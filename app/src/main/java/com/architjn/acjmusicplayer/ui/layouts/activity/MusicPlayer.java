@@ -41,16 +41,11 @@ import com.architjn.acjmusicplayer.utils.adapters.PlayingSongAdapter;
 import com.architjn.acjmusicplayer.service.MusicService;
 import com.architjn.acjmusicplayer.task.ChangeSeekDetailUpdater;
 import com.architjn.acjmusicplayer.task.ColorAnimateAlbumView;
-import com.architjn.acjmusicplayer.ui.widget.MyLinearLayoutManager;
 import com.architjn.acjmusicplayer.utils.items.SongListItem;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-
-/**
- * Created by architjn on 01/07/15.
- */
 
 public class MusicPlayer extends AppCompatActivity {
 
@@ -102,7 +97,7 @@ public class MusicPlayer extends AppCompatActivity {
                 rv = (RecyclerView) findViewById(R.id.player_playlist);
                 MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
                 PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList());
-                MyLinearLayoutManager layoutManager = new MyLinearLayoutManager(context,
+                LinearLayoutManager layoutManager = new LinearLayoutManager(context,
                         LinearLayoutManager.VERTICAL, false);
                 layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 rv.setLayoutManager(layoutManager);
