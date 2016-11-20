@@ -41,10 +41,6 @@
             android:label=""
             android:theme="@style/AppTheme.Main" />
         <activity
-            android:name="com.dominionos.music.ui.layouts.activity.settings.Settings"
-            android:label="@string/action_settings"
-            android:theme="@style/AppTheme.Pref" />
-        <activity
             android:name="com.dominionos.music.ui.layouts.activity.settings.ThemeSettings"
             android:label="@string/pref_theme"
             android:theme="@style/AppTheme.Pref" />

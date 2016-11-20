@@ -12,18 +12,17 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
 import com.dominionos.music.utils.adapters.ViewPagerAdapter;
 import com.dominionos.music.service.MusicService;
-import com.dominionos.music.ui.layouts.activity.settings.Settings;
 import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
 import com.dominionos.music.ui.layouts.fragments.ArtistsFragment;
 import com.dominionos.music.ui.layouts.fragments.SongsFragment;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.album);
         PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist);
         PrimaryDrawerItem playlists = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist);
-        SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.action_settings);
+        SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about);
 
         final Drawer drawer = new DrawerBuilder()
                 .withActivity(this)
@@ -109,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                         artists,
                         playlists,
                         new DividerDrawerItem(),
-                        settings
+                        about
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
 
@@ -130,7 +129,13 @@ public class MainActivity extends AppCompatActivity {
                                 viewPager.setCurrentItem(3);
                                 break;
                             case 5:
-                                startActivity(new Intent(MainActivity.this, Settings.class));
+                                new LibsBuilder()
+                                        .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                                        .withActivityTheme(R.style.AppTheme_Main)
+                                        .withAboutIconShown(true)
+                                        .withAboutVersionShown(true)
+                                        .withAboutDescription("Music player based on @architjn's Auro")
+                                        .start(MainActivity.this);
                                 break;
                         }
                         return true;
@@ -156,28 +161,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         if (fab.getVisibility() != View.VISIBLE)
             fab.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(MainActivity.this, Settings.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
