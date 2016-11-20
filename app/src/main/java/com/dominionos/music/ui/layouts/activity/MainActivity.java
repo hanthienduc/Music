@@ -4,16 +4,12 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -28,23 +24,27 @@ import com.dominionos.music.ui.layouts.activity.settings.Settings;
 import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
 import com.dominionos.music.ui.layouts.fragments.ArtistsFragment;
 import com.dominionos.music.ui.layouts.fragments.SongsFragment;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences settingsPref;
     private FloatingActionButton fab;
-    private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private ViewPager viewPager;
-    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         overridePendingTransition(0, 0);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         fab = (FloatingActionButton) findViewById(R.id.fab_main);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -79,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.main_viewPager);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         settingsPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        drawerLayout = (DrawerLayout) findViewById(R.id.main_drawerlayout);
-        navigationView = (NavigationView) findViewById(R.id.main_navigationview);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -94,47 +92,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setDrawer() {
-        drawerLayout.setStatusBarBackgroundColor(Color.TRANSPARENT);
-        if (toolbar != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            toolbar.setNavigationIcon(R.drawable.ic_drawer);
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    drawerLayout.openDrawer(GravityCompat.START);
-                }
-            });
-        }
-        navigationView.getMenu().getItem(getIntent().getIntExtra("pos", 2)).setChecked(true);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.navigation_songs:
-                        viewPager.setCurrentItem(0);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        break;
-                    case R.id.navigation_albums:
-                        viewPager.setCurrentItem(1);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        break;
-                    case R.id.navigation_artists:
-                        viewPager.setCurrentItem(2);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        break;
-                    case R.id.navigation_playlist:
-                        viewPager.setCurrentItem(3);
-                        finish();
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        break;
-                    case R.id.navigation_sub_item_2:
-                        startActivity(new Intent(MainActivity.this, Settings.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        break;
-                }
-                return false;
-            }
-        });
+        PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs);
+        PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.album);
+        PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist);
+        PrimaryDrawerItem playlists = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist);
+        SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.action_settings);
+
+        final Drawer drawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withCloseOnClick(true)
+                .withHeader(R.layout.layout_header)
+                .addDrawerItems(
+                        songs,
+                        albums,
+                        artists,
+                        playlists,
+                        new DividerDrawerItem(),
+                        settings
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        int drawerIdentifier = (int) drawerItem.getIdentifier();
+                        switch(drawerIdentifier) {
+                            case 1:
+                                viewPager.setCurrentItem(0);
+                                break;
+                            case 2:
+                                viewPager.setCurrentItem(1);
+                                break;
+                            case 3:
+                                viewPager.setCurrentItem(2);
+                                break;
+                            case 4:
+                                viewPager.setCurrentItem(3);
+                                break;
+                            case 5:
+                                startActivity(new Intent(MainActivity.this, Settings.class));
+                                break;
+                        }
+                        return true;
+                    }
+                })
+                .build();
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -143,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                navigationView.getMenu().getItem(position).setChecked(true);
+                drawer.setSelectionAtPosition(position + 1);
             }
 
             @Override

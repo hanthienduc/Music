@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme.Main" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.Main" parent="MaterialDrawerTheme.Light">
         <item name="colorPrimary">@color/ColorPrimary</item>
         <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
         <item name="android:fastScrollThumbDrawable">@drawable/ic_datejumper</item>
