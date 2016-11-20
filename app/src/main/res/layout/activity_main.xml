@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sothree.slidinguppanel.SlidingUpPanelLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/sliding_panel"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="bottom"
-    sothree:umanoPanelHeight="?attr/actionBarSize"
-    sothree:umanoShadowHeight="10dp"
-    sothree:umanoScrollableView="@+id/player_playlist">
-
     <android.support.v4.widget.DrawerLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/main_drawerlayout"
         android:layout_width="match_parent"
@@ -78,13 +68,3 @@
             app:headerLayout="@layout/layout_header"
             app:menu="@menu/menu_drawer" />
     </android.support.v4.widget.DrawerLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="test"/>
-    </LinearLayout>
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
