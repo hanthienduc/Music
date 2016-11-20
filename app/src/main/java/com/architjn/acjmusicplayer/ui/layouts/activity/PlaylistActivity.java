@@ -12,9 +12,6 @@ import com.architjn.acjmusicplayer.R;
 import com.architjn.acjmusicplayer.utils.MySQLiteHelper;
 import com.architjn.acjmusicplayer.utils.adapters.PlaylistActivityAdapter;
 
-/**
- * Created by architjn on 02/09/15.
- */
 public class PlaylistActivity extends AppCompatActivity {
     RecyclerView recyclerView;
 

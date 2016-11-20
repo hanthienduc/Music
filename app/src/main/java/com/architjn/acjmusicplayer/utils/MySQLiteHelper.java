@@ -154,7 +154,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(SONG_KEY_NAME, song.getName());
         values.put(SONG_KEY_COUNT, song.getCount());
         values.put(SONG_KEY_ALBUM_NAME, song.getAlbumName());
-        values.put(SONG_KEY_MOOD, song.getMood());
 
         db.insert(TABLE_SONG_FOR_PLAYLIST, null, values);
         db.close();
@@ -221,7 +220,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                         musicCursor.getString(artistColumn),
                         musicCursor.getString(pathColumn), false,
                         musicCursor.getLong(albumIdColumn),
-                        musicCursor.getString(albumColumn), 0, Mood.UNKNOWN);
+                        musicCursor.getString(albumColumn), 0);
             }
             while (musicCursor.moveToNext());
         }
@@ -246,8 +245,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 song = new SongListItem(Long.valueOf(cursor.getString(1)),
                         cursor.getString(7), cursor.getString(4),
                         cursor.getString(6), fav, Long.parseLong(cursor.getString(3)),
-                        cursor.getString(9), Integer.parseInt(cursor.getString(8)),
-                        cursor.getString(10));
+                        cursor.getString(9), Integer.parseInt(cursor.getString(8)));
                 songs.add(song);
             } while (cursor.moveToNext());
         }
@@ -273,8 +271,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 song = new SongListItem(Long.valueOf(cursor.getString(1)),
                         cursor.getString(7), cursor.getString(4),
                         cursor.getString(6), fav, Long.parseLong(cursor.getString(3)),
-                        cursor.getString(9), Integer.parseInt(cursor.getString(8)),
-                        cursor.getString(10));
+                        cursor.getString(9), Integer.parseInt(cursor.getString(8)));
                 songs.add(song);
             } while (cursor.moveToNext());
         }

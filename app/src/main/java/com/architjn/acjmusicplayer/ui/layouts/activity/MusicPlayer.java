@@ -44,6 +44,7 @@ import com.architjn.acjmusicplayer.task.ColorAnimateAlbumView;
 import com.architjn.acjmusicplayer.utils.items.SongListItem;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,7 +55,6 @@ public class MusicPlayer extends AppCompatActivity {
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
     public static int mainColor;
-    private Toolbar toolbar;
     private String songPath, songName, songDesc, albumName, songArt;
     private TextView songNameView, songArtistView, currentTimeHolder, totalTimeHolder;
     private long albumId;
@@ -236,8 +236,8 @@ public class MusicPlayer extends AppCompatActivity {
     private void updateSeeker() {
         seekBar.setMax(duration);
         seekBar.setProgress(currentDuration);
-        totalTimeHolder.setText(String.format("%02d", ((duration / 1000) / 60)) +
-                ":" + String.format("%02d", ((duration / 1000) % 60)));
+        totalTimeHolder.setText(String.format(String.valueOf(Locale.getDefault()), ((duration / 1000) / 60)) +
+                ":" + String.format(String.valueOf(Locale.getDefault()), ((duration / 1000) % 60)));
         musicStoped = false;
         if (timer != null)
             timer.cancel();
@@ -332,7 +332,6 @@ public class MusicPlayer extends AppCompatActivity {
 
     private void init() {
         shadeOverArt = (RelativeLayout) findViewById(R.id.shade_over_art);
-        toolbar = (Toolbar) findViewById(R.id.toolbar_player);
         playerNestedScroll = (NestedScrollView) findViewById(R.id.player_nested_scroll);
         header = (ImageView) findViewById(R.id.header);
         playButton = (ImageView) findViewById(R.id.player_play);

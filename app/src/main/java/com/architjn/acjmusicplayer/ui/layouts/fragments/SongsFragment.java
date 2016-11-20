@@ -1,10 +1,8 @@
 package com.architjn.acjmusicplayer.ui.layouts.fragments;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,15 +24,13 @@ public class SongsFragment extends Fragment {
     Cursor musicCursor;
     View mainView;
     RecyclerView rv;
-    private SongsAdapter songAdapter;
-    private SharedPreferences settingsPref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.songs_fragment, container, false);
         mainView = v;
 
-        initalize();
+        init();
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
 
         Runnable myRunnable = new Runnable() {
@@ -48,8 +44,7 @@ public class SongsFragment extends Fragment {
         return v;
     }
 
-    private void initalize() {
-        settingsPref = PreferenceManager.getDefaultSharedPreferences(mainView.getContext());
+    private void init() {
         rv = (RecyclerView) mainView.findViewById(R.id.songs_fragment_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mainView.getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -85,11 +80,11 @@ public class SongsFragment extends Fragment {
                         musicCursor.getString(artistColumn),
                         musicCursor.getString(pathColumn), false,
                         musicCursor.getLong(albumIdColumn),
-                        musicCursor.getString(albumColumn), i, Mood.UNKNOWN));
+                        musicCursor.getString(albumColumn), i));
                 i++;
             }
             while (musicCursor.moveToNext());
-            songAdapter = new SongsAdapter(mainView.getContext(), songList);
+            SongsAdapter songAdapter = new SongsAdapter(mainView.getContext(), songList);
             rv.setAdapter(songAdapter);
         }
     }

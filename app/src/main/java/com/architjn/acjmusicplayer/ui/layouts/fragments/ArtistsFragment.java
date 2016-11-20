@@ -34,7 +34,7 @@ public class ArtistsFragment extends Fragment {
         View v = inflater.inflate(R.layout.artists_fragment, container, false);
         this.mainView = v;
 
-        initialize();
+        init();
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
 
         Runnable myRunnable = new Runnable() {
@@ -48,7 +48,7 @@ public class ArtistsFragment extends Fragment {
         return v;
     }
 
-    private void initialize() {
+    private void init() {
         settingsPref = PreferenceManager.getDefaultSharedPreferences(mainView.getContext());
         gv = (RecyclerView) mainView.findViewById(R.id.artist_grid);
     }
@@ -81,6 +81,9 @@ public class ArtistsFragment extends Fragment {
             }
             while (musicCursor.moveToNext());
         }
+        if (musicCursor != null) {
+            musicCursor.close();
+        }
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(),
                 settingsPref.getInt("pref_grid_num", 2));
@@ -90,7 +93,7 @@ public class ArtistsFragment extends Fragment {
         gv.addItemDecoration(new SpacesItemDecoration(8, settingsPref.getInt("pref_grid_num", 2)));
         gv.setHasFixedSize(true);
         gv.setAdapter(new ArtistAdapter(mainView.getContext(), albumList));
-        gv.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        gv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);

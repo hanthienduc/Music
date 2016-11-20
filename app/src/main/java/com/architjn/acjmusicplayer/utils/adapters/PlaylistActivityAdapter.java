@@ -1,21 +1,16 @@
 package com.architjn.acjmusicplayer.utils.adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.CountDownTimer;
 import android.provider.MediaStore;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +25,6 @@ import java.util.List;
 
 public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivityAdapter.MainViewHolder> {
 
-    public static final String TAG = PlaylistActivityAdapter.class.getSimpleName();
     private Context context;
     private final List<SongListItem> data;
     private int playlistId;
@@ -45,8 +39,7 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
     public MainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.song_list_item, parent, false);
-        MainViewHolder holder = new MainViewHolder(view);
-        return holder;
+        return new MainViewHolder(view);
     }
 
     @Override
@@ -91,9 +84,6 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
                                 data.remove(position);
                                 notifyItemRemoved(position);
                                 updateListWithInterval();
-                                return true;
-                            case R.id.menu_mood:
-                                setMood(position);
                                 return true;
                             case R.id.menu_share:
                                 Intent share = new Intent(Intent.ACTION_SEND);
@@ -148,42 +138,6 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
         });
     }
 
-
-    private void setMood(int position) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setTitle("Choose mood");
-        View view = ((Activity) context).getLayoutInflater().inflate(R.layout.dialog_listview, null);
-        com.architjn.acjmusicplayer.utils.Mood mood = new com.architjn.acjmusicplayer.utils.Mood();
-        List<String> moods = mood.getAllMoods();
-        RecyclerView gv = (RecyclerView) view.findViewById(R.id.dialog_playlist_rv);
-        LinearLayoutManager gridLayoutManager = new LinearLayoutManager(context);
-        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        gridLayoutManager.scrollToPosition(0);
-        gv.setLayoutManager(gridLayoutManager);
-        gv.setHasFixedSize(true);
-        alertDialogBuilder.setView(view);
-        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = alertDialogBuilder.create();
-        DialogMoodAdapter adapter = new DialogMoodAdapter(context, moods, data.get(position), dialog);
-        gv.setAdapter(adapter);
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.copyFrom(dialog.getWindow().getAttributes());
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-        dialog.show();
-    }
-
     private void updateListWithInterval() {
         new CountDownTimer(400, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -206,7 +160,7 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
         TextView songName, songDesc;
         public View menu;
 
-        public MainViewHolder(View itemView) {
+        MainViewHolder(View itemView) {
             super(itemView);
             view = itemView;
             songName = (TextView) itemView.findViewById(R.id.song_item_name);

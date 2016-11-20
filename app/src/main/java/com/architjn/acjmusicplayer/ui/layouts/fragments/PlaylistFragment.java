@@ -21,9 +21,6 @@ import com.architjn.acjmusicplayer.utils.items.Playlist;
 
 import java.util.List;
 
-/**
- * Created by architjn on 31/08/15.
- */
 public class PlaylistFragment extends Fragment {
 
     private View mainView;
@@ -34,7 +31,7 @@ public class PlaylistFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.albums_fragment, container, false);
         this.mainView = v;
-        initialize();
+        init();
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
 
         Runnable myRunnable = new Runnable() {
@@ -61,7 +58,7 @@ public class PlaylistFragment extends Fragment {
         gv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList));
     }
 
-    private void initialize() {
+    private void init() {
         settingsPref = PreferenceManager.getDefaultSharedPreferences(mainView.getContext());
         gv = (RecyclerView) mainView.findViewById(R.id.album_grid);
     }

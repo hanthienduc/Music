@@ -36,7 +36,7 @@ public class Settings extends PreferenceActivity {
         //Adding toolbar
         LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
         Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.main_action_bar, root, false);
-        bar.setTitle(getResources().getString(R.string.settings));
+        bar.setTitle(getResources().getString(R.string.action_settings));
         bar.setBackgroundColor(shp.getInt("amp_actionbar", getResources().getColor(R.color.ColorPrimary)));
         root.addView(bar, 0);
 

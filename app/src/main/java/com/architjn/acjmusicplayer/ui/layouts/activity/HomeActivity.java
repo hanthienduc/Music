@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -23,9 +24,6 @@ import com.architjn.acjmusicplayer.ui.layouts.activity.settings.Settings;
 import com.architjn.acjmusicplayer.ui.layouts.fragments.HomeFragment;
 import com.architjn.acjmusicplayer.ui.layouts.fragments.PlaylistFragment;
 
-/**
- * Created by architjn on 31/08/15.
- */
 public class HomeActivity extends AppCompatActivity {
 
 
@@ -95,7 +93,7 @@ public class HomeActivity extends AppCompatActivity {
         }
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.navigation_home:
                         viewPager.setCurrentItem(0);
@@ -126,13 +124,6 @@ public class HomeActivity extends AppCompatActivity {
                         finish();
                         drawerLayout.closeDrawer(GravityCompat.START);
                         break;
-                    case R.id.navigation_genres:
-                        Intent c = new Intent(HomeActivity.this, MainActivity.class);
-                        c.putExtra("pos", 5);
-                        startActivity(c);
-                        finish();
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        break;
                     case R.id.navigation_sub_item_2:
                         startActivity(new Intent(HomeActivity.this, Settings.class));
                         finish();
@@ -142,7 +133,7 @@ public class HomeActivity extends AppCompatActivity {
                 return false;
             }
         });
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 

@@ -32,7 +32,7 @@ public class AlbumsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.albums_fragment, container, false);
         this.mainView = v;
-        initialize();
+        init();
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
 
         Runnable myRunnable = new Runnable() {
@@ -46,7 +46,7 @@ public class AlbumsFragment extends Fragment {
         return v;
     }
 
-    private void initialize() {
+    private void init() {
         settingsPref = PreferenceManager.getDefaultSharedPreferences(mainView.getContext());
         gv = (RecyclerView) mainView.findViewById(R.id.album_grid);
     }
@@ -79,6 +79,9 @@ public class AlbumsFragment extends Fragment {
                         musicCursor.getInt(numOfSongsColumn)));
             }
             while (musicCursor.moveToNext());
+        }
+        if (musicCursor != null) {
+            musicCursor.close();
         }
         GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(),
                 settingsPref.getInt("pref_grid_num", 2));

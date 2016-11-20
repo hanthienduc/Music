@@ -3,9 +3,9 @@ package com.architjn.acjmusicplayer.ui.layouts.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -24,7 +24,6 @@ import com.architjn.acjmusicplayer.service.MusicService;
 import com.architjn.acjmusicplayer.ui.layouts.activity.settings.Settings;
 import com.architjn.acjmusicplayer.ui.layouts.fragments.AlbumsFragment;
 import com.architjn.acjmusicplayer.ui.layouts.fragments.ArtistsFragment;
-import com.architjn.acjmusicplayer.ui.layouts.fragments.GenresFragment;
 import com.architjn.acjmusicplayer.ui.layouts.fragments.SongsFragment;
 
 
@@ -57,10 +56,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            getWindow().setExitTransition(new Explode());
-        }
-
         setupViewPager(viewPager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tablayout);
         if (settingsPref.getBoolean("pref_extend_tabs", false))
@@ -84,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFrag(new SongsFragment(), getResources().getString(R.string.songs));
         adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.album));
         adapter.addFrag(new ArtistsFragment(), getResources().getString(R.string.artist));
-        adapter.addFrag(new GenresFragment(), getResources().getString(R.string.genres));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(getIntent().getIntExtra("pos", 2) - 2);
     }
@@ -104,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView.getMenu().getItem(getIntent().getIntExtra("pos", 2)).setChecked(true);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.navigation_home:
                         startActivity(new Intent(MainActivity.this, HomeActivity.class));
@@ -128,10 +122,6 @@ public class MainActivity extends AppCompatActivity {
                         viewPager.setCurrentItem(2);
                         drawerLayout.closeDrawer(GravityCompat.START);
                         break;
-                    case R.id.navigation_genres:
-                        viewPager.setCurrentItem(3);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        break;
                     case R.id.navigation_sub_item_2:
                         startActivity(new Intent(MainActivity.this, Settings.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
@@ -140,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 

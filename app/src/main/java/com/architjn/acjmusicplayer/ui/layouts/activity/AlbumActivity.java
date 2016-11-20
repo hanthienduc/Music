@@ -37,24 +37,15 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.ArrayList;
 
-/**
- * Created by architjn on 22/06/15.
- */
 public class AlbumActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
-    private String imagePath;
-    private ImageView albumArt;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
-    private SharedPreferences settingsPref;
     private ArrayList<SongListItem> songList = new ArrayList<>();
-    private ArrayList<String> songName, songArtist, songPath,
-            songAlbum, songId, songAlbumId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        settingsPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences settingsPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (settingsPref.getBoolean("pref_album_status_trans", true)) {
             if (Build.VERSION.SDK_INT >= 21)
                 getWindow().setStatusBarColor(Color.TRANSPARENT);
@@ -78,7 +69,7 @@ public class AlbumActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
         overridePendingTransition(0, 0);
-        collapsingToolbarLayout = (CollapsingToolbarLayout)
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
                 findViewById(R.id.collapsingtoolbarlayout_album);
         if (collapsingToolbarLayout != null)
             collapsingToolbarLayout.setTitle(getIntent().getStringExtra("albumName"));
@@ -87,7 +78,7 @@ public class AlbumActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_album);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        albumArt = (ImageView) findViewById(R.id.activity_album_art);
+        ImageView albumArt = (ImageView) findViewById(R.id.activity_album_art);
 
         final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbarlayout_artist);
         fab = (FloatingActionButton) findViewById(R.id.fab_album);
@@ -109,8 +100,8 @@ public class AlbumActivity extends AppCompatActivity {
                 MediaStore.Audio.Albums._ID + "=?",
                 new String[]{String.valueOf(getIntent().getLongExtra("albumId", 0))},
                 null);
-        if (cursor.moveToFirst()) {
-            imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+        if (cursor != null && cursor.moveToFirst()) {
+            String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
             try {
                 Picasso.with(AlbumActivity.this)
                         .load(new File(imagePath))
@@ -121,6 +112,9 @@ public class AlbumActivity extends AppCompatActivity {
                         load(R.drawable.default_artwork_dark)
                         .into(albumArt);
             }
+        }
+        if (cursor != null) {
+            cursor.close();
         }
         Handler mainHandler = new Handler(getMainLooper());
 
@@ -223,9 +217,12 @@ public class AlbumActivity extends AppCompatActivity {
                         musicCursor.getString(pathColumn), false,
                         musicCursor.getLong(albumIdColumn),
                         musicCursor.getString(albumNameColumn),
-                        count, Mood.UNKNOWN));
+                        count));
             }
             while (musicCursor.moveToNext());
+        }
+        if (musicCursor != null) {
+            musicCursor.close();
         }
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

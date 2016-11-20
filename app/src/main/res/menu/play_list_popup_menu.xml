@@ -14,10 +14,6 @@
         android:title="@string/menu_remove_playlist"
         android:visible="true" />
     <item
-        android:id="@+id/menu_mood"
-        android:title="@string/menu_set_mood"
-        android:visible="true" />
-    <item
         android:id="@+id/menu_share"
         android:title="@string/menu_share"
         android:visible="true" />

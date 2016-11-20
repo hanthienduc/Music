@@ -75,7 +75,6 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         values.put(SONG_KEY_NAME, song.getName());
         values.put(SONG_KEY_COUNT, song.getCount());
         values.put(SONG_KEY_ALBUM_NAME, song.getAlbumName());
-        values.put(SONG_KEY_MOOD, song.getMood());
 
         db.insert(TABLE_PLAYBACK, null, values);
         db.close();
@@ -218,7 +217,6 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
             values.put(SONG_KEY_NAME, song.getName());
             values.put(SONG_KEY_COUNT, song.getCount());
             values.put(SONG_KEY_ALBUM_NAME, song.getAlbumName());
-            values.put(SONG_KEY_MOOD, song.getMood());
             values.put(SONG_KEY_PLAYING, 0);
             db.insert(TABLE_PLAYBACK, null, values);
         }
@@ -249,8 +247,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         return new SongListItem(Long.valueOf(cursor.getString(1)),
                 cursor.getString(6), cursor.getString(3),
                 cursor.getString(5), fav, Long.parseLong(cursor.getString(2)),
-                cursor.getString(8), Integer.parseInt(cursor.getString(7)),
-                cursor.getString(9));
+                cursor.getString(8), Integer.parseInt(cursor.getString(7)));
     }
 
 }

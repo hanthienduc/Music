@@ -42,7 +42,7 @@
             android:theme="@style/AppTheme.Main" />
         <activity
             android:name=".ui.layouts.activity.settings.Settings"
-            android:label="@string/settings"
+            android:label="@string/action_settings"
             android:theme="@style/AppTheme.Pref" />
         <activity
             android:name=".ui.layouts.activity.settings.ThemeSettings"

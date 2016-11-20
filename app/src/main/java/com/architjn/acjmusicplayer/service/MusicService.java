@@ -10,12 +10,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.architjn.acjmusicplayer.R;
 import com.architjn.acjmusicplayer.task.ChangeNotificationDetails;
 import com.architjn.acjmusicplayer.ui.layouts.activity.MusicPlayer;
-import com.architjn.acjmusicplayer.utils.Mood;
 import com.architjn.acjmusicplayer.utils.MusicPlayerDBHelper;
 import com.architjn.acjmusicplayer.utils.MySQLiteHelper;
 import com.architjn.acjmusicplayer.utils.items.SongListItem;
@@ -32,17 +31,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-/**
- * Created by architjn on 29/06/15.
- */
 public class MusicService extends Service {
 
     MediaPlayer mediaPlayer;
 
     private Notification notificationCompat;
     private NotificationManager notificationManager;
-    private RemoteViews notiLayoutBig;
     private String songName, songDesc, songPath, albumName;
     private long albumId;
     private boolean singleSong;
@@ -73,8 +69,6 @@ public class MusicService extends Service {
     public static final String ACTION_MENU_PLAY_NEXT = "menu_play_next";
     public static final String ACTION_MENU_REMOVE_FROM_QUEUE = "menu_from_queue";
     public static final String ACTION_MENU_SHARE = "menu_share";
-    public static final String ACTION_MENU_ADD_PLAYLIST = "menu_add_in_playlist";
-    public static final String ACTION_MENU_SET_MOOD = "menu_set_mood";
     public static final String ACTION_MENU_DELETE = "menu_delete";
 
     private BroadcastReceiver musicPlayer = new BroadcastReceiver() {
@@ -88,7 +82,7 @@ public class MusicService extends Service {
                         intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), true);
                 playList.addSong(new SongListItem(intent.getLongExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                         intent.getStringExtra("songPath"), false,
-                        intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0, Mood.UNKNOWN));
+                        intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                 currentPlaylistSongId = 0;
                 pausedSongSeek = 0;
             } else if (intent.getAction().equals(ACTION_PLAY_ALBUM)) {
@@ -125,9 +119,12 @@ public class MusicService extends Service {
                                 musicCursor.getString(pathColumn), false,
                                 musicCursor.getLong(albumIdColumn),
                                 musicCursor.getString(albumNameColumn),
-                                count, Mood.UNKNOWN), count);
+                                count), count);
                     }
                     while (musicCursor.moveToNext());
+                }
+                if (musicCursor != null) {
+                    musicCursor.close();
                 }
             } else if (intent.getAction().equals(ACTION_REMOVE_SERVICE)) {
                 MusicService.this.stopSelf();
@@ -145,7 +142,7 @@ public class MusicService extends Service {
                 pausedSongSeek = 0;
                 playMusic(playList.getNextSong(currentPlaylistSongId));
                 updateCurrentPlaying();
-            } else if (intent.getAction() == ACTION_PREV) {
+            } else if (Objects.equals(intent.getAction(), ACTION_PREV)) {
                 if (mediaPlayer.getCurrentPosition() >= 5000) {
                     mediaPlayer.seekTo(0);
                 } else {
@@ -251,12 +248,12 @@ public class MusicService extends Service {
                 if (currentPlaylistSongId == playList.getLastSong().getId() && currentPlaylistSongId != -1) {
                     playList.addSong(new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                             intent.getStringExtra("songPath"), false,
-                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0, Mood.UNKNOWN));
+                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                 } else if (currentPlaylistSongId != -1) {
                     //TODO
 //                    playList.addSong(currentPlaylistSongId + 1, new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
 //                            intent.getStringExtra("songPath"), false,
-//                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0, Mood.UNKNOWN));
+//                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                 } else {
                     Intent i = intent;
                     i.setAction(ACTION_PLAY_SINGLE);
@@ -266,7 +263,7 @@ public class MusicService extends Service {
                 if (playList.getPlaybackTableSize() != 0 && currentPlaylistSongId != -1) {
                     playList.addSong(new SongListItem(intent.getLongExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                             intent.getStringExtra("songPath"), false,
-                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0, Mood.UNKNOWN));
+                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                 } else {
                     Intent i = intent;
                     i.setAction(ACTION_PLAY_SINGLE);
@@ -387,12 +384,12 @@ public class MusicService extends Service {
     }
 
     public void playMusic(final int songId, final String songPath, final String songName, final String songDesc,
-                          final String songArt, final long albumId, final String albumName, @Nullable boolean singlePlay) {
+                          final String songArt, final long albumId, final String albumName, boolean singlePlay) {
 
         if (singlePlay) {
             currentPlaylistSongId = -1;
             currentPlaylistAlbumId = -1;
-            pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0, Mood.UNKNOWN);
+            pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
             pausedSongPlaylistId = -1;
             singleSong = true;
         } else {
@@ -401,6 +398,7 @@ public class MusicService extends Service {
         try {
             stopMusic();
             mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(songPath);
             mediaPlayer.prepare();
             currentPlaylistSongId = songId;
@@ -418,7 +416,7 @@ public class MusicService extends Service {
                         currentPlaylistSongId = -1;
                         currentPlaylistAlbumId = -1;
                         pausedSongPlaylistId = -1;
-                        pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0, Mood.UNKNOWN);
+                        pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
                         pausedSongSeek = 0;
                         stopMusic();
                     }
@@ -442,7 +440,7 @@ public class MusicService extends Service {
             notificationCompat = createBuiderNotificationRemovable().build();
         else
             notificationCompat = createBuiderNotification().build();
-        notiLayoutBig = new RemoteViews(getPackageName(), R.layout.notification_layout);
+        RemoteViews notiLayoutBig = new RemoteViews(getPackageName(), R.layout.notification_layout);
         if (Build.VERSION.SDK_INT >= 16) {
             notificationCompat.bigContentView = notiLayoutBig;
             notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,

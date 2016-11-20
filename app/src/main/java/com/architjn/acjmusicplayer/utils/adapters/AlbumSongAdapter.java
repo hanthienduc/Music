@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,16 +27,13 @@ import com.architjn.acjmusicplayer.utils.items.SongListItem;
 import java.io.File;
 import java.util.List;
 
-/**
- * Created by architjn on 23/06/15.
- */
 public class AlbumSongAdapter extends RecyclerView.Adapter<AlbumSongAdapter.SimpleItemViewHolder> {
 
     private final List<SongListItem> items;
     private Context context;
 
     public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, desc, counter;
+        TextView title, desc, counter;
         public View view;
         public ImageView menu;
 
@@ -119,9 +115,6 @@ public class AlbumSongAdapter extends RecyclerView.Adapter<AlbumSongAdapter.Simp
                             case R.id.menu_add_playlist:
                                 addToPlaylist(position);
                                 return true;
-                            case R.id.menu_mood:
-                                setMood(position);
-                                return true;
                             case R.id.menu_share:
                                 Intent share = new Intent(Intent.ACTION_SEND);
                                 share.setType("audio/*");
@@ -191,40 +184,6 @@ public class AlbumSongAdapter extends RecyclerView.Adapter<AlbumSongAdapter.Simp
         dialog.show();
     }
 
-    private void setMood(int position) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setTitle("Choose mood");
-        View view = ((Activity) context).getLayoutInflater().inflate(R.layout.dialog_listview, null);
-        com.architjn.acjmusicplayer.utils.Mood mood = new com.architjn.acjmusicplayer.utils.Mood();
-        List<String> moods = mood.getAllMoods();
-        RecyclerView gv = (RecyclerView) view.findViewById(R.id.dialog_playlist_rv);
-        LinearLayoutManager gridLayoutManager = new LinearLayoutManager(context);
-        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        gridLayoutManager.scrollToPosition(0);
-        gv.setLayoutManager(gridLayoutManager);
-        gv.setHasFixedSize(true);
-        alertDialogBuilder.setView(view);
-        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = alertDialogBuilder.create();
-        DialogMoodAdapter adapter = new DialogMoodAdapter(context, moods, items.get(position), dialog);
-        gv.setAdapter(adapter);
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.copyFrom(dialog.getWindow().getAttributes());
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-        dialog.show();
-    }
 
     @Override
     public int getItemCount() {

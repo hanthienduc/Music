@@ -9,16 +9,12 @@ import android.view.ViewGroup;
 
 import com.architjn.acjmusicplayer.R;
 
-/**
- * Created by architjn on 31/08/15.
- */
 public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.home_fragment, container, false);
 
-        return v;
+        return inflater.inflate(R.layout.home_fragment, container, false);
     }
 
 }
