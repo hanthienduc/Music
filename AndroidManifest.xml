@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.architjn.acjmusicplayer">
+    package="com.domionionos.music">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat.Light">
         <activity
-            android:name=".ui.layouts.activity.HomeActivity"
+            android:name=".ui.layouts.activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.Main">
             <intent-filter>
@@ -24,10 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.layouts.activity.MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.Main" />
         <activity
             android:name=".ui.layouts.activity.AlbumActivity"
             android:label="Album"
@@ -42,7 +38,7 @@
             android:theme="@style/AppTheme.Main" />
         <activity
             android:name=".ui.layouts.activity.settings.Settings"
-            android:label="@string/settings"
+            android:label="@string/action_settings"
             android:theme="@style/AppTheme.Pref" />
         <activity
             android:name=".ui.layouts.activity.settings.ThemeSettings"
