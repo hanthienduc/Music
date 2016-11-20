@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.architjn.acjmusicplayer.R;
+import com.architjn.acjmusicplayer.ui.layouts.fragments.PlaylistFragment;
 import com.architjn.acjmusicplayer.utils.adapters.ViewPagerAdapter;
 import com.architjn.acjmusicplayer.service.MusicService;
 import com.architjn.acjmusicplayer.ui.layouts.activity.settings.Settings;
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
 
         init();
         setDrawer();
+
+        Intent i = new Intent(MainActivity.this, MusicService.class);
+        startService(i);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,8 +83,9 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFrag(new SongsFragment(), getResources().getString(R.string.songs));
         adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.album));
         adapter.addFrag(new ArtistsFragment(), getResources().getString(R.string.artist));
+        adapter.addFrag(new PlaylistFragment(), getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(getIntent().getIntExtra("pos", 2) - 2);
+        viewPager.setCurrentItem(0);
     }
 
     public void setDrawer() {
@@ -100,16 +105,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case R.id.navigation_home:
-                        startActivity(new Intent(MainActivity.this, HomeActivity.class));
-                        finish();
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        break;
-                    case R.id.navigation_playlist:
-                        startActivity(new Intent(MainActivity.this, HomeActivity.class));
-                        finish();
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        break;
                     case R.id.navigation_songs:
                         viewPager.setCurrentItem(0);
                         drawerLayout.closeDrawer(GravityCompat.START);
@@ -120,6 +115,11 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.navigation_artists:
                         viewPager.setCurrentItem(2);
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        break;
+                    case R.id.navigation_playlist:
+                        viewPager.setCurrentItem(3);
+                        finish();
                         drawerLayout.closeDrawer(GravityCompat.START);
                         break;
                     case R.id.navigation_sub_item_2:
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                navigationView.getMenu().getItem(position + 2).setChecked(true);
+                navigationView.getMenu().getItem(position).setChecked(true);
             }
 
             @Override
