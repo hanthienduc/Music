@@ -28,7 +28,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.architjn.acjmusicplayer.R;
-import com.architjn.acjmusicplayer.utils.Mood;
 import com.architjn.acjmusicplayer.utils.adapters.AlbumSongAdapter;
 import com.architjn.acjmusicplayer.utils.items.SongListItem;
 import com.architjn.acjmusicplayer.service.MusicService;

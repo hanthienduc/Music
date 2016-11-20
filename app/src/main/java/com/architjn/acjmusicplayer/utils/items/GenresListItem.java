@@ -1,8 +1,5 @@
 package com.architjn.acjmusicplayer.utils.items;
 
-/**
- * Created by architjn on 10/06/15.
- */
 public class GenresListItem {
 
     long id;

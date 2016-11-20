@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground">
 
     <TextView
@@ -13,7 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:textColor="#ffffff" />
+        android:textColor="@android:color/tertiary_text_light" />
 
     <TextView
         android:id="@+id/album_song_item_name"
@@ -25,7 +25,7 @@
         android:layout_toStartOf="@+id/album_song_item_menu"
         android:layout_toEndOf="@id/album_song_itemcount"
         android:maxLines="1"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/primary_text_light"
         android:textSize="18sp" />
 
     <TextView
@@ -38,7 +38,7 @@
         android:layout_toStartOf="@+id/album_song_item_menu"
         android:layout_toEndOf="@id/album_song_itemcount"
         android:maxLines="1"
-        android:textColor="@color/light_color" />
+        android:textColor="@android:color/secondary_text_light" />
 
     <ImageView
         android:id="@+id/album_song_item_menu"

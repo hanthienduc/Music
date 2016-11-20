@@ -12,9 +12,6 @@ import android.widget.TextView;
 
 import com.architjn.acjmusicplayer.R;
 
-/**
- * Created by architjn on 02/07/15.
- */
 public class ColorAnimateAlbumView extends AsyncTask<Void, Void, Void> {
 
     private Context context;
@@ -34,13 +31,15 @@ public class ColorAnimateAlbumView extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        Integer colorTo = palette.getDarkVibrantColor(context.getResources().getColor(R.color.ColorPrimary));
+        int defaultColor = 0x000000;
+        Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+        Integer colorTo = vibrantSwatch.getRgb();
         colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
         colorAnimation.setDuration(2000);
-        Integer colorTo1 = palette.getDarkVibrantSwatch().getBodyTextColor();
+        Integer colorTo1 = vibrantSwatch.getTitleTextColor();
         colorAnimation1 = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom1, colorTo1);
         colorAnimation1.setDuration(2000);
-        Integer colorTo2 = palette.getDarkVibrantSwatch().getTitleTextColor();
+        Integer colorTo2 = vibrantSwatch.getBodyTextColor();
         colorAnimation2 = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom2, colorTo2);
         colorAnimation2.setDuration(2000);
         return null;

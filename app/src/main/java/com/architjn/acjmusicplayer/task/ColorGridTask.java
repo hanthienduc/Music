@@ -12,14 +12,11 @@ import android.util.Log;
 import com.architjn.acjmusicplayer.R;
 import com.architjn.acjmusicplayer.utils.adapters.AlbumsAdapter;
 
-/**
- * Created by architjn on 26/06/15.
- */
 public class ColorGridTask extends AsyncTask<Void, Void, Void> {
 
     private Context context;
     private String artPath;
-    AlbumsAdapter.SimpleItemViewHolder holder;
+    private AlbumsAdapter.SimpleItemViewHolder holder;
     private ValueAnimator colorAnimation;
 
     public ColorGridTask(Context context, String artPath, AlbumsAdapter.SimpleItemViewHolder holder) {
@@ -51,7 +48,7 @@ public class ColorGridTask extends AsyncTask<Void, Void, Void> {
                         colorAnimation.start();
                         try {
                             Integer colorFrom1 = Color.parseColor("#ffffff");
-                            Integer colorTo1 = palette.getVibrantSwatch().getBodyTextColor();
+                            Integer colorTo1 = palette.getVibrantSwatch().getTitleTextColor();
                             colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom1, colorTo1);
                             colorAnimation.setDuration(800);
                             colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

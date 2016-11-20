@@ -55,12 +55,9 @@ public class MusicPlayer extends AppCompatActivity {
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
     public static int mainColor;
-    private String songPath, songName, songDesc, albumName, songArt;
+    private String songName, songDesc, songArt;
     private TextView songNameView, songArtistView, currentTimeHolder, totalTimeHolder;
     private long albumId;
-    private NestedScrollView playerNestedScroll;
-    private SharedPreferences settingsPref;
-    private RecyclerView rv;
     private Timer timer;
     private LinearLayout detailHolder;
     private RelativeLayout shadeOverArt;
@@ -94,7 +91,7 @@ public class MusicPlayer extends AppCompatActivity {
                     musicStoped = true;
                 }
             } else if (intent.getAction().equals(ACTION_GET_PLAYING_LIST)) {
-                rv = (RecyclerView) findViewById(R.id.player_playlist);
+                RecyclerView rv = (RecyclerView) findViewById(R.id.player_playlist);
                 MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
                 PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList());
                 LinearLayoutManager layoutManager = new LinearLayoutManager(context,
@@ -104,11 +101,9 @@ public class MusicPlayer extends AppCompatActivity {
                 rv.setHasFixedSize(true);
                 rv.setAdapter(adapter);
             } else if (intent.getAction().equals(ACTION_GET_PLAYING_DETAIL)) {
-                songPath = intent.getStringExtra("songPath");
                 songName = intent.getStringExtra("songName");
                 songDesc = intent.getStringExtra("songDesc");
                 albumId = intent.getLongExtra("songAlbumId", 0);
-                albumName = intent.getStringExtra("songAlbumName");
                 duration = intent.getIntExtra("songDuration", 0);
                 currentDuration = 0;
                 musicStoped = false;
@@ -122,7 +117,7 @@ public class MusicPlayer extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        settingsPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences settingsPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (settingsPref.getBoolean("pref_album_status_trans", true)) {
             if (Build.VERSION.SDK_INT >= 21) {
                 getWindow().setStatusBarColor(Color.TRANSPARENT);
@@ -156,11 +151,9 @@ public class MusicPlayer extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             getWindow().setEnterTransition(new Fade());
 
-        songPath = getIntent().getStringExtra("songPath");
         songName = getIntent().getStringExtra("songName");
         songDesc = getIntent().getStringExtra("songDesc");
         albumId = getIntent().getLongExtra("songAlbumId", 0);
-        albumName = getIntent().getStringExtra("songAlbumName");
         duration = getIntent().getIntExtra("songDuration", 0);
         currentDuration = getIntent().getIntExtra("songCurrTime", 0);
 
@@ -186,8 +179,11 @@ public class MusicPlayer extends AppCompatActivity {
                 MediaStore.Audio.Albums._ID + "=?",
                 new String[]{String.valueOf(albumId)},
                 null);
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+        }
+        if (cursor != null) {
+            cursor.close();
         }
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -201,30 +197,28 @@ public class MusicPlayer extends AppCompatActivity {
 
 
         if (songArt != null) {
-            Palette.generateAsync(BitmapFactory.decodeFile(songArt, options),
-                    new Palette.PaletteAsyncListener() {
-                        @Override
-                        public void onGenerated(final Palette palette) {
-                            try {
-                                mainColor = palette.getDarkVibrantSwatch().getRgb();
-                                if (Build.VERSION.SDK_INT >= 21) {
-                                    ActivityManager.TaskDescription taskDescription = new
-                                            ActivityManager.TaskDescription(getResources().getString(R.string.app_name),
-                                            BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                                            palette.getDarkVibrantSwatch().getRgb());
-                                    setTaskDescription(taskDescription);
-                                }
-                                new ColorAnimateAlbumView(MusicPlayer.this, detailHolder, palette).execute();
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                                detailHolder.setBackgroundColor(mainColor);
-                            } finally {
-                                collapsingToolbarLayout.setContentScrimColor(mainColor);
-                                collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
-                            }
+            Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
+                public void onGenerated(Palette palette) {
+                    try {
+                        int defaultColor = 0x000000;
+                        mainColor = palette.getVibrantColor(defaultColor);
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            ActivityManager.TaskDescription taskDescription = new
+                                    ActivityManager.TaskDescription(getResources().getString(R.string.app_name),
+                                    BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
+                                    palette.getVibrantColor(defaultColor));
+                            setTaskDescription(taskDescription);
                         }
-                    }
-            );
+                        new ColorAnimateAlbumView(MusicPlayer.this, detailHolder, palette).execute();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        detailHolder.setBackgroundColor(mainColor);
+                    } finally {
+                        collapsingToolbarLayout.setContentScrimColor(mainColor);
+                        collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
+                    }                }
+            };
+            Palette.from(BitmapFactory.decodeFile(songArt, options)).generate(paletteListener);
         } else {
             header.setImageResource(R.drawable.default_artwork_dark);
             mainColor = Color.parseColor("#37474f");
@@ -236,8 +230,8 @@ public class MusicPlayer extends AppCompatActivity {
     private void updateSeeker() {
         seekBar.setMax(duration);
         seekBar.setProgress(currentDuration);
-        totalTimeHolder.setText(String.format(String.valueOf(Locale.getDefault()), ((duration / 1000) / 60)) +
-                ":" + String.format(String.valueOf(Locale.getDefault()), ((duration / 1000) % 60)));
+        totalTimeHolder.setText(((duration / 1000) / 60) +
+                ":" + ((duration / 1000) % 60));
         musicStoped = false;
         if (timer != null)
             timer.cancel();
@@ -332,7 +326,6 @@ public class MusicPlayer extends AppCompatActivity {
 
     private void init() {
         shadeOverArt = (RelativeLayout) findViewById(R.id.shade_over_art);
-        playerNestedScroll = (NestedScrollView) findViewById(R.id.player_nested_scroll);
         header = (ImageView) findViewById(R.id.header);
         playButton = (ImageView) findViewById(R.id.player_play);
         rewindButton = (ImageView) findViewById(R.id.player_rewind);

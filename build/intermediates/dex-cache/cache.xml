@@ -120,12 +120,30 @@
     </item>
     <item
         is-multidex="false"
+        jar="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\exploded-aar\com.android.support\support-v13\25.0.0\jars\libs\internal_impl-25.0.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="67355078cd30daae43f62ba47a4663ee6edb976e">
+        <dex dex="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\pre-dexed\debug\internal_impl-25.0.0_5534776fc2187b09cc4bdd2f2842d129cb120a1b.jar" />
+    </item>
+    <item
+        is-multidex="false"
         jar="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\25.0.1\jars\libs\internal_impl-25.0.1.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.0"
         sha1="e5343c9d19cb19ff55f6b268c7f3fe8c9d224f6f">
         <dex dex="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\pre-dexed\debug\internal_impl-25.0.1_7179ada3b943f276fd276232bdb5195801ba9542.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\exploded-aar\me.zhanghai.android.materialprogressbar\library\1.3.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="a846ddbf5bf88dee5f89d4dffe22c864f576d9b0">
+        <dex dex="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\pre-dexed\debug\me.zhanghai.android.materialprogressbar-library-1.3.0_c2bc8d0946525dfee8896bf254b7769a4ccde84d.jar" />
     </item>
     <item
         is-multidex="false"
@@ -144,6 +162,15 @@
         revision="25.0.0"
         sha1="c1b6ab157e8e12cb08b9ee82bb5e3c5d22632eb3">
         <dex dex="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\pre-dexed\debug\com.android.support-transition-25.0.1_910080a88879341453ed4964b8ec9264b5904682.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\exploded-aar\com.afollestad.material-dialogs\core\0.9.1.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="16795a75616fe3ba9df9ae4af09202145e3a26dc">
+        <dex dex="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\pre-dexed\debug\com.afollestad.material-dialogs-core-0.9.1.0_ffa751ec3516c462a094f8ec31199e2893b01947.jar" />
     </item>
     <item
         is-multidex="false"
@@ -207,6 +234,15 @@
         revision="25.0.0"
         sha1="f83b00041ecfba705603fec40363416c7de69719">
         <dex dex="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\pre-dexed\debug\internal_impl-25.0.1_493e39e0853946815d5b16162ae456dbeb1e3ae8.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\exploded-aar\com.android.support\support-v13\25.0.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="6ac094121e75b4b87432beb9305d70c68ec6dcab">
+        <dex dex="C:\Users\boswelja\Documents\GitHub\packages_apps_Music\app\build\intermediates\pre-dexed\debug\com.android.support-support-v13-25.0.0_5dd0a118c2c127e5fe5280ffd95017c01ec566ce.jar" />
     </item>
 
 </items>

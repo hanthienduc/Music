@@ -2,9 +2,6 @@ package com.architjn.acjmusicplayer.utils.items;
 
 import android.graphics.Bitmap;
 
-/**
- * Created by architjn on 10/06/15.
- */
 public class ArtistListItem {
 
     long id;

@@ -1,21 +1,22 @@
 package com.architjn.acjmusicplayer.utils.adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.architjn.acjmusicplayer.R;
 import com.architjn.acjmusicplayer.service.MusicService;
 import com.architjn.acjmusicplayer.utils.MySQLiteHelper;
@@ -31,12 +32,12 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
     private SongListItem songToAdd;
     private AlertDialog dialog;
 
-    public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
+    final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         public TextView title, add;
         public View view;
         public ImageView menu;
 
-        public SimpleItemViewHolder(View itemView) {
+        SimpleItemViewHolder(View itemView) {
             super(itemView);
             view = itemView;
             title = (TextView) itemView.findViewById(R.id.playlist_item_name);
@@ -45,8 +46,8 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
         }
     }
 
-    public DialogPlaylistAdapter(Context context, List<Playlist> items,
-                                 SongListItem songListItem, AlertDialog dialog) {
+    DialogPlaylistAdapter(Context context, List<Playlist> items,
+                          SongListItem songListItem, AlertDialog dialog) {
         this.context = context;
         this.items = items;
         this.songToAdd = songListItem;
@@ -129,64 +130,44 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
         }
     }
 
-    protected void showNewPlaylistPrompt() {
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View promptView = layoutInflater.inflate(R.layout.input_dialog, null);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setView(promptView);
-        alertDialogBuilder.setTitle("Enter name");
-        final EditText editText = (EditText) promptView.findViewById(R.id.edittext);
-        alertDialogBuilder.setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (!editText.getText().equals("")) {
+    private void showNewPlaylistPrompt() {
+        new MaterialDialog.Builder(context)
+                .title("Create playlist")
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input("e.g. Favourites", null, new MaterialDialog.InputCallback() {
+
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                        if(!input.toString().equals("")) {
                             MySQLiteHelper helper = new MySQLiteHelper(context);
                             items.add(items.size() - 1, new Playlist(helper.createNewPlayList(
-                                    editText.getText().toString()), editText.getText().toString()));
+                                    input.toString()), input.toString()));
                             notifyItemInserted(items.size() - 2);
-                        } else
-                            Toast.makeText(context, "Enter some name first", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Playlist name cannot be empty", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
+                }).show();
     }
 
-    protected void showRenamePlaylistPrompt(final int pos) {
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View promptView = layoutInflater.inflate(R.layout.input_dialog, null);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setView(promptView);
-        alertDialogBuilder.setTitle("Enter new name");
-        final EditText editText = (EditText) promptView.findViewById(R.id.edittext);
-        alertDialogBuilder.setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (!editText.getText().equals("")) {
-                            MySQLiteHelper helper = new MySQLiteHelper(context);
-                            helper.renamePlaylist(editText.getText().toString(), items.get(pos).getId());
-                            items.get(pos).setName(editText.getText().toString());
-                            notifyItemChanged(pos);
-                        } else
-                            Toast.makeText(context, "Enter some name first", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
+    private void showRenamePlaylistPrompt(final int pos) {
+        new MaterialDialog.Builder(context)
+                .title("Rename playlist")
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input("e.g. Favourites", null, new MaterialDialog.InputCallback() {
 
-        AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                        if(!input.toString().equals("")) {
+                            MySQLiteHelper helper = new MySQLiteHelper(context);
+                            helper.renamePlaylist(input.toString(), items.get(pos).getId());
+                            items.get(pos).setName(input.toString());
+                            notifyItemChanged(pos);
+                        } else {
+                            Toast.makeText(context, "Playlist name cannot be empty", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).show();
     }
 
     @Override

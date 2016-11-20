@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.architjn.acjmusicplayer.R;
-import com.architjn.acjmusicplayer.utils.Mood;
 import com.architjn.acjmusicplayer.utils.adapters.SongsAdapter;
 import com.architjn.acjmusicplayer.utils.items.SongListItem;
 

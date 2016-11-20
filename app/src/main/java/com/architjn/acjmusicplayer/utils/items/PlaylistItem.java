@@ -1,8 +1,5 @@
 package com.architjn.acjmusicplayer.utils.items;
 
-/**
- * Created by architjn on 04/07/15.
- */
 public class PlaylistItem {
 
     private String songTitle, songDesc;

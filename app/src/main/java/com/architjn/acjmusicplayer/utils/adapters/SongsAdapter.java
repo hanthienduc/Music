@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 import com.architjn.acjmusicplayer.R;
 import com.architjn.acjmusicplayer.service.MusicService;
 import com.architjn.acjmusicplayer.utils.MySQLiteHelper;
-import com.architjn.acjmusicplayer.utils.Mood;
 import com.architjn.acjmusicplayer.utils.items.Playlist;
 import com.architjn.acjmusicplayer.utils.items.SongListItem;
 

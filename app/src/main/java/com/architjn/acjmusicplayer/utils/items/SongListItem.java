@@ -2,8 +2,6 @@ package com.architjn.acjmusicplayer.utils.items;
 
 import android.graphics.Bitmap;
 
-import com.architjn.acjmusicplayer.utils.Mood;
-
 public class SongListItem {
 
     long id, albumId;

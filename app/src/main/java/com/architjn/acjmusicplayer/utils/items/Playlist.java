@@ -1,8 +1,5 @@
 package com.architjn.acjmusicplayer.utils.items;
 
-/**
- * Created by architjn on 31/08/15.
- */
 public class Playlist {
 
     int id;
