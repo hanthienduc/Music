@@ -49,7 +49,7 @@
         android:id="@+id/fab_album"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
         android:clickable="true"
         android:elevation="12dp"
         android:src="@drawable/ic_play"

@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,6 +24,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -63,6 +65,7 @@ public class MusicPlayer extends AppCompatActivity {
     private PaperSeekBar seekBar;
     private int duration, currentDuration;
     private boolean musicStoped;
+    private AudioManager audioManager;
 
 
     private BroadcastReceiver musicPlayer = new BroadcastReceiver() {
@@ -321,6 +324,7 @@ public class MusicPlayer extends AppCompatActivity {
     }
 
     private void init() {
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         shadeOverArt = (RelativeLayout) findViewById(R.id.shade_over_art);
         header = (ImageView) findViewById(R.id.header);
         playButton = (ImageView) findViewById(R.id.player_play);
@@ -374,6 +378,21 @@ public class MusicPlayer extends AppCompatActivity {
         Color.colorToHSV(baseColor, hsv);
         hsv[2] *= 0.8f;
         return Color.HSVToColor(hsv);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch(keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+                break;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
+                break;
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }

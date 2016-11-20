@@ -1,10 +1,12 @@
 package com.dominionos.music.ui.layouts.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Transition;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -40,6 +43,7 @@ public class AlbumActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
     private ArrayList<SongListItem> songList = new ArrayList<>();
+    private AudioManager audioManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,14 +74,15 @@ public class AlbumActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
                 findViewById(R.id.collapsingtoolbarlayout_album);
-        if (collapsingToolbarLayout != null)
-            collapsingToolbarLayout.setTitle(getIntent().getStringExtra("albumName"));
+        collapsingToolbarLayout.setTitle(getIntent().getStringExtra("albumName"));
         collapsingToolbarLayout.setStatusBarScrimColor(
                 getAutoStatColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor()));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_album);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ImageView albumArt = (ImageView) findViewById(R.id.activity_album_art);
+
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbarlayout_artist);
         fab = (FloatingActionButton) findViewById(R.id.fab_album);
@@ -255,5 +260,20 @@ public class AlbumActivity extends AppCompatActivity {
         Color.colorToHSV(baseColor, hsv);
         hsv[2] *= 0.8f;
         return Color.HSVToColor(hsv);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch(keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+                break;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
+                break;
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
