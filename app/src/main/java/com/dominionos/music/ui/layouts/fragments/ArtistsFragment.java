@@ -1,14 +1,11 @@
 package com.dominionos.music.ui.layouts.fragments;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.dominionos.music.R;
 import com.dominionos.music.utils.SimpleItemListDivider;
-import com.dominionos.music.utils.SpacesItemDecoration;
 import com.dominionos.music.utils.adapters.ArtistAdapter;
 import com.dominionos.music.utils.items.ArtistListItem;
 
@@ -26,8 +22,7 @@ import java.util.ArrayList;
 public class ArtistsFragment extends Fragment {
 
     View mainView;
-    RecyclerView gv;
-    private SharedPreferences settingsPref;
+    RecyclerView rv;
     int currentFabPos;
 
     @Override
@@ -50,8 +45,7 @@ public class ArtistsFragment extends Fragment {
     }
 
     private void init() {
-        settingsPref = PreferenceManager.getDefaultSharedPreferences(mainView.getContext());
-        gv = (RecyclerView) mainView.findViewById(R.id.artist_list);
+        rv = (RecyclerView) mainView.findViewById(R.id.artist_list);
     }
 
     private void getArtistList() {
@@ -71,8 +65,6 @@ public class ArtistsFragment extends Fragment {
                     (MediaStore.Audio.Artists.NUMBER_OF_ALBUMS);
             int numOfTracksColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Artists.NUMBER_OF_TRACKS);
-            int artistKeyColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Artists.ARTIST_KEY);
             //add albums to list
             do {
                 albumList.add(new ArtistListItem(musicCursor.getLong(idColumn),
@@ -89,11 +81,11 @@ public class ArtistsFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
-        gv.setLayoutManager(linearLayoutManager);
-        gv.addItemDecoration(new SimpleItemListDivider(mainView.getContext(), 0));
-        gv.setHasFixedSize(true);
-        gv.setAdapter(new ArtistAdapter(albumList));
-        gv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        rv.setLayoutManager(linearLayoutManager);
+        rv.addItemDecoration(new SimpleItemListDivider(mainView.getContext(), 0));
+        rv.setHasFixedSize(true);
+        rv.setAdapter(new ArtistAdapter(albumList));
+        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
