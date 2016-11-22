@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Build;
@@ -16,21 +18,20 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Fade;
-import android.transition.Transition;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.dominionos.music.R;
+import com.dominionos.music.utils.AppBarStateChangeListener;
 import com.dominionos.music.utils.adapters.AlbumSongAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 import com.dominionos.music.service.MusicService;
@@ -80,12 +81,23 @@ public class AlbumActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_album);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ImageView albumArt = (ImageView) findViewById(R.id.activity_album_art);
+        final ImageView albumArt = (ImageView) findViewById(R.id.activity_album_art);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbarlayout_artist);
+        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbarlayout_album);
+        View toolbarBackground = findViewById(R.id.title_background);
         fab = (FloatingActionButton) findViewById(R.id.fab_album);
+        appBarLayout.addOnOffsetChangedListener(new AppBarStateChangeListener() {
+            @Override
+            public void onStateChanged(AppBarLayout appBarLayout, State state) {
+                if(state == State.COLLAPSED) {
+                    fab.hide();
+                } else if (state == State.EXPANDED) {
+                    fab.show();
+                }
+            }
+        });
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,7 +110,6 @@ public class AlbumActivity extends AppCompatActivity {
             }
         });
 
-        controlEnterAnimation();
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
                 MediaStore.Audio.Albums._ID + "=?",
@@ -120,6 +131,25 @@ public class AlbumActivity extends AppCompatActivity {
         if (cursor != null) {
             cursor.close();
         }
+
+        Bitmap bitmap = ((BitmapDrawable)albumArt.getDrawable()).getBitmap();
+
+
+        Palette palette = new Palette.Builder(bitmap).generate();
+        try {
+            Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+            int vibrantRgb = palette.getVibrantSwatch().getRgb();
+            int vibrantTitleText = palette.getVibrantSwatch().getTitleTextColor();
+            toolbarBackground.setBackgroundColor(vibrantRgb);
+            collapsingToolbarLayout.setStatusBarScrimColor(vibrantRgb);
+            collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
+            collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
+            collapsingToolbarLayout.setBackgroundColor(vibrantRgb);
+        } catch (NullPointerException e) {
+            Log.i("AlbumActivity", "Palette.Builder could not generate a vibrant swatch, falling back to default colours");
+        }
+
+
         Handler mainHandler = new Handler(getMainLooper());
 
         Runnable myRunnable = new Runnable() {
@@ -130,62 +160,6 @@ public class AlbumActivity extends AppCompatActivity {
         };
         mainHandler.post(myRunnable);
 
-    }
-
-
-    private void controlEnterAnimation() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setEnterTransition(new Fade());
-//            getWindow().setExitTransition(new Fade());
-            getWindow().getEnterTransition().addListener(new Transition.TransitionListener() {
-                @Override
-                public void onTransitionStart(Transition transition) {
-
-                }
-
-                @Override
-                public void onTransitionEnd(Transition transition) {
-                    if (Build.VERSION.SDK_INT >= 12) {
-                        Animation zoomIn = AnimationUtils.loadAnimation(AlbumActivity.this, R.anim.zoom_in);
-                        zoomIn.setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                fab.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-
-                            }
-                        });
-                        fab.setAnimation(zoomIn);
-                        fab.animate();
-                    } else {
-                        fab.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                @Override
-                public void onTransitionCancel(Transition transition) {
-
-                }
-
-                @Override
-                public void onTransitionPause(Transition transition) {
-
-                }
-
-                @Override
-                public void onTransitionResume(Transition transition) {
-
-                }
-            });
-        }
     }
 
     private void setSongList() {

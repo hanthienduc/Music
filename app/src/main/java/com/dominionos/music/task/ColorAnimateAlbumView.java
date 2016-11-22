@@ -35,13 +35,13 @@ public class ColorAnimateAlbumView extends AsyncTask<Void, Void, Void> {
         Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
         Integer colorTo = vibrantSwatch.getRgb();
         colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        colorAnimation.setDuration(2000);
+        colorAnimation.setDuration(1000);
         Integer colorTo1 = vibrantSwatch.getTitleTextColor();
         colorAnimation1 = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom1, colorTo1);
-        colorAnimation1.setDuration(2000);
+        colorAnimation1.setDuration(1000);
         Integer colorTo2 = vibrantSwatch.getBodyTextColor();
         colorAnimation2 = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom2, colorTo2);
-        colorAnimation2.setDuration(2000);
+        colorAnimation2.setDuration(1000);
         return null;
     }
 
