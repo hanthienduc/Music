@@ -4,14 +4,10 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/artist_grid"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:columnWidth="150dp"
+        android:id="@+id/artist_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
-        android:numColumns="auto_fit"
-        android:horizontalSpacing="4dp"
-        android:verticalSpacing="4dp"
-        android:stretchMode="columnWidth" />
+        android:padding="4dp"/>
 
 </RelativeLayout>

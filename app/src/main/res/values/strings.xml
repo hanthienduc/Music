@@ -18,6 +18,12 @@
     <string name="menu_details">Details</string>
     <string name="menu_set_ringtone">Set as Ringtone</string>
     <string name="menu_song_editor">Tag Editor</string>
-    <string name="nav_playlist">Playlist</string>
     <string name="about">About</string>
+    <string name="repeat">Repeat</string>
+    <string name="rewind">Rewind</string>
+    <string name="fast_forward">Fast Forward</string>
+    <string name="play">Play</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="album_art">Album Art</string>
+    <string name="artist_art">Artist Art</string>
 </resources>

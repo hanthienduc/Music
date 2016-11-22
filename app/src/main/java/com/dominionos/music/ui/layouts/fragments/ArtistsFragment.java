@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dominionos.music.R;
+import com.dominionos.music.utils.SimpleItemListDivider;
 import com.dominionos.music.utils.SpacesItemDecoration;
 import com.dominionos.music.utils.adapters.ArtistAdapter;
 import com.dominionos.music.utils.items.ArtistListItem;
@@ -50,7 +51,7 @@ public class ArtistsFragment extends Fragment {
 
     private void init() {
         settingsPref = PreferenceManager.getDefaultSharedPreferences(mainView.getContext());
-        gv = (RecyclerView) mainView.findViewById(R.id.artist_grid);
+        gv = (RecyclerView) mainView.findViewById(R.id.artist_list);
     }
 
     private void getArtistList() {
@@ -85,14 +86,13 @@ public class ArtistsFragment extends Fragment {
             musicCursor.close();
         }
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(),
-                settingsPref.getInt("pref_grid_num", 2));
-        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        gridLayoutManager.scrollToPosition(0);
-        gv.setLayoutManager(gridLayoutManager);
-        gv.addItemDecoration(new SpacesItemDecoration(8, settingsPref.getInt("pref_grid_num", 2)));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        linearLayoutManager.scrollToPosition(0);
+        gv.setLayoutManager(linearLayoutManager);
+        gv.addItemDecoration(new SimpleItemListDivider(mainView.getContext(), 0));
         gv.setHasFixedSize(true);
-        gv.setAdapter(new ArtistAdapter(mainView.getContext(), albumList));
+        gv.setAdapter(new ArtistAdapter(albumList));
         gv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
