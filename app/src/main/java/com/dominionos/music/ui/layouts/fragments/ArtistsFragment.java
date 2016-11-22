@@ -67,7 +67,8 @@ public class ArtistsFragment extends Fragment {
                     (MediaStore.Audio.Artists.NUMBER_OF_TRACKS);
             //add albums to list
             do {
-                albumList.add(new ArtistListItem(musicCursor.getLong(idColumn),
+                albumList.add(new ArtistListItem(
+                        musicCursor.getLong(idColumn),
                         musicCursor.getString(titleColumn),
                         musicCursor.getInt(numOfTracksColumn),
                         musicCursor.getInt(numOfAlbumsColumn)));
