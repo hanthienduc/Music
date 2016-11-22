@@ -18,14 +18,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
                 <LinearLayout
                     android:id="@+id/detail_holder"
                     android:layout_width="match_parent"
-                    android:layout_height="90dp"
+                    android:layout_height="wrap_content"
                     android:background="@color/ColorPrimary"
                     android:elevation="4dp"
                     android:orientation="vertical"
@@ -52,27 +48,20 @@
                         android:textColor="@android:color/secondary_text_light"
                         android:textSize="16sp" />
 
-                </LinearLayout>
-
-                <com.annimon.paperstyle.PaperSeekBar
-                    android:id="@+id/player_seekbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/detail_holder"
-                    android:layout_marginBottom="-16dp"
-                    android:layout_marginLeft="-16dp"
-                    android:layout_marginRight="-16dp"
-                    android:layout_marginTop="-16dp"
-                    android:elevation="8dp"
-                    app:pw_color="@color/accent_color" />
+                    <app.minimize.com.seek_bar_compat.SeekBarCompat
+                        android:id="@+id/player_seekbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:progressColor="#FFFFFF"
+                        app:progressBackgroundColor="#22FFFFFF"
+                        app:thumbColor="#FFFFFF"
+                        app:thumbAlpha="1.0"/>
 
                 <LinearLayout
                     android:id="@+id/control_holder"
                     android:layout_width="match_parent"
                     android:layout_height="110dp"
-                    android:layout_below="@id/player_seekbar"
                     android:background="@color/control_background_dark"
-                    android:elevation="6dp"
                     android:orientation="horizontal"
                     android:padding="20dp"
                     android:gravity="center_vertical">
@@ -126,8 +115,7 @@
                             android:src="@drawable/ic_shuffle_white_48dp" />
 
                 </LinearLayout>
-
-            </RelativeLayout>
+                </LinearLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/player_playlist"

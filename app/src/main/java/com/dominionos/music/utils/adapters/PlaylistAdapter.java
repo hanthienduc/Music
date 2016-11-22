@@ -31,17 +31,15 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         TextView gridName;
-        ImageView gridArt, overflow;
-        View realBackground, mainView;
+        ImageView overflow;
+        View mainView;
 
         SimpleItemViewHolder(View view) {
             super(view);
 
-            gridName = (TextView) view.findViewById(R.id.grid_name);
-            gridArt = (ImageView) view.findViewById(R.id.grid_art);
-            overflow = (ImageView) view.findViewById(R.id.grid_menu);
+            gridName = (TextView) view.findViewById(R.id.playlist_name);
+            overflow = (ImageView) view.findViewById(R.id.playlist_menu);
             mainView = view;
-            realBackground = view.findViewById(R.id.real_background);
         }
     }
 
@@ -53,7 +51,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
     @Override
     public PlaylistAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.playlist_grid, parent, false);
+                inflate(R.layout.playlist_list_item, parent, false);
 
 
         return new SimpleItemViewHolder(itemView);

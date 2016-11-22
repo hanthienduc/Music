@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dominionos.music.R;
+import com.dominionos.music.utils.SimpleItemListDivider;
 import com.dominionos.music.utils.adapters.SongsAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 
@@ -49,6 +50,7 @@ public class SongsFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
+        rv.addItemDecoration(new SimpleItemListDivider(mainView.getContext(), 0));
         rv.setHasFixedSize(true);
     }
 

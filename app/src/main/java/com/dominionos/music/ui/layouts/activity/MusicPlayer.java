@@ -35,7 +35,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.annimon.paperstyle.PaperSeekBar;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.adapters.PlayingSongAdapter;
@@ -45,6 +44,8 @@ import com.dominionos.music.task.ColorAnimateAlbumView;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import app.minimize.com.seek_bar_compat.SeekBarCompat;
 
 public class MusicPlayer extends AppCompatActivity {
 
@@ -57,12 +58,12 @@ public class MusicPlayer extends AppCompatActivity {
     private TextView songNameView, songArtistView, currentTimeHolder, totalTimeHolder;
     private long albumId;
     private Timer timer;
-    private LinearLayout detailHolder;
+    private LinearLayout detailHolder, controlHolder;
     private RelativeLayout shadeOverArt;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView playButton, rewindButton,
             nextButton, shuffleButton, header;
-    private PaperSeekBar seekBar;
+    private SeekBarCompat seekBar;
     private int duration, currentDuration;
     private boolean musicStoped;
     private AudioManager audioManager;
@@ -188,12 +189,10 @@ public class MusicPlayer extends AppCompatActivity {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.RGB_565;
-        options.inDither = true;
-        Drawable artWork = new BitmapDrawable(BitmapFactory.decodeFile(songArt, options));
+        Drawable artWork = new BitmapDrawable(this.getResources(), BitmapFactory.decodeFile(songArt, options));
         ((ImageView) findViewById(R.id.header)).setImageDrawable(artWork);
         songNameView.setText(songName);
         songArtistView.setText(songDesc);
-
 
         if (songArt != null) {
             Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
@@ -209,9 +208,11 @@ public class MusicPlayer extends AppCompatActivity {
                             setTaskDescription(taskDescription);
                         }
                         new ColorAnimateAlbumView(MusicPlayer.this, detailHolder, palette).execute();
+                        new ColorAnimateAlbumView(MusicPlayer.this, controlHolder, palette).execute();
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                         detailHolder.setBackgroundColor(mainColor);
+                        controlHolder.setBackgroundColor(mainColor);
                     } finally {
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
                         collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
@@ -333,10 +334,11 @@ public class MusicPlayer extends AppCompatActivity {
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
         songNameView = (TextView) findViewById(R.id.player_song_name);
         songArtistView = (TextView) findViewById(R.id.player_song_artist);
-        seekBar = (PaperSeekBar) findViewById(R.id.player_seekbar);
+        seekBar = (SeekBarCompat) findViewById(R.id.player_seekbar);
         currentTimeHolder = (TextView) findViewById(R.id.player_current_time);
         totalTimeHolder = (TextView) findViewById(R.id.player_total_time);
         detailHolder = (LinearLayout) findViewById(R.id.detail_holder);
+        controlHolder = (LinearLayout) findViewById(R.id.control_holder);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsingtoolbarlayout_player);
     }
 

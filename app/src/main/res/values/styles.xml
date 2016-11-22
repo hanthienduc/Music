@@ -11,11 +11,6 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.Splash" parent="AppTheme.Main">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-    </style>
-
     <style name="DarkDialog" parent="Theme.AppCompat.Light.NoActionBar"/>
 
     <style name="AppTheme.Album" parent="Theme.AppCompat.Light.NoActionBar">
@@ -32,13 +27,6 @@
         <item name="windowActionBar">false</item>
         <!--<item name="colorAccent">@color/accent_color</item>-->
         <item name="windowNoTitle">true</item>
-        <item name="round_selector">@drawable/round_selector_dark</item>
-    </style>
-
-    <style name="AppTheme.Pref" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/ColorPrimary</item>
-        <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
-        <item name="colorAccent">@color/accent_color</item>
     </style>
 
 </resources>
