@@ -53,10 +53,9 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                //Intent requestSongDetials = new Intent();
-                //requestSongDetials.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
-                //sendBroadcast(requestSongDetials);
+                Intent requestSongDetials = new Intent();
+                requestSongDetials.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                sendBroadcast(requestSongDetials);
             }
         });
         if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
