@@ -37,7 +37,7 @@
         android:clickable="true"
         android:elevation="12dp"
         android:src="@drawable/ic_audiotrack_white_24dp"
-        app:backgroundTint="@color/accent_color"
+        app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
         app:layout_anchor="@+id/main_viewPager"
         app:layout_anchorGravity="bottom|right|end"

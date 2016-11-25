@@ -63,7 +63,7 @@
         android:elevation="12dp"
         android:src="@drawable/ic_play"
         android:visibility="invisible"
-        app:backgroundTint="@color/accent_color"
+        app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
         app:layout_anchor="@+id/title_background"
         app:layout_anchorGravity="top|end" />

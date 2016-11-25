@@ -191,7 +191,6 @@ public class MusicPlayer extends AppCompatActivity {
         if (songArt != null) {
             Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
                 public void onGenerated(Palette palette) {
-                    try {
                         int defaultColor = 0x000000;
                         mainColor = palette.getVibrantColor(defaultColor);
                         if (Build.VERSION.SDK_INT >= 21) {
@@ -203,14 +202,9 @@ public class MusicPlayer extends AppCompatActivity {
                         }
                         new ColorAnimateAlbumView(MusicPlayer.this, detailHolder, palette).execute();
                         new ColorAnimateAlbumView(MusicPlayer.this, controlHolder, palette).execute();
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                        detailHolder.setBackgroundColor(mainColor);
-                        controlHolder.setBackgroundColor(mainColor);
-                    } finally {
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
                         collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
-                    }                }
+                    }
             };
             Palette.from(BitmapFactory.decodeFile(songArt, options)).generate(paletteListener);
         } else {

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="ColorPrimary">#37474f</color>
-    <color name="ColorPrimaryDark">#212b2f</color>
-    <color name="tabInactiveTextColor">#9FA8DA</color>
-    <color name="card_background">#212121</color>
-    <color name="noti_background">#414141</color>
-    <color name="control_background_dark">#424242</color>
-    <color name="accent_color">#ff4081</color>
+    <color name="colorPrimary">#f44336</color>
+    <color name="colorPrimaryDark">#D32F2F</color>
+    <color name="tabInactiveTextColor">@android:color/tab_indicator_text</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="noti_background">#FFFFFF</color>
+    <color name="colorAccent">#2196f3</color>
+    <color name="titleText">@android:color/primary_text_dark</color>
+    <color name="bodyText">@android:color/secondary_text_dark</color>
 
 </resources>
