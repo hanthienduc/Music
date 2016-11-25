@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.album);
         PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist);
         PrimaryDrawerItem playlists = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist);
-        SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about);
+        SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about).withSelectable(false);
 
         final Drawer drawer = new DrawerBuilder()
                 .withActivity(this)
@@ -137,9 +137,10 @@ public class MainActivity extends AppCompatActivity {
                                 new LibsBuilder()
                                         .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
                                         .withActivityTheme(R.style.AppTheme_Main)
+                                        .withActivityTitle(getString(R.string.about))
                                         .withAboutIconShown(true)
                                         .withAboutVersionShown(true)
-                                        .withAboutDescription("Music player based on @architjn's Auro")
+                                        .withAboutDescription("Music player based on an older version of @architjn's Auro, before everything got broken.")
                                         .start(MainActivity.this);
                                 break;
                         }
