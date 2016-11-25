@@ -138,8 +138,8 @@ public class AlbumActivity extends AppCompatActivity {
         Palette palette = new Palette.Builder(bitmap).generate();
         try {
             Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
-            int vibrantRgb = palette.getVibrantSwatch().getRgb();
-            int vibrantTitleText = palette.getVibrantSwatch().getTitleTextColor();
+            int vibrantRgb = vibrantSwatch.getRgb();
+            int vibrantTitleText = vibrantSwatch.getTitleTextColor();
             toolbarBackground.setBackgroundColor(vibrantRgb);
             collapsingToolbarLayout.setStatusBarScrimColor(vibrantRgb);
             collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
@@ -246,7 +246,9 @@ public class AlbumActivity extends AppCompatActivity {
                 audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
                 break;
             case KeyEvent.KEYCODE_VOLUME_MUTE:
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
+                }
         }
         return super.onKeyDown(keyCode, event);
     }

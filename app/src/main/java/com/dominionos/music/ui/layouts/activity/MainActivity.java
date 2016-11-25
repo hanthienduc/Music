@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -58,22 +59,24 @@ public class MainActivity extends AppCompatActivity {
                 sendBroadcast(requestSongDetials);
             }
         });
-        if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            init();
-            setDrawer();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                init();
+                setDrawer();
 
-            Intent i = new Intent(MainActivity.this, MusicService.class);
-            startService(i);
+                Intent i = new Intent(MainActivity.this, MusicService.class);
+                startService(i);
 
-            setupViewPager(viewPager);
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tablayout);
-            if (settingsPref.getBoolean("pref_extend_tabs", false))
-                tabLayout.setTabMode(TabLayout.MODE_FIXED);
-            else
-                tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-            tabLayout.setupWithViewPager(viewPager);
-        } else {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                setupViewPager(viewPager);
+                TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tablayout);
+                if (settingsPref.getBoolean("pref_extend_tabs", false))
+                    tabLayout.setTabMode(TabLayout.MODE_FIXED);
+                else
+                    tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+                tabLayout.setupWithViewPager(viewPager);
+            } else {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            }
         }
 
     }
@@ -207,7 +210,9 @@ public class MainActivity extends AppCompatActivity {
                 audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
                 break;
             case KeyEvent.KEYCODE_VOLUME_MUTE:
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
+                }
         }
         return super.onKeyDown(keyCode, event);
     }
