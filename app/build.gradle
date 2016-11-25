@@ -40,4 +40,7 @@ dependencies {
         transitive = true
     }
     compile 'com.minimize.library:seekbar-compat:0.2.5'
+    compile 'com.afollestad:async:0.2.3'
+    compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
+    compile 'com.makeramen:roundedimageview:2.2.1'
 }

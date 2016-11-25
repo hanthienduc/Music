@@ -1,5 +1,6 @@
 package com.dominionos.music.ui.layouts.fragments;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,10 +25,12 @@ public class ArtistsFragment extends Fragment {
     View mainView;
     RecyclerView rv;
     int currentFabPos;
+    private Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.artists_fragment, container, false);
+        context = v.getContext();
         this.mainView = v;
 
         init();
@@ -52,7 +55,7 @@ public class ArtistsFragment extends Fragment {
         ArrayList<ArtistListItem> albumList = new ArrayList<>();
         System.gc();
         final String orderBy = MediaStore.Audio.Artists.ARTIST;
-        Cursor musicCursor = mainView.getContext().getContentResolver().
+        Cursor musicCursor = context.getContentResolver().
                 query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, null, null, null, orderBy);
 
         if (musicCursor != null && musicCursor.moveToFirst()) {
@@ -83,9 +86,9 @@ public class ArtistsFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
-        rv.addItemDecoration(new SimpleItemListDivider(mainView.getContext(), 0));
+        rv.addItemDecoration(new SimpleItemListDivider(context, 0));
         rv.setHasFixedSize(true);
-        rv.setAdapter(new ArtistAdapter(albumList));
+        rv.setAdapter(new ArtistAdapter(context, albumList));
         rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
