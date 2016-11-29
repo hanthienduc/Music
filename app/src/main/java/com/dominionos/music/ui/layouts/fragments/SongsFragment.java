@@ -1,5 +1,7 @@
 package com.dominionos.music.ui.layouts.fragments;
 
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,8 +13,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.dominionos.music.R;
+import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.SimpleItemListDivider;
 import com.dominionos.music.utils.adapters.SongsAdapter;
 import com.dominionos.music.utils.items.SongListItem;
@@ -24,11 +28,14 @@ public class SongsFragment extends Fragment {
     Cursor musicCursor;
     View mainView;
     RecyclerView rv;
+    LinearLayout playAll;
+    Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.songs_fragment, container, false);
         mainView = v;
+        context = getContext();
 
         init();
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
@@ -52,11 +59,19 @@ public class SongsFragment extends Fragment {
         rv.setLayoutManager(layoutManager);
         rv.addItemDecoration(new SimpleItemListDivider(mainView.getContext(), 0));
         rv.setHasFixedSize(true);
+        playAll = (LinearLayout) mainView.findViewById(R.id.play_all);
+        playAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent a = new Intent();
+                a.setAction(MusicService.ACTION_PLAY_ALL_SONGS);
+                context.sendBroadcast(a);
+            }
+        });
     }
 
     private void setSongList() {
         final ArrayList<SongListItem> songList = new ArrayList<>();
-        System.gc();
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final String orderBy = MediaStore.Audio.Media.TITLE;
         musicCursor = mainView.getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,

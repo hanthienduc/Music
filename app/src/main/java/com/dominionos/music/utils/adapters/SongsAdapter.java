@@ -134,16 +134,22 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent a = new Intent();
-                a.setAction(MusicService.ACTION_PLAY_SINGLE);
-                a.putExtra("songId", items.get(position).getId());
-                a.putExtra("songPath", items.get(position).getPath());
-                a.putExtra("songName", items.get(position).getName());
-                a.putExtra("songDesc", items.get(position).getDesc());
-                a.putExtra("songArt", items.get(position).getArt());
-                a.putExtra("songAlbumId", items.get(position).getAlbumId());
-                a.putExtra("songAlbumName", items.get(position).getAlbumName());
-                context.sendBroadcast(a);
+                if(items.get(position).getId() == -1) {
+                    Intent a = new Intent();
+                    a.setAction(MusicService.ACTION_PLAY_ALL_SONGS);
+                    context.sendBroadcast(a);
+                } else {
+                    Intent a = new Intent();
+                    a.setAction(MusicService.ACTION_PLAY_SINGLE);
+                    a.putExtra("songId", items.get(position).getId());
+                    a.putExtra("songPath", items.get(position).getPath());
+                    a.putExtra("songName", items.get(position).getName());
+                    a.putExtra("songDesc", items.get(position).getDesc());
+                    a.putExtra("songArt", items.get(position).getArt());
+                    a.putExtra("songAlbumId", items.get(position).getAlbumId());
+                    a.putExtra("songAlbumName", items.get(position).getAlbumName());
+                    context.sendBroadcast(a);
+                }
             }
         });
     }
