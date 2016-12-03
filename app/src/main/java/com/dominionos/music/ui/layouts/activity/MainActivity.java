@@ -42,11 +42,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme_Main);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         overridePendingTransition(0, 0);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+        viewPager = (ViewPager) findViewById(R.id.main_viewPager);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         fab = (FloatingActionButton) findViewById(R.id.fab_main);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,26 +63,25 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 init();
-                setDrawer();
-
-                Intent i = new Intent(MainActivity.this, MusicService.class);
-                startService(i);
-
-                setupViewPager(viewPager);
-                TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tablayout);
-                tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-                tabLayout.setupWithViewPager(viewPager);
             } else {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
+        } else {
+            init();
         }
 
     }
 
     private void init() {
-        viewPager = (ViewPager) findViewById(R.id.main_viewPager);
-        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        Intent i = new Intent(MainActivity.this, MusicService.class);
+        startService(i);
+
+        setupViewPager(viewPager);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tablayout);
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tabLayout.setupWithViewPager(viewPager);
+
+        setDrawer();
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -174,15 +177,6 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     init();
-                    setDrawer();
-
-                    Intent i = new Intent(MainActivity.this, MusicService.class);
-                    startService(i);
-
-                    setupViewPager(viewPager);
-                    TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tablayout);
-                    tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-                    tabLayout.setupWithViewPager(viewPager);
                 } else {
                     finish();
                 }

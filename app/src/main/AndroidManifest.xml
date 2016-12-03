@@ -16,7 +16,7 @@
         <activity
             android:name="com.dominionos.music.ui.layouts.activity.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.Main" >
+            android:theme="@style/AppTheme.BrandedLaunch" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
