@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.adapters.SongsAdapter;
 import com.dominionos.music.utils.items.SongListItem;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +26,7 @@ public class SongsFragment extends Fragment {
 
     Cursor musicCursor;
     View mainView;
-    RecyclerView rv;
+    FastScrollRecyclerView rv;
     Context context;
 
     @Override
@@ -49,7 +50,7 @@ public class SongsFragment extends Fragment {
     }
 
     private void init() {
-        rv = (RecyclerView) mainView.findViewById(R.id.songs_fragment_list);
+        rv = (FastScrollRecyclerView) mainView.findViewById(R.id.songs_fragment_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mainView.getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);

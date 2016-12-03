@@ -43,4 +43,5 @@ dependencies {
     compile 'com.afollestad:async:0.2.3'
     compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     compile 'com.makeramen:roundedimageview:2.2.1'
+    compile 'com.simplecityapps:recyclerview-fastscroll:1.0.11'
 }

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -23,14 +24,22 @@ import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.items.Playlist;
 import com.dominionos.music.utils.items.SongListItem;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.io.File;
 import java.util.List;
 
-public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemViewHolder> {
+public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemViewHolder>
+        implements FastScrollRecyclerView.SectionedAdapter {
 
     private final List<SongListItem> items;
     private Context context;
+
+    @NonNull
+    @Override
+    public String getSectionName(int position) {
+        return items.get(position).getName().substring(0,1);
+    }
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         TextView title, desc;
