@@ -31,8 +31,9 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
 
     public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         public TextView albumName, albumDesc;
-        public ImageView albumArt;
-        public View realBackground, mainView;
+        ImageView albumArt;
+        public View realBackground, textHolder;
+        View mainView;
 
         public SimpleItemViewHolder(View view) {
             super(view);
@@ -41,6 +42,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
             albumDesc = (TextView) view.findViewById(R.id.grid_desc);
             albumArt = (ImageView) view.findViewById(R.id.grid_art);
             mainView = view;
+            textHolder = view.findViewById(R.id.text_holder);
             realBackground = view.findViewById(R.id.real_background);
         }
     }
@@ -65,8 +67,8 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         holder.albumName.setText(items.get(position).getName());
         holder.albumDesc.setText(items.get(position).getDesc());
         int backCardColor = context.getResources().getColor(R.color.card_background);
-        if (((ColorDrawable) holder.realBackground.getBackground()).getColor() != backCardColor)
-            holder.realBackground.setBackgroundColor(backCardColor);
+        if (((ColorDrawable) holder.textHolder.getBackground()).getColor() != backCardColor)
+            holder.textHolder.setBackgroundColor(backCardColor);
         try {
             Picasso.with(context).load(new File(items.get(position).getArtString()))
                     .error(R.drawable.default_artwork_dark)
@@ -89,14 +91,14 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, AlbumActivity.class);
-                intent.putExtra("albumName", items.get(position).getName().toString());
+                intent.putExtra("albumName", items.get(position).getName());
                 intent.putExtra("albumId", items.get(position).getId());
                 String transitionName = "albumArt";
                 ActivityOptionsCompat options =
                         ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,
                                 new Pair<View, String>(holder.albumArt, transitionName)
                         );
-                ActivityCompat.startActivity((Activity) context, intent, options.toBundle());
+                ActivityCompat.startActivity(context, intent, options.toBundle());
             }
         });
     }

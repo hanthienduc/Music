@@ -30,7 +30,7 @@ public class AlbumsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.albums_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_albums, container, false);
         this.mainView = v;
         init();
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
@@ -88,7 +88,7 @@ public class AlbumsFragment extends Fragment {
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
-        gv.addItemDecoration(new SpacesItemDecoration(8, settingsPref.getInt("pref_grid_num", 2)));
+        gv.addItemDecoration(new SpacesItemDecoration(8, 2));
         gv.setHasFixedSize(true);
         gv.setAdapter(new AlbumsAdapter(mainView.getContext(), albumList));
 

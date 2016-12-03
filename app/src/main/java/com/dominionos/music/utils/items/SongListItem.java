@@ -9,6 +9,7 @@ public class SongListItem {
     Boolean fav;
     Bitmap art;
     int count;
+    boolean isPlayAll;
 
     public SongListItem(long id, String name, String desc, String path,
                         Boolean fav, long albumId, String albumName, int count) {
@@ -20,6 +21,7 @@ public class SongListItem {
         this.albumId = albumId;
         this.count = count;
         this.albumName = albumName;
+        this.isPlayAll = isPlayAll;
     }
 
     public long getId() {

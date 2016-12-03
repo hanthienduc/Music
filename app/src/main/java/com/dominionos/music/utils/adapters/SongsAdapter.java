@@ -32,12 +32,12 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     private final List<SongListItem> items;
     private Context context;
 
-    public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, desc;
+    final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
+        TextView title, desc;
         public View view;
         public ImageView menu;
 
-        public SimpleItemViewHolder(View itemView) {
+        SimpleItemViewHolder(View itemView) {
             super(itemView);
             view = itemView;
             title = (TextView) itemView.findViewById(R.id.song_item_name);
@@ -134,11 +134,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(items.get(position).getId() == -1) {
-                    Intent a = new Intent();
-                    a.setAction(MusicService.ACTION_PLAY_ALL_SONGS);
-                    context.sendBroadcast(a);
-                } else {
                     Intent a = new Intent();
                     a.setAction(MusicService.ACTION_PLAY_SINGLE);
                     a.putExtra("songId", items.get(position).getId());
@@ -149,7 +144,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                     a.putExtra("songAlbumId", items.get(position).getAlbumId());
                     a.putExtra("songAlbumName", items.get(position).getAlbumName());
                     context.sendBroadcast(a);
-                }
             }
         });
     }

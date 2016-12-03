@@ -23,7 +23,7 @@ public class ColorGridTask extends AsyncTask<Void, Void, Void> {
         this.context = context;
         this.artPath = artPath;
         this.holder = holder;
-        holder.realBackground.setBackgroundColor(context.getResources().getColor(R.color.card_background));
+        holder.textHolder.setBackgroundColor(context.getResources().getColor(R.color.card_background));
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ColorGridTask extends AsyncTask<Void, Void, Void> {
 
                             @Override
                             public void onAnimationUpdate(ValueAnimator animator) {
-                                holder.realBackground.setBackgroundColor((Integer) animator.getAnimatedValue());
+                                holder.textHolder.setBackgroundColor((Integer) animator.getAnimatedValue());
                             }
 
                         });

@@ -3,12 +3,10 @@ package com.dominionos.music.ui.layouts.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -37,7 +35,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SharedPreferences settingsPref;
     private FloatingActionButton fab;
     private Toolbar toolbar;
     private ViewPager viewPager;
@@ -54,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent requestSongDetials = new Intent();
-                requestSongDetials.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
-                sendBroadcast(requestSongDetials);
+                Intent requestSongDetails = new Intent();
+                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                sendBroadcast(requestSongDetails);
             }
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -69,10 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
                 setupViewPager(viewPager);
                 TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tablayout);
-                if (settingsPref.getBoolean("pref_extend_tabs", false))
-                    tabLayout.setTabMode(TabLayout.MODE_FIXED);
-                else
-                    tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+                tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
                 tabLayout.setupWithViewPager(viewPager);
             } else {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
@@ -84,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         viewPager = (ViewPager) findViewById(R.id.main_viewPager);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        settingsPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     }
 
@@ -109,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withCloseOnClick(true)
-                .withHeader(R.layout.layout_header)
                 .addDrawerItems(
                         songs,
                         albums,
@@ -159,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                drawer.setSelectionAtPosition(position + 1);
+                drawer.setSelectionAtPosition(position);
             }
 
             @Override
@@ -189,10 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
                     setupViewPager(viewPager);
                     TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tablayout);
-                    if (settingsPref.getBoolean("pref_extend_tabs", false))
-                        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-                    else
-                        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+                    tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
                     tabLayout.setupWithViewPager(viewPager);
                 } else {
                     finish();

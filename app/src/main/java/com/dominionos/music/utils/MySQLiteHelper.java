@@ -67,7 +67,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_PLAYLIST = "playlist";
     private static final String TABLE_SONG_FOR_PLAYLIST = "song_for_playlist";
-    private static final String TABLE_MOODS = "moods";
 
     private static final String PLAYLIST_KEY_ID = "playlist_id";
     private static final String PLAYLIST_KEY_TITLE = "playlist_title";
@@ -82,13 +81,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String SONG_KEY_NAME = "song_name";
     private static final String SONG_KEY_COUNT = "song_count";
     private static final String SONG_KEY_ALBUM_NAME = "song_album_name";
-    private static final String SONG_KEY_MOOD = "song_mood";
-
-    private static final String MOOD_KEY_ID = "song_id";
-    private static final String MOOD_KEY_MOOD = "song_mood";
-    private static final String MOOD_KEY_NAME = "song_name";
-    private static final String MOOD_KEY_ARTIST = "song_artist";
-    private static final String MOOD_KEY_ALBUM = "song_album";
 
     public int createNewPlayList(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -115,30 +107,20 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     }
 
     public List<Playlist> getAllPlaylist() {
-        List<Playlist> playlists = new LinkedList<Playlist>();
+        List<Playlist> playlists = new LinkedList<>();
         String query = "SELECT  * FROM " + TABLE_PLAYLIST;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        Playlist playlist = null;
+        Playlist playlist;
         if (cursor.moveToFirst()) {
             do {
                 playlist = new Playlist(Integer.parseInt(cursor.getString(0)), cursor.getString(1));
                 playlists.add(playlist);
             } while (cursor.moveToNext());
         }
+        cursor.close();
 
         return playlists;
-    }
-
-    public void updateMood(long songId, String mood) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("UPDATE " + TABLE_SONG_FOR_PLAYLIST + " SET " + SONG_KEY_MOOD + "='" + mood + "'"
-                + " WHERE " + SONG_KEY_REAL_ID
-                + "='" + songId + "'");
-    }
-
-    public void updateMood(String songName, String mood) {
-        updateMood(getSong(songName).getId(), mood);
     }
 
     public void addSong(SongListItem song, int playlistId) {
@@ -157,36 +139,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
         db.insert(TABLE_SONG_FOR_PLAYLIST, null, values);
         db.close();
-    }
-
-    public void setMood(SongListItem song, String mood) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if (!isMoodAlreadyPresent(song)) {
-            ContentValues values = new ContentValues();
-            values.putNull(MOOD_KEY_ID);
-            values.put(MOOD_KEY_NAME, song.getName());
-            values.put(MOOD_KEY_ARTIST, song.getDesc());
-            values.put(MOOD_KEY_ALBUM, song.getAlbumName());
-            values.put(MOOD_KEY_MOOD, mood);
-
-            db.insert(TABLE_MOODS, null, values);
-            db.close();
-        } else {
-            db.execSQL("UPDATE " + TABLE_MOODS + " SET " + MOOD_KEY_MOOD + "='"
-                    + mood + "' WHERE " + MOOD_KEY_NAME + "='"
-                    + song.getName() + "'");
-        }
-    }
-
-    public boolean isMoodAlreadyPresent(SongListItem song) {
-        String query = "SELECT  * FROM " + TABLE_MOODS + " WHERE "
-                + MOOD_KEY_NAME + "='" + song.getName() + "'";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        if (cursor.getCount() > 0) {
-            return true;
-        } else
-            return false;
     }
 
     public void addSong(String songName, int playlistId) {
@@ -221,27 +173,25 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                         musicCursor.getString(pathColumn), false,
                         musicCursor.getLong(albumIdColumn),
                         musicCursor.getString(albumColumn), 0);
-            }
-            while (musicCursor.moveToNext());
+            } while (musicCursor.moveToNext());
+        }
+        if (musicCursor != null) {
+            musicCursor.close();
         }
         return null;
     }
 
-    public List<SongListItem> getPlayListSongs(int playlistId) {
-        List<SongListItem> songs = new LinkedList<SongListItem>();
+    public ArrayList<SongListItem> getPlayListSongs(int playlistId) {
+        ArrayList<SongListItem> songs = new ArrayList<>();
         String query = "SELECT  * FROM " + TABLE_SONG_FOR_PLAYLIST + " WHERE "
                 + SONG_KEY_PLAYLISTID + "='" + playlistId + "'";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        SongListItem song = null;
+        SongListItem song;
         if (cursor.moveToFirst()) {
             do {
                 boolean fav;
-                if (cursor.getString(4).matches("0")) {
-                    fav = false;
-                } else {
-                    fav = true;
-                }
+                fav = !cursor.getString(4).matches("0");
                 song = new SongListItem(Long.valueOf(cursor.getString(1)),
                         cursor.getString(7), cursor.getString(4),
                         cursor.getString(6), fav, Long.parseLong(cursor.getString(3)),
@@ -249,32 +199,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 songs.add(song);
             } while (cursor.moveToNext());
         }
-
-        return songs;
-    }
-
-    public ArrayList<SongListItem> getPlayListSongs(int playlistId, String nullHack) {
-        ArrayList<SongListItem> songs = new ArrayList<SongListItem>();
-        String query = "SELECT  * FROM " + TABLE_SONG_FOR_PLAYLIST + " WHERE "
-                + SONG_KEY_PLAYLISTID + "='" + playlistId + "'";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        SongListItem song = null;
-        if (cursor.moveToFirst()) {
-            do {
-                boolean fav;
-                if (cursor.getString(4).matches("0")) {
-                    fav = false;
-                } else {
-                    fav = true;
-                }
-                song = new SongListItem(Long.valueOf(cursor.getString(1)),
-                        cursor.getString(7), cursor.getString(4),
-                        cursor.getString(6), fav, Long.parseLong(cursor.getString(3)),
-                        cursor.getString(9), Integer.parseInt(cursor.getString(8)));
-                songs.add(song);
-            } while (cursor.moveToNext());
-        }
+        cursor.close();
 
         return songs;
     }

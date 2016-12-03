@@ -326,7 +326,7 @@ public class MusicService extends Service {
             case ACTION_PLAY_PLAYLIST:
                 MySQLiteHelper helper = new MySQLiteHelper(context);
                 playList.clearPlayingList();
-                playList.addSongs(helper.getPlayListSongs(intent.getIntExtra("playlistId", -1), null));
+                playList.addSongs(helper.getPlayListSongs(intent.getIntExtra("playlistId", -1)));
                 playMusic(playList.getFirstSong());
                 break;
             case ACTION_PLAY_ALL_SONGS:

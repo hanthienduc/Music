@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 
 import com.dominionos.music.R;
 import com.dominionos.music.utils.MySQLiteHelper;
-import com.dominionos.music.utils.SimpleItemListDivider;
 import com.dominionos.music.utils.adapters.PlaylistAdapter;
 import com.dominionos.music.utils.items.Playlist;
 
@@ -25,7 +24,7 @@ public class PlaylistFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.playlist_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_playlists, container, false);
         this.mainView = v;
         rv = (RecyclerView) mainView.findViewById(R.id.playlist_list);
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
@@ -48,7 +47,6 @@ public class PlaylistFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
-        rv.addItemDecoration(new SimpleItemListDivider(mainView.getContext(), 0));
         rv.setHasFixedSize(true);
         rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList));
     }

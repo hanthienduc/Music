@@ -1,7 +1,6 @@
 package com.dominionos.music.ui.layouts.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,27 +12,25 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.dominionos.music.R;
-import com.dominionos.music.service.MusicService;
-import com.dominionos.music.utils.SimpleItemListDivider;
 import com.dominionos.music.utils.adapters.SongsAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class SongsFragment extends Fragment {
 
     Cursor musicCursor;
     View mainView;
     RecyclerView rv;
-    LinearLayout playAll;
     Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.songs_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_songs, container, false);
         mainView = v;
         context = getContext();
 
@@ -57,17 +54,7 @@ public class SongsFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
-        rv.addItemDecoration(new SimpleItemListDivider(mainView.getContext(), 0));
         rv.setHasFixedSize(true);
-        playAll = (LinearLayout) mainView.findViewById(R.id.play_all);
-        playAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent a = new Intent();
-                a.setAction(MusicService.ACTION_PLAY_ALL_SONGS);
-                context.sendBroadcast(a);
-            }
-        });
     }
 
     private void setSongList() {
@@ -100,8 +87,13 @@ public class SongsFragment extends Fragment {
                 i++;
             }
             while (musicCursor.moveToNext());
-            SongsAdapter songAdapter = new SongsAdapter(mainView.getContext(), songList);
-            rv.setAdapter(songAdapter);
+            Collections.sort(songList, new Comparator<SongListItem>() {
+                @Override
+                public int compare(SongListItem songListItem, SongListItem t1) {
+                    return songListItem.getName().compareTo(t1.getName());
+                }
+            });
+            rv.setAdapter(new SongsAdapter(mainView.getContext(), songList));
         }
     }
 

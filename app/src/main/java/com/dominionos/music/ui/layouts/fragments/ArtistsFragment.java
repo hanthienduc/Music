@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dominionos.music.R;
-import com.dominionos.music.utils.SimpleItemListDivider;
 import com.dominionos.music.utils.adapters.ArtistAdapter;
 import com.dominionos.music.utils.items.ArtistListItem;
 
@@ -29,7 +28,7 @@ public class ArtistsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.artists_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_artists, container, false);
         context = v.getContext();
         this.mainView = v;
 
@@ -86,7 +85,6 @@ public class ArtistsFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
-        rv.addItemDecoration(new SimpleItemListDivider(context, 0));
         rv.setHasFixedSize(true);
         rv.setAdapter(new ArtistAdapter(context, albumList));
         rv.addOnScrollListener(new RecyclerView.OnScrollListener() {

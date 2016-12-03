@@ -12,18 +12,13 @@ import com.dominionos.music.utils.items.SongListItem;
 import java.util.ArrayList;
 import java.util.Collections;
 
-/**
- * Created by architjn on 04/09/15.
- */
 public class MusicPlayerDBHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "MusicPlayingDB";
-    private Context context;
 
     public MusicPlayerDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
     }
 
     @Override
@@ -60,7 +55,6 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
     private static final String SONG_KEY_NAME = "song_name";
     private static final String SONG_KEY_COUNT = "song_count";
     private static final String SONG_KEY_ALBUM_NAME = "song_album_name";
-    private static final String SONG_KEY_MOOD = "song_mood";
     private static final String SONG_KEY_PLAYING = "song_playing";
 
     public void addSong(SongListItem song) {
@@ -180,7 +174,9 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         String query = "SELECT  * FROM " + TABLE_PLAYBACK;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        return cursor.getCount();
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
     }
 
     public void setSongKeyPlaying(int index) {
@@ -239,11 +235,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
 
     private SongListItem getSongFromCursor(Cursor cursor) {
         boolean fav;
-        if (cursor.getString(4).matches("0")) {
-            fav = false;
-        } else {
-            fav = true;
-        }
+        fav = !cursor.getString(4).matches("0");
         return new SongListItem(Long.valueOf(cursor.getString(1)),
                 cursor.getString(6), cursor.getString(3),
                 cursor.getString(5), fav, Long.parseLong(cursor.getString(2)),
