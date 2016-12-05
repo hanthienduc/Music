@@ -127,7 +127,7 @@ public class MusicService extends Service {
                                 musicCursor.getString(pathColumn), false,
                                 musicCursor.getLong(albumIdColumn),
                                 musicCursor.getString(albumNameColumn),
-                                count), count);
+                                count));
                     }
                     while (musicCursor.moveToNext());
                 }
@@ -266,11 +266,6 @@ public class MusicService extends Service {
                     playList.addSong(new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                             intent.getStringExtra("songPath"), false,
                             intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
-                } else if (currentPlaylistSongId != -1) {
-                    //TODO
-//                    playList.addSong(currentPlaylistSongId + 1, new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
-//                            intent.getStringExtra("songPath"), false,
-//                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                 } else {
                     intent.setAction(ACTION_PLAY_SINGLE);
                     sendBroadcast(intent);
@@ -361,7 +356,7 @@ public class MusicService extends Service {
                                 musicCursor2.getString(pathColumn), false,
                                 musicCursor2.getLong(albumIdColumn),
                                 musicCursor2.getString(albumColumn),
-                                i2), i2);
+                                i2));
                     }
                     while (musicCursor2.moveToNext());
                 }
@@ -396,9 +391,8 @@ public class MusicService extends Service {
         sendBroadcast(playlistIntent);
     }
 
-    public void addSong(SongListItem song, int count) {
+    public void addSong(SongListItem song) {
         playList.addSong(song);
-//        if (count == 1) {
         if (mediaPlayer != null) {
             if (currentPlaylistAlbumId != song.getAlbumId()) {
                 pausedSongSeek = 0;
@@ -408,7 +402,6 @@ public class MusicService extends Service {
             pausedSongSeek = 0;
             playMusic(0);
         }
-//        }
     }
 
     public void stopMusic() {

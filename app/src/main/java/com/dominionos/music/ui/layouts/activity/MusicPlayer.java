@@ -63,7 +63,7 @@ public class MusicPlayer extends AppCompatActivity {
             nextButton, shuffleButton, header;
     private SeekBarCompat seekBar;
     private int duration, currentDuration;
-    private boolean musicStoped;
+    private boolean musicStopped;
     private AudioManager audioManager;
 
 
@@ -75,18 +75,18 @@ public class MusicPlayer extends AppCompatActivity {
                 currentDuration = intent.getIntExtra("songSeekVal", 0);
                 if (intent.getBooleanExtra("isPlaying", false)) {
                     playButton.setImageResource(R.drawable.ic_pause_white_48dp);
-                    musicStoped = false;
+                    musicStopped = false;
                 } else {
                     playButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
-                    musicStoped = true;
+                    musicStopped = true;
                 }
             } else if (intent.getAction().equals(ACTION_GET_PLAY_STATE)) {
                 if (intent.getBooleanExtra("isPlaying", false)) {
                     playButton.setImageResource(R.drawable.ic_pause_white_48dp);
-                    musicStoped = false;
+                    musicStopped = false;
                 } else {
                     playButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
-                    musicStoped = true;
+                    musicStopped = true;
                 }
             } else if (intent.getAction().equals(ACTION_GET_PLAYING_LIST)) {
                 RecyclerView rv = (RecyclerView) findViewById(R.id.player_playlist);
@@ -104,7 +104,7 @@ public class MusicPlayer extends AppCompatActivity {
                 albumId = intent.getLongExtra("songAlbumId", 0);
                 duration = intent.getIntExtra("songDuration", 0);
                 currentDuration = 0;
-                musicStoped = false;
+                musicStopped = false;
                 updateSeeker();
                 updateView();
             }
@@ -220,7 +220,7 @@ public class MusicPlayer extends AppCompatActivity {
         seekBar.setProgress(currentDuration);
         totalTimeHolder.setText(((duration / 1000) / 60) +
                 ":" + ((duration / 1000) % 60));
-        musicStoped = false;
+        musicStopped = false;
         if (timer != null)
             timer.cancel();
         timer = new Timer();
@@ -229,7 +229,7 @@ public class MusicPlayer extends AppCompatActivity {
             public void run() {
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        if (!musicStoped) {
+                        if (!musicStopped) {
                             int seekProg = seekBar.getProgress();
                             if (seekProg < duration)
                                 seekBar.setProgress(seekProg + 100);
@@ -290,11 +290,11 @@ public class MusicPlayer extends AppCompatActivity {
                     changeCurrentTime.setAction(MusicService.ACTION_SEEK_TO);
                     changeCurrentTime.putExtra("changeSeek", progress);
                     sendBroadcast(changeCurrentTime);
-                    musicStoped = false;
+                    musicStopped = false;
                 } else {
                     if (seekBar.getProgress() == duration) {
                         seekBar.setProgress(100);
-                        musicStoped = true;
+                        musicStopped = true;
                     }
                 }
             }

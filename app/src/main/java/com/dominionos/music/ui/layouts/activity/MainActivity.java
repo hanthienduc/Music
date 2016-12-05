@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-        viewPager = (ViewPager) findViewById(R.id.main_viewPager);
+        viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         fab = (FloatingActionButton) findViewById(R.id.fab_main);

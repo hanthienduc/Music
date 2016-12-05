@@ -23,7 +23,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/main_viewPager"
+        android:id="@+id/main_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
@@ -39,7 +39,7 @@
         android:src="@drawable/ic_audiotrack_white_24dp"
         app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
-        app:layout_anchor="@+id/main_viewPager"
+        app:layout_anchor="@+id/main_viewpager"
         app:layout_anchorGravity="bottom|right|end"
         app:layout_behavior="com.dominionos.music.utils.ScrollAwareFABBehavior" />
 
