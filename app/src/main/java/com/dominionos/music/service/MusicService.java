@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -49,6 +50,7 @@ public class MusicService extends Service {
     private SongListItem pausedSong;
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
+    private MediaSession mediaSession;
 
     AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -614,14 +616,21 @@ public class MusicService extends Service {
     public void onDestroy() {
         super.onDestroy();
         audioManager.abandonAudioFocus(afChangeListener);
+        mediaSession.release();
     }
 
     @Override
     public void onCreate() {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
         audioManager.requestAudioFocus(afChangeListener,
                 AudioManager.STREAM_MUSIC, AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+
+        mediaSession = new MediaSession(this, "MusicService");
+        Intent intent = new Intent(this, MusicPlayer.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 99 /*request code*/,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mediaSession.setSessionActivity(pi);
+        mediaSession.setActive(true);
     }
 
 }
