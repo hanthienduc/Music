@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.media.AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK;
+import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
+
 public class MusicService extends Service {
 
     MediaPlayer mediaPlayer;
@@ -45,6 +48,21 @@ public class MusicService extends Service {
     long currentPlaylistAlbumId = -1;
     private SongListItem pausedSong;
     private MusicPlayerDBHelper playList;
+    private AudioManager audioManager;
+
+    AudioManager.OnAudioFocusChangeListener afChangeListener =
+            new AudioManager.OnAudioFocusChangeListener() {
+                public void onAudioFocusChange(int focusChange) {
+                    if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT) {
+                        mediaPlayer.pause();
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                        mediaPlayer.start();
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                        audioManager.abandonAudioFocus(afChangeListener);
+                        stopMusic();
+                    }
+                }
+            };
 
     public static final int NOTIFICATION_ID = 104;
     public static final String ACTION_PLAY = "play";
@@ -595,6 +613,15 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        audioManager.abandonAudioFocus(afChangeListener);
+    }
+
+    @Override
+    public void onCreate() {
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        audioManager.requestAudioFocus(afChangeListener,
+                AudioManager.STREAM_MUSIC, AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
     }
 
 }

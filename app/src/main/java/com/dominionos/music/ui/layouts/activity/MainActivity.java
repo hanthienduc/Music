@@ -32,7 +32,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
