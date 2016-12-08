@@ -52,6 +52,7 @@ public class MusicService extends Service {
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSession mediaSession;
+    private ArrayList<SongListItem> songList;
 
     AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -316,7 +317,6 @@ public class MusicService extends Service {
                 if (action.matches(ACTION_MENU_PLAY_NEXT)) {
                     SongListItem item = playList.getSong(intent.getIntExtra("count", -1));
                     playList.addSong(item);
-                    //TODO
                     updatePlaylist();
                 } else if (action.matches(ACTION_MENU_REMOVE_FROM_QUEUE)) {
                     playList.removeSong(intent.getIntExtra("count", -1));
@@ -350,45 +350,14 @@ public class MusicService extends Service {
                 playMusic(playList.getFirstSong());
                 break;
             case ACTION_PLAY_ALL_SONGS:
-                playList.clearPlayingList();
-                //TODO Prevent having to re-query song list when play all is clicked
-                final ArrayList<SongListItem> songList = new ArrayList<>();
-                System.gc();
-                Cursor musicCursor2;
-                final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
-                final String orderBy2 = MediaStore.Audio.Media.TITLE;
-                musicCursor2 = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        null, where2, null, orderBy2);
-                if (musicCursor2 != null && musicCursor2.moveToFirst()) {
-                    int titleColumn = musicCursor2.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media.TITLE);
-                    int idColumn = musicCursor2.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media._ID);
-                    int artistColumn = musicCursor2.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media.ARTIST);
-                    int pathColumn = musicCursor2.getColumnIndex
-                            (MediaStore.Audio.Media.DATA);
-                    int albumIdColumn = musicCursor2.getColumnIndex
-                            (MediaStore.Audio.Media.ALBUM_ID);
-                    int albumColumn = musicCursor2.getColumnIndex
-                            (MediaStore.Audio.Media.ALBUM);
-                    int i2 = 0;
-                    do {
-                        i2++;
-                        addSong(new SongListItem(musicCursor2.getLong(idColumn),
-                                musicCursor2.getString(titleColumn),
-                                musicCursor2.getString(artistColumn),
-                                musicCursor2.getString(pathColumn), false,
-                                musicCursor2.getLong(albumIdColumn),
-                                musicCursor2.getString(albumColumn),
-                                i2));
-                    }
-                    while (musicCursor2.moveToNext());
+                if(songList != null) {
+                    playList.clearPlayingList();
+                    playList.addSongs(songList);
+                    pausedSongSeek = 0;
+                    playMusic(0);
+                } else {
+                    Toast.makeText(context, "The service has not yet build a list of your songs", Toast.LENGTH_LONG).show();
                 }
-                if (musicCursor2 != null) {
-                    musicCursor2.close();
-                }
-                playList.addSongs(songList);
                 break;
         }
     }
@@ -581,6 +550,59 @@ public class MusicService extends Service {
         commandFilter.addAction(ACTION_PLAY_ALBUM);
         commandFilter.addAction(ACTION_SHUFFLE_PLAYLIST);
         registerReceiver(musicPlayer, commandFilter);
+
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.requestAudioFocus(afChangeListener,
+                AudioManager.STREAM_MUSIC, AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+
+        mediaSession = new MediaSession(this, "MusicService");
+        Intent intent2 = new Intent(this, MusicPlayer.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 99 /*request code*/,
+                intent2, PendingIntent.FLAG_UPDATE_CURRENT);
+        mediaSession.setSessionActivity(pi);
+        mediaSession.setActive(true);
+
+        new Runnable() {
+            @Override
+            public void run() {
+                songList = new ArrayList<>();
+                System.gc();
+                Cursor musicCursor2;
+                final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
+                final String orderBy2 = MediaStore.Audio.Media.TITLE;
+                musicCursor2 = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        null, where2, null, orderBy2);
+                if (musicCursor2 != null && musicCursor2.moveToFirst()) {
+                    int titleColumn = musicCursor2.getColumnIndex
+                            (android.provider.MediaStore.Audio.Media.TITLE);
+                    int idColumn = musicCursor2.getColumnIndex
+                            (android.provider.MediaStore.Audio.Media._ID);
+                    int artistColumn = musicCursor2.getColumnIndex
+                            (android.provider.MediaStore.Audio.Media.ARTIST);
+                    int pathColumn = musicCursor2.getColumnIndex
+                            (MediaStore.Audio.Media.DATA);
+                    int albumIdColumn = musicCursor2.getColumnIndex
+                            (MediaStore.Audio.Media.ALBUM_ID);
+                    int albumColumn = musicCursor2.getColumnIndex
+                            (MediaStore.Audio.Media.ALBUM);
+                    int i2 = 0;
+                    do {
+                        i2++;
+                        songList.add(new SongListItem(musicCursor2.getLong(idColumn),
+                                musicCursor2.getString(titleColumn),
+                                musicCursor2.getString(artistColumn),
+                                musicCursor2.getString(pathColumn), false,
+                                musicCursor2.getLong(albumIdColumn),
+                                musicCursor2.getString(albumColumn),
+                                i2));
+                    }
+                    while (musicCursor2.moveToNext());
+                }
+                if (musicCursor2 != null) {
+                    musicCursor2.close();
+                }
+            }
+        }.run();
         return START_STICKY;
     }
 
@@ -622,20 +644,6 @@ public class MusicService extends Service {
         super.onDestroy();
         audioManager.abandonAudioFocus(afChangeListener);
         mediaSession.release();
-    }
-
-    @Override
-    public void onCreate() {
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        audioManager.requestAudioFocus(afChangeListener,
-                AudioManager.STREAM_MUSIC, AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
-
-        mediaSession = new MediaSession(this, "MusicService");
-        Intent intent = new Intent(this, MusicPlayer.class);
-        PendingIntent pi = PendingIntent.getActivity(this, 99 /*request code*/,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        mediaSession.setSessionActivity(pi);
-        mediaSession.setActive(true);
     }
 
 }
