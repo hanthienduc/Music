@@ -29,4 +29,5 @@
     <string name="artist_fetch_url">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo</string>
     <string name="api">911da172e486f9339ebc82b65ee89993</string>
     <string name="artist_image">Artist Image</string>
+    <string name="play_all">Play All</string>
 </resources>

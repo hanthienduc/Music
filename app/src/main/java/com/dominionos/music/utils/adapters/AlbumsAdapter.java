@@ -32,10 +32,11 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
     public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         public TextView albumName, albumDesc;
         ImageView albumArt;
-        public View realBackground, textHolder;
+        View realBackground;
+        public View textHolder;
         View mainView;
 
-        public SimpleItemViewHolder(View view) {
+        SimpleItemViewHolder(View view) {
             super(view);
 
             albumName = (TextView) view.findViewById(R.id.grid_name);

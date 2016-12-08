@@ -24,10 +24,10 @@
         </activity>
         <activity
             android:name="com.dominionos.music.ui.layouts.activity.AlbumActivity"
-            android:theme="@style/AppTheme.Album" />
+            android:theme="@style/AppTheme.Main" />
         <activity
             android:name="com.dominionos.music.ui.layouts.activity.MusicPlayer"
-            android:theme="@style/AppTheme.Player" />
+            android:theme="@style/AppTheme.Main" />
         <activity
             android:name="com.dominionos.music.ui.layouts.activity.PlaylistActivity"
             android:theme="@style/AppTheme.Main" />
