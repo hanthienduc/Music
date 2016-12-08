@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/menu_playlist_play"
-        android:title="@string/menu_playlist_play"
+        android:title="@string/play"
         android:visible="true" />
     <item
         android:id="@+id/menu_playlist_rename"

@@ -112,15 +112,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                                 share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" + items.get(position).getPath()));
                                 context.startActivity(Intent.createChooser(share, "Share Song"));
                                 return true;
-                            case R.id.menu_song_editor:
-                                Toast.makeText(context, "Song tag editor", Toast.LENGTH_SHORT).show();
-                                return true;
-                            case R.id.menu_details:
-                                Toast.makeText(context, "Details", Toast.LENGTH_SHORT).show();
-                                return true;
-                            case R.id.menu_set_ringtone:
-                                Toast.makeText(context, "Set as Ringtone", Toast.LENGTH_SHORT).show();
-                                return true;
                             case R.id.menu_delete:
                                 File file = new File(items.get(position).getPath());
                                 boolean deleted = file.delete();

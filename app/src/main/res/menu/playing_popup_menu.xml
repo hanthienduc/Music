@@ -18,18 +18,6 @@
         android:title="@string/menu_share"
         android:visible="true" />
     <item
-        android:id="@+id/menu_song_editor"
-        android:title="@string/menu_song_editor"
-        android:visible="true" />
-    <item
-        android:id="@+id/menu_details"
-        android:title="@string/menu_details"
-        android:visible="true" />
-    <item
-        android:id="@+id/menu_set_ringtone"
-        android:title="@string/menu_set_ringtone"
-        android:visible="true" />
-    <item
         android:id="@+id/menu_delete"
         android:title="@string/menu_delete"
         android:visible="true" />

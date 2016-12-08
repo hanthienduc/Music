@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -162,7 +163,11 @@ public class MusicService extends Service {
                     if (am != null) {
                         List<ActivityManager.AppTask> tasks = am.getAppTasks();
                         if (tasks != null) {
-                            tasks.get(0).finishAndRemoveTask();
+                            try {
+                                tasks.get(0).finishAndRemoveTask();
+                            } catch (RuntimeException e) {
+                                Log.e("MusicService", "Failed to remove tasks");
+                            }
                         }
                     }
                     unregisterReceiver(musicPlayer);

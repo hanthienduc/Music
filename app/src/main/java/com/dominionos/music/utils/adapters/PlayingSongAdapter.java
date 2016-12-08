@@ -102,15 +102,6 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                                 c.putExtra("action", MusicService.ACTION_MENU_SHARE);
                                 context.sendBroadcast(c);
                                 return true;
-                            case R.id.menu_song_editor:
-                                Toast.makeText(context, "Song tag editor", Toast.LENGTH_SHORT).show();
-                                return true;
-                            case R.id.menu_details:
-                                Toast.makeText(context, "Details", Toast.LENGTH_SHORT).show();
-                                return true;
-                            case R.id.menu_set_ringtone:
-                                Toast.makeText(context, "Set as Ringtone", Toast.LENGTH_SHORT).show();
-                                return true;
                             case R.id.menu_delete:
                                 Intent d = new Intent();
                                 d.setAction(MusicService.ACTION_MENU_FROM_PLAYLIST);
