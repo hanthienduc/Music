@@ -13,6 +13,10 @@
         <item name="android:windowExitTransition">@android:transition/slide_bottom</item>
     </style>
 
+    <style name="AppTheme.Search" parent="AppTheme.Main">
+        <item name="android:windowActionBarOverlay">false</item>
+    </style>
+
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="color">@android:color/primary_text_dark</item>
     </style>

@@ -76,16 +76,23 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected (MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.play_all) {
-            Intent i = new Intent();
-            i.setAction(MusicService.ACTION_PLAY_ALL_SONGS);
-            sendBroadcast(i);
+        switch(id) {
+            case R.id.play_all:
+                Intent i = new Intent();
+                i.setAction(MusicService.ACTION_PLAY_ALL_SONGS);
+                sendBroadcast(i);
+                break;
+            case R.id.search_item:
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intent);
+                break;
         }
         return true;
     }
