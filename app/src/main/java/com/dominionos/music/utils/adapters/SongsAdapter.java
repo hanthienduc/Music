@@ -32,7 +32,7 @@ import java.util.List;
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemViewHolder>
         implements FastScrollRecyclerView.SectionedAdapter {
 
-    private final List<SongListItem> items;
+    private List<SongListItem> items;
     private Context context;
 
     @NonNull

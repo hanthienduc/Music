@@ -66,7 +66,6 @@ public class MusicPlayer extends AppCompatActivity {
     private boolean musicStopped;
     private AudioManager audioManager;
 
-
     private BroadcastReceiver musicPlayer = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
