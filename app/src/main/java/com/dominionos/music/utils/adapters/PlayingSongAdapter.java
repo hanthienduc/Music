@@ -28,12 +28,12 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     private final List<SongListItem> songs;
     private Context context;
 
-    public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, desc;
+    final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
+        TextView title, desc;
         public View view;
         public ImageView menu;
 
-        public SimpleItemViewHolder(View itemView) {
+        SimpleItemViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
@@ -157,5 +157,10 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     @Override
     public int getItemCount() {
         return this.songs.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return songs.get(position).getId();
     }
 }
