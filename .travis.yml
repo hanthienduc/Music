@@ -13,4 +13,4 @@ jdk:
   - oraclejdk8
 
 script:
-  chmod 775 gradle && ./gradlew build
+  ./gradlew build
