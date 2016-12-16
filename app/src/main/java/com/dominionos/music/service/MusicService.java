@@ -118,7 +118,6 @@ public class MusicService extends Service {
             case ACTION_PLAY_ALBUM:
                 pausedSongSeek = 0;
                 playList.clearPlayingList();
-                System.gc();
                 Cursor musicCursor;
                 String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
                 String whereVal[] = {intent.getLongExtra("albumId", 0) + ""};

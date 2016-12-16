@@ -2,6 +2,7 @@ package com.dominionos.music.utils.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dominionos.music.R;
+import com.dominionos.music.ui.layouts.activity.ArtistActivity;
 import com.dominionos.music.utils.ArtistImgHandler;
 import com.dominionos.music.utils.items.ArtistListItem;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -30,12 +32,14 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         TextView artistName, artistDesc;
         RoundedImageView artistImg;
+        View view;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
             artistName = (TextView) itemView.findViewById(R.id.artist_name);
             artistDesc = (TextView) itemView.findViewById(R.id.artist_desc);
             artistImg = (RoundedImageView) itemView.findViewById(R.id.artist_image);
+            view = itemView;
         }
     }
 
@@ -52,7 +56,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
     }
 
     @Override
-    public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
+    public void onBindViewHolder(SimpleItemViewHolder holder, final int position) {
         int albumCount = items.get(position).getNumOfAlbums();
         int songCount = items.get(position).getNumOfTracks();
         String artistItemsCount;
@@ -69,6 +73,15 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
             artistItemsCount = (albumCount + " Albums • " + songCount + " Songs");
         }
         holder.artistDesc.setText(artistItemsCount);
+
+        holder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, ArtistActivity.class);
+                i.putExtra("artistName", items.get(position).getName());
+                context.startActivity(i);
+            }
+        });
     }
 
     private void getArtistImg(final SimpleItemViewHolder holder, int position) {
