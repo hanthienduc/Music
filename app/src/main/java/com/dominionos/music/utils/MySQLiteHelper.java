@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.MediaStore;
 
+import com.dominionos.music.utils.items.CheckableSongListItem;
 import com.dominionos.music.utils.items.Playlist;
 import com.dominionos.music.utils.items.SongListItem;
 
@@ -139,6 +140,29 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
         db.insert(TABLE_SONG_FOR_PLAYLIST, null, values);
         db.close();
+    }
+
+    public void addSongs(List<CheckableSongListItem> songList, int playlistId) {
+        int songListSize = songList.size();
+        int currentItem = 0;
+        while(currentItem < songListSize) {
+            CheckableSongListItem item = songList.get(currentItem);
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.putNull(SONG_KEY_ID);
+            values.put(SONG_KEY_REAL_ID, (int) item.getId());
+            values.put(SONG_KEY_PLAYLISTID, playlistId);
+            values.put(SONG_KEY_ALBUMID, item.getAlbumId());
+            values.put(SONG_KEY_DESC, item.getDesc());
+            values.put(SONG_KEY_FAV, item.getFav());
+            values.put(SONG_KEY_PATH, item.getPath());
+            values.put(SONG_KEY_NAME, item.getName());
+            values.put(SONG_KEY_COUNT, item.getCount());
+            values.put(SONG_KEY_ALBUM_NAME, item.getAlbumName());
+            db.insert(TABLE_SONG_FOR_PLAYLIST, null, values);
+            db.close();
+            currentItem++;
+        }
     }
 
     public void addSong(String songName, int playlistId) {

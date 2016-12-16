@@ -408,7 +408,7 @@ public class MusicService extends Service {
     }
 
     public void playMusic(int playingPos) {
-        if (playList.getPlaybackTableSize() != 0) {
+        if (playList.getPlaybackTableSize() > 0) {
             try {
                 SongListItem song = playList.getSong(playingPos);
                 playMusic((int) song.getId(), song.getPath(), song.getName(),
@@ -566,7 +566,6 @@ public class MusicService extends Service {
             @Override
             public void run() {
                 songList = new ArrayList<>();
-                System.gc();
                 Cursor musicCursor2;
                 final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
                 final String orderBy2 = MediaStore.Audio.Media.TITLE;
