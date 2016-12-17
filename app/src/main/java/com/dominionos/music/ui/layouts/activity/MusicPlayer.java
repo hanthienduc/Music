@@ -198,8 +198,14 @@ public class MusicPlayer extends AppCompatActivity {
                         }
                         new ColorAnimateAlbumView(detailHolder, palette).execute();
                         new ColorAnimateAlbumView(controlHolder, palette).execute();
+                    if(mainColor != 0) {
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
                         collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
+                    } else {
+                        mainColor = getResources().getColor(R.color.colorPrimary);
+                        collapsingToolbarLayout.setContentScrimColor(mainColor);
+                        collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
+                    }
                     }
             };
             Palette.from(BitmapFactory.decodeFile(songArt, options)).generate(paletteListener);
@@ -214,8 +220,13 @@ public class MusicPlayer extends AppCompatActivity {
     private void updateSeeker() {
         seekBar.setMax(duration);
         seekBar.setProgress(currentDuration);
-        totalTimeHolder.setText(((duration / 1000) / 60) +
-                ":" + ((duration / 1000) % 60));
+        String totalDurationSeconds = String.valueOf((duration / 1000) % 60);
+        String totalDurationMinutes = String.valueOf((duration / 1000) / 60);
+        if(totalDurationSeconds.length() == 1) {
+            totalTimeHolder.setText(totalDurationMinutes + ":" + totalDurationSeconds + "0");
+        } else {
+            totalTimeHolder.setText(totalDurationMinutes + ":" + totalDurationSeconds);
+        }
         musicStopped = false;
         if (timer != null)
             timer.cancel();

@@ -157,6 +157,7 @@
             android:elevation="4dp"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/colorPrimary"
+            app:statusBarScrim="@color/colorPrimaryDark"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <ImageView
