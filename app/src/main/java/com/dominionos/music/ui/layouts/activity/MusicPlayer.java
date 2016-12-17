@@ -187,17 +187,16 @@ public class MusicPlayer extends AppCompatActivity {
         if (songArt != null) {
             Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
                 public void onGenerated(Palette palette) {
-                        int defaultColor = 0x000000;
-                        mainColor = palette.getVibrantColor(defaultColor);
-                        if (Build.VERSION.SDK_INT >= 21) {
-                            ActivityManager.TaskDescription taskDescription = new
-                                    ActivityManager.TaskDescription(getResources().getString(R.string.app_name),
+                    int defaultColor = 0x000000;
+                    mainColor = palette.getVibrantColor(defaultColor);
+                    if (Build.VERSION.SDK_INT >= 21) {
+                        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(getResources().getString(R.string.app_name),
                                     BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                                     palette.getVibrantColor(defaultColor));
-                            setTaskDescription(taskDescription);
-                        }
-                        new ColorAnimateAlbumView(detailHolder, palette).execute();
-                        new ColorAnimateAlbumView(controlHolder, palette).execute();
+                        setTaskDescription(taskDescription);
+                    }
+                    new ColorAnimateAlbumView(detailHolder, palette).execute();
+                    new ColorAnimateAlbumView(controlHolder, palette).execute();
                     if(mainColor != 0) {
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
                         collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
