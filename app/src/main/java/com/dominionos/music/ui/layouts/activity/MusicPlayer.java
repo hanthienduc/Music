@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
@@ -159,7 +160,6 @@ public class MusicPlayer extends AppCompatActivity {
         updateSeeker();
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_player));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         updateView();
 
     }
@@ -182,7 +182,10 @@ public class MusicPlayer extends AppCompatActivity {
         options.inPreferredConfig = Bitmap.Config.RGB_565;
         Drawable artWork = new BitmapDrawable(this.getResources(), BitmapFactory.decodeFile(songArt, options));
         ((ImageView) findViewById(R.id.header)).setImageDrawable(artWork);
-        getSupportActionBar().setTitle(songName);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(songName);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         if (songArt != null) {
             Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
@@ -201,7 +204,7 @@ public class MusicPlayer extends AppCompatActivity {
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
                         collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
                     } else {
-                        mainColor = getResources().getColor(R.color.colorPrimary);
+                        mainColor = ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null);
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
                         collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
                     }
