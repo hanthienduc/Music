@@ -34,6 +34,8 @@
                         android:id="@+id/player_seekbar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingBottom="2dp"
                         app:progressColor="#FFFFFF"
                         app:progressBackgroundColor="#22FFFFFF"
                         app:thumbColor="#FFFFFF"
@@ -134,7 +136,7 @@
                     android:id="@+id/player_playlist"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#FFFFFF"
+                    android:background="@color/windowBackground"
                     android:scrollbars="vertical"
                     android:nestedScrollingEnabled="false" />
         </LinearLayout>
@@ -154,7 +156,7 @@
             android:layout_height="375dp"
             android:elevation="4dp"
             android:fitsSystemWindows="true"
-            app:contentScrim="?colorPrimary"
+            app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <ImageView

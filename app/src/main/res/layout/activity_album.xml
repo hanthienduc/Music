@@ -17,7 +17,8 @@
             android:layout_height="match_parent"
             android:elevation="10dp"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
                 <ImageView
                     android:id="@+id/activity_album_art"
@@ -30,14 +31,14 @@
                     app:layout_collapseMode="parallax"
                     android:contentDescription="@string/album_art" />
 
-            <View
-                android:id="@+id/title_background"
-                android:layout_width="match_parent"
-                android:layout_height="92dp"
-                android:background="#FFFFFF"
-                android:layout_gravity="bottom"
-                android:layout_alignBottom="@id/activity_album_art"
-                app:layout_collapseMode="pin"/>
+                <View
+                    android:id="@+id/title_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="92dp"
+                    android:background="@color/colorPrimary"
+                    android:layout_gravity="bottom"
+                    android:layout_alignBottom="@id/activity_album_art"
+                    app:layout_collapseMode="pin"/>
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar_album"
@@ -52,6 +53,7 @@
         android:id="@+id/rv_artist_activity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/windowBackground"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton

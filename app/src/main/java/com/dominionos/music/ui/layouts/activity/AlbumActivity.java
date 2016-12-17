@@ -57,6 +57,7 @@ public class AlbumActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
                 findViewById(R.id.collapsingtoolbarlayout_album);
         collapsingToolbarLayout.setTitle(getIntent().getStringExtra("albumName"));
+        collapsingToolbarLayout.setContentScrimColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor());
         collapsingToolbarLayout.setStatusBarScrimColor(
                 getAutoStatColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor()));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_album);
@@ -123,6 +124,7 @@ public class AlbumActivity extends AppCompatActivity {
             int vibrantTitleText = vibrantSwatch.getTitleTextColor();
             toolbarBackground.setBackgroundColor(vibrantRgb);
             collapsingToolbarLayout.setStatusBarScrimColor(vibrantRgb);
+            collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
             collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
             collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
             collapsingToolbarLayout.setBackgroundColor(vibrantRgb);

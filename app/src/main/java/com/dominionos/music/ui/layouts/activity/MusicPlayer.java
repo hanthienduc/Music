@@ -205,7 +205,7 @@ public class MusicPlayer extends AppCompatActivity {
             Palette.from(BitmapFactory.decodeFile(songArt, options)).generate(paletteListener);
         } else {
             header.setImageResource(R.drawable.default_artwork_dark);
-            mainColor = Color.parseColor("#37474f");
+            mainColor = Color.parseColor(String.valueOf(R.color.colorPrimary));
             collapsingToolbarLayout.setContentScrimColor(mainColor);
             collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
         }
