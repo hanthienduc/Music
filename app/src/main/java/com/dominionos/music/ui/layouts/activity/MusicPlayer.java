@@ -53,8 +53,8 @@ public class MusicPlayer extends AppCompatActivity {
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
     public static int mainColor;
-    private String songName, songDesc, songArt;
-    private TextView songNameView, songArtistView, currentTimeHolder, totalTimeHolder;
+    private String songName, songArt;
+    private TextView currentTimeHolder, totalTimeHolder;
     private long albumId;
     private Timer timer;
     private LinearLayout detailHolder, controlHolder;
@@ -99,7 +99,6 @@ public class MusicPlayer extends AppCompatActivity {
                 rv.setAdapter(adapter);
             } else if (intent.getAction().equals(ACTION_GET_PLAYING_DETAIL)) {
                 songName = intent.getStringExtra("songName");
-                songDesc = intent.getStringExtra("songDesc");
                 albumId = intent.getLongExtra("songAlbumId", 0);
                 duration = intent.getIntExtra("songDuration", 0);
                 currentDuration = 0;
@@ -149,7 +148,6 @@ public class MusicPlayer extends AppCompatActivity {
             getWindow().setEnterTransition(new Fade());
 
         songName = getIntent().getStringExtra("songName");
-        songDesc = getIntent().getStringExtra("songDesc");
         albumId = getIntent().getLongExtra("songAlbumId", 0);
         duration = getIntent().getIntExtra("songDuration", 0);
         currentDuration = getIntent().getIntExtra("songCurrTime", 0);
@@ -184,8 +182,7 @@ public class MusicPlayer extends AppCompatActivity {
         options.inPreferredConfig = Bitmap.Config.RGB_565;
         Drawable artWork = new BitmapDrawable(this.getResources(), BitmapFactory.decodeFile(songArt, options));
         ((ImageView) findViewById(R.id.header)).setImageDrawable(artWork);
-        songNameView.setText(songName);
-        songArtistView.setText(songDesc);
+        getSupportActionBar().setTitle(songName);
 
         if (songArt != null) {
             Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
@@ -199,8 +196,8 @@ public class MusicPlayer extends AppCompatActivity {
                                     palette.getVibrantColor(defaultColor));
                             setTaskDescription(taskDescription);
                         }
-                        new ColorAnimateAlbumView(MusicPlayer.this, detailHolder, palette).execute();
-                        new ColorAnimateAlbumView(MusicPlayer.this, controlHolder, palette).execute();
+                        new ColorAnimateAlbumView(detailHolder, palette).execute();
+                        new ColorAnimateAlbumView(controlHolder, palette).execute();
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
                         collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
                     }
@@ -318,8 +315,6 @@ public class MusicPlayer extends AppCompatActivity {
         rewindButton = (ImageView) findViewById(R.id.player_rewind);
         nextButton = (ImageView) findViewById(R.id.player_forward);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
-        songNameView = (TextView) findViewById(R.id.player_song_name);
-        songArtistView = (TextView) findViewById(R.id.player_song_artist);
         seekBar = (SeekBarCompat) findViewById(R.id.player_seekbar);
         currentTimeHolder = (TextView) findViewById(R.id.player_current_time);
         totalTimeHolder = (TextView) findViewById(R.id.player_total_time);

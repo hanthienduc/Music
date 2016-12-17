@@ -32,18 +32,17 @@ public class AlbumSongAdapter extends RecyclerView.Adapter<AlbumSongAdapter.Simp
     private final List<SongListItem> items;
     private Context context;
 
-    public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        TextView title, desc, counter;
+    final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
+        TextView title, desc;
         public View view;
         public ImageView menu;
 
-        public SimpleItemViewHolder(View itemView) {
+        SimpleItemViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.album_song_item_name);
-            desc = (TextView) itemView.findViewById(R.id.album_song_item_desc);
-            counter = (TextView) itemView.findViewById(R.id.album_song_itemcount);
+            title = (TextView) itemView.findViewById(R.id.song_item_name);
+            desc = (TextView) itemView.findViewById(R.id.song_item_desc);
             view = itemView;
-            menu = (ImageView) itemView.findViewById(R.id.album_song_item_menu);
+            menu = (ImageView) itemView.findViewById(R.id.song_item_menu);
         }
     }
 
@@ -55,7 +54,7 @@ public class AlbumSongAdapter extends RecyclerView.Adapter<AlbumSongAdapter.Simp
     @Override
     public AlbumSongAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.album_song_list_item, parent, false);
+                inflate(R.layout.song_list_item, parent, false);
         return new SimpleItemViewHolder(itemView);
     }
 
@@ -63,7 +62,6 @@ public class AlbumSongAdapter extends RecyclerView.Adapter<AlbumSongAdapter.Simp
     public void onBindViewHolder(SimpleItemViewHolder holder, final int position) {
         holder.title.setText(items.get(position).getName());
         holder.desc.setText(items.get(position).getDesc());
-        holder.counter.setText(items.get(position).getCount() + "");
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

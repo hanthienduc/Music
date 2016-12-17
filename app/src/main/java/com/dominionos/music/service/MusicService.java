@@ -613,7 +613,7 @@ public class MusicService extends Service {
         PendingIntent deletePendingIntent = PendingIntent.getBroadcast(MusicService.this, 0, deleteIntent, 0);
         return new NotificationCompat.Builder(this)
                 .setOngoing(true)
-                .setSmallIcon(R.drawable.ic_audiotrack_white_24dp)
+                .setSmallIcon(R.drawable.ic_audiotrack)
                 .setContentIntent(contentIntent)
                 .setDeleteIntent(deletePendingIntent);
     }
@@ -627,7 +627,7 @@ public class MusicService extends Service {
         PendingIntent deletePendingIntent = PendingIntent.getBroadcast(MusicService.this, 0, deleteIntent, 0);
         return new NotificationCompat.Builder(this)
                 .setOngoing(false)
-                .setSmallIcon(R.drawable.ic_audiotrack_white_24dp)
+                .setSmallIcon(R.drawable.ic_audiotrack)
                 .setContentIntent(contentIntent)
                 .setDeleteIntent(deletePendingIntent);
     }

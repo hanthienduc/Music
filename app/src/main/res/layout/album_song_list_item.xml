@@ -6,7 +6,7 @@
 
     <TextView
         android:id="@+id/album_song_itemcount"
-        android:layout_width="20dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/album_song_item_desc"
         android:layout_alignTop="@+id/album_song_item_name"
@@ -15,6 +15,7 @@
         android:layout_marginTop="10dp"
         android:gravity="center_vertical|start"
         android:textSize="20sp"
+        android:maxLines="1"
         android:textColor="@android:color/tertiary_text_light" />
 
     <TextView
