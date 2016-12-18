@@ -155,7 +155,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<SongListItem> getCurrentPlayingList() {
-        ArrayList<SongListItem> songs = new ArrayList<SongListItem>();
+        ArrayList<SongListItem> songs = new ArrayList<>();
         String query = "SELECT  * FROM " + TABLE_PLAYBACK;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -179,26 +179,13 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    public void setSongKeyPlaying(int index) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("UPDATE " + TABLE_PLAYBACK + " SET " + SONG_KEY_PLAYING + "='0'");
-        db.execSQL("UPDATE " + TABLE_PLAYBACK + " SET " + SONG_KEY_PLAYING + "='1' WHERE "
-                + SONG_KEY_REAL_ID + "='" + index + "'");
-    }
-
     public void clearPlayingList() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_PLAYBACK);
     }
 
-    public void removeSong(SongListItem song) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + TABLE_PLAYBACK + " WHERE " + SONG_KEY_REAL_ID
-                + "='" + song.getId() + "'");
-    }
 
-
-    public ArrayList<SongListItem> addSongs(ArrayList<SongListItem> playList) {
+    public void addSongs(ArrayList<SongListItem> playList) {
         SQLiteDatabase db = this.getWritableDatabase();
         for (int i = 0; i < playList.size(); i++) {
             SongListItem song = playList.get(i);
@@ -217,7 +204,6 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
             db.insert(TABLE_PLAYBACK, null, values);
         }
         db.close();
-        return playList;
     }
 
     public SongListItem getSong(int playingPos) {

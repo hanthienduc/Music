@@ -25,17 +25,18 @@ import com.dominionos.music.utils.items.SongListItem;
 
 import java.util.List;
 
-public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAdapter.SimpleItemViewHolder> {
+class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAdapter.SimpleItemViewHolder> {
 
     private final List<Playlist> items;
-    private Context context;
-    private SongListItem songToAdd;
-    private AlertDialog dialog;
+    private final Context context;
+    private final SongListItem songToAdd;
+    private final AlertDialog dialog;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, add;
-        public View view;
-        public ImageView menu;
+        public final TextView title;
+        public final TextView add;
+        public final View view;
+        public final ImageView menu;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
@@ -62,7 +63,8 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
     }
 
     @Override
-    public void onBindViewHolder(SimpleItemViewHolder holder, final int position) {
+    public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
+        position = holder.getAdapterPosition();
         if (items.get(position).getId() == -1) {
             holder.title.setVisibility(View.GONE);
             holder.menu.setVisibility(View.GONE);
@@ -76,6 +78,7 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
             });
         } else {
             holder.title.setText(items.get(position).getName());
+            final int finalPosition = position;
             holder.menu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -86,9 +89,9 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
                             switch (item.getItemId()) {
                                 case R.id.menu_playlist_delete:
                                     MySQLiteHelper helper = new MySQLiteHelper(context);
-                                    helper.removePlayList(items.get(position).getId());
-                                    items.remove(position);
-                                    notifyItemRemoved(position);
+                                    helper.removePlayList(items.get(finalPosition).getId());
+                                    items.remove(finalPosition);
+                                    notifyItemRemoved(finalPosition);
                                     new CountDownTimer(400, 1000) {
                                         public void onTick(long millisUntilFinished) {
                                         }
@@ -100,12 +103,12 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
                                     return true;
                                 case R.id.menu_playlist_play:
                                     Intent i = new Intent();
-                                    i.putExtra("playlistId", items.get(position).getId());
+                                    i.putExtra("playlistId", items.get(finalPosition).getId());
                                     i.setAction(MusicService.ACTION_PLAY_PLAYLIST);
                                     context.sendBroadcast(i);
                                     return true;
                                 case R.id.menu_playlist_rename:
-                                    showRenamePlaylistPrompt(position);
+                                    showRenamePlaylistPrompt(finalPosition);
                                     return true;
                             }
                             return false;
@@ -120,9 +123,9 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
                 public void onClick(View v) {
                     MySQLiteHelper helper = new MySQLiteHelper(context);
                     if (songToAdd.getId() != -1)
-                        helper.addSong(songToAdd, items.get(position).getId());
+                        helper.addSong(songToAdd, items.get(finalPosition).getId());
                     else
-                        helper.addSong(songToAdd.getName(), items.get(position).getId());
+                        helper.addSong(songToAdd.getName(), items.get(finalPosition).getId());
                     dialog.dismiss();
                     Toast.makeText(context, "Song added to playlist", Toast.LENGTH_SHORT).show();
                 }

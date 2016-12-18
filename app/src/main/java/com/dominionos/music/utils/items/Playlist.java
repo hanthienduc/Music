@@ -2,8 +2,8 @@ package com.dominionos.music.utils.items;
 
 public class Playlist {
 
-    int id;
-    String name;
+    private final int id;
+    private String name;
 
     public Playlist(int id, String name){
         this.id = id;

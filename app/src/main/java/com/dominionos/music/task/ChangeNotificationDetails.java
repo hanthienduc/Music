@@ -10,20 +10,18 @@ import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
 
 import com.dominionos.music.R;
 import com.dominionos.music.service.MusicService;
 
-/**
- * Created by architjn on 05/07/15.
- */
 public class ChangeNotificationDetails extends AsyncTask<Void, Void, Void> {
 
-    private Context context;
-    private long albumId;
-    private NotificationManager notificationManager;
-    private Notification notificationCompat;
+    private final Context context;
+    private final long albumId;
+    private final NotificationManager notificationManager;
+    private final Notification notificationCompat;
 
     public ChangeNotificationDetails(Context context, long albumId,
                                      NotificationManager notificationManager,
@@ -42,13 +40,12 @@ public class ChangeNotificationDetails extends AsyncTask<Void, Void, Void> {
                 new String[]{String.valueOf(albumId)},
                 null);
         String songArt = "";
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
         }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.RGB_565;
-        options.inDither = true;
         try {
             final Bitmap albumArt = BitmapFactory.decodeFile(songArt, options);
             Palette.generateAsync(BitmapFactory.decodeFile(songArt, options),
@@ -59,7 +56,7 @@ public class ChangeNotificationDetails extends AsyncTask<Void, Void, Void> {
                                 Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
                                 Canvas canvas = new Canvas(bmp);
                                 canvas.drawColor(palette.getDarkVibrantColor(
-                                        context.getResources().getColor(R.color.noti_background)));
+                                        ResourcesCompat.getColor(context.getResources(), R.color.noti_background, null)));
                                 notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_color_bg,
                                         bmp);
                                 notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_album_art, albumArt);
@@ -73,12 +70,15 @@ public class ChangeNotificationDetails extends AsyncTask<Void, Void, Void> {
                 notificationCompat.bigContentView.setImageViewResource(R.id.noti_album_art, R.drawable.default_artwork_dark);
                 Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(bmp);
-                canvas.drawColor(context.getResources().getColor(R.color.noti_background));
+                canvas.drawColor(ResourcesCompat.getColor(context.getResources(), R.color.noti_background, null));
                 notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_color_bg,
                         bmp);
                 notificationManager.notify(MusicService.NOTIFICATION_ID, notificationCompat);
                 e.printStackTrace();
             }
+        }
+        if (cursor != null) {
+            cursor.close();
         }
         return null;
     }

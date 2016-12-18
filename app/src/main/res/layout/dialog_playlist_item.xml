@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground">
@@ -12,10 +13,10 @@
         android:layout_marginBottom="22dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:layout_toStartOf="@+id/song_item_menu"
         android:maxLines="1"
         android:textColor="@android:color/primary_text_light"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        tools:ignore="RelativeOverlap" />
 
     <ImageView
         android:id="@+id/playlist_item_menu"
@@ -24,11 +25,12 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="10dp"
-        android:background="@drawable/unbounded_ripple"
+        android:background="?android:attr/selectableItemBackground"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:padding="10dp"
-        android:src="@drawable/abc_ic_menu_overflow_material" />
+        android:src="@drawable/ic_overflow"
+        android:contentDescription="@string/menu" />
 
     <TextView
         android:id="@+id/playlist_item_add_new"
@@ -38,8 +40,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:maxLines="1"
-        android:text="add Playlist"
-        android:textColor="@android:color/white"
+        android:text="@string/add_playlist"
+        android:textColor="@android:color/primary_text_light"
         android:textSize="18sp"
         android:visibility="gone" />
 </RelativeLayout>

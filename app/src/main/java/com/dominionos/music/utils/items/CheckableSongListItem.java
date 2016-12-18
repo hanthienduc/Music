@@ -1,21 +1,20 @@
 package com.dominionos.music.utils.items;
 
-import android.graphics.Bitmap;
-
 public class CheckableSongListItem {
 
 
-    long id, albumId;
-    String name, desc, path, albumName;
-    Boolean fav;
+    private final long id;
+    private final long albumId;
+    private final String name;
+    private final String desc;
+    private final String path;
+    private final String albumName;
     public Boolean isSelected;
-    Bitmap art;
-    int count;
+    private final int count;
 
     public CheckableSongListItem(long id, String name, String desc, String path,
-                        Boolean fav, long albumId, String albumName, int count) {
+                        long albumId, String albumName, int count) {
         this.desc = desc;
-        this.fav = fav;
         this.path = path;
         this.id = id;
         this.name = name;
@@ -47,15 +46,6 @@ public class CheckableSongListItem {
 
     public long getAlbumId() {
         return this.albumId;
-    }
-
-
-    public Boolean getFav() {
-        return this.fav;
-    }
-
-    public Bitmap getArt() {
-        return this.art;
     }
 
     public int getCount() {

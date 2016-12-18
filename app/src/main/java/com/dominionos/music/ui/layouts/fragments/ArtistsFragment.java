@@ -21,9 +21,8 @@ import java.util.ArrayList;
 
 public class ArtistsFragment extends Fragment {
 
-    View mainView;
-    RecyclerView rv;
-    int currentFabPos;
+    private View mainView;
+    private RecyclerView rv;
     private Context context;
 
     @Override
@@ -91,7 +90,6 @@ public class ArtistsFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                currentFabPos = dy;
             }
         });
     }

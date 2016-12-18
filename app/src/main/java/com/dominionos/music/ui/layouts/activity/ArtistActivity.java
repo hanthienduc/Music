@@ -24,8 +24,6 @@ import java.util.Comparator;
 
 public class ArtistActivity extends AppCompatActivity {
 
-    Cursor musicCursor;
-    RecyclerView rv;
     private AudioManager audioManager;
 
     @Override
@@ -38,10 +36,12 @@ public class ArtistActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.artist_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(artistName);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(artistName);
+        }
 
-        rv = (RecyclerView) findViewById(R.id.artist_recyclerview);
+        RecyclerView rv = (RecyclerView) findViewById(R.id.artist_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
@@ -51,7 +51,7 @@ public class ArtistActivity extends AppCompatActivity {
         final ArrayList<SongListItem> songList = new ArrayList<>();
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final String orderBy = MediaStore.Audio.Media.TITLE;
-        musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        Cursor musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null, where, null, orderBy);
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleColumn = musicCursor.getColumnIndex
@@ -86,6 +86,9 @@ public class ArtistActivity extends AppCompatActivity {
                 }
             });
             rv.setAdapter(new SongsAdapter(this, songList));
+        }
+        if (musicCursor != null) {
+            musicCursor.close();
         }
 
     }

@@ -25,9 +25,9 @@ import java.util.List;
 
 public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivityAdapter.MainViewHolder> {
 
-    private Context context;
+    private final Context context;
     private final List<SongListItem> data;
-    private int playlistId;
+    private final int playlistId;
 
     public PlaylistActivityAdapter(Context context, List<SongListItem> data, int playlistId) {
         this.data = data;
@@ -43,9 +43,11 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
     }
 
     @Override
-    public void onBindViewHolder(final MainViewHolder holder, final int position) {
+    public void onBindViewHolder(final MainViewHolder holder, int position) {
+        position = holder.getAdapterPosition();
         holder.songName.setText(data.get(position).getName());
         holder.songDesc.setText(data.get(position).getDesc());
+        final int finalPosition = position;
         holder.menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,49 +59,47 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
                             case R.id.menu_play_next:
                                 Intent i = new Intent();
                                 i.setAction(MusicService.ACTION_PLAY_NEXT);
-                                i.putExtra("songId", data.get(position).getId());
-                                i.putExtra("songPath", data.get(position).getPath());
-                                i.putExtra("songName", data.get(position).getName());
-                                i.putExtra("songDesc", data.get(position).getDesc());
-                                i.putExtra("songArt", data.get(position).getArt());
-                                i.putExtra("songAlbumId", data.get(position).getAlbumId());
-                                i.putExtra("songAlbumName", data.get(position).getAlbumName());
+                                i.putExtra("songId", data.get(finalPosition).getId());
+                                i.putExtra("songPath", data.get(finalPosition).getPath());
+                                i.putExtra("songName", data.get(finalPosition).getName());
+                                i.putExtra("songDesc", data.get(finalPosition).getDesc());
+                                i.putExtra("songAlbumId", data.get(finalPosition).getAlbumId());
+                                i.putExtra("songAlbumName", data.get(finalPosition).getAlbumName());
                                 context.sendBroadcast(i);
                                 return true;
                             case R.id.menu_add_playing:
                                 Intent a = new Intent();
                                 a.setAction(MusicService.ACTION_ADD_SONG);
-                                a.putExtra("songId", data.get(position).getId());
-                                a.putExtra("songPath", data.get(position).getPath());
-                                a.putExtra("songName", data.get(position).getName());
-                                a.putExtra("songDesc", data.get(position).getDesc());
-                                a.putExtra("songArt", data.get(position).getArt());
-                                a.putExtra("songAlbumId", data.get(position).getAlbumId());
-                                a.putExtra("songAlbumName", data.get(position).getAlbumName());
+                                a.putExtra("songId", data.get(finalPosition).getId());
+                                a.putExtra("songPath", data.get(finalPosition).getPath());
+                                a.putExtra("songName", data.get(finalPosition).getName());
+                                a.putExtra("songDesc", data.get(finalPosition).getDesc());
+                                a.putExtra("songAlbumId", data.get(finalPosition).getAlbumId());
+                                a.putExtra("songAlbumName", data.get(finalPosition).getAlbumName());
                                 context.sendBroadcast(a);
                                 return true;
                             case R.id.menu_remove_playlist:
                                 MySQLiteHelper helper = new MySQLiteHelper(context);
-                                helper.removeSong(data.get(position).getId(), playlistId);
-                                data.remove(position);
-                                notifyItemRemoved(position);
+                                helper.removeSong(data.get(finalPosition).getId(), playlistId);
+                                data.remove(finalPosition);
+                                notifyItemRemoved(finalPosition);
                                 updateListWithInterval();
                                 return true;
                             case R.id.menu_share:
                                 Intent share = new Intent(Intent.ACTION_SEND);
                                 share.setType("audio/*");
-                                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" + data.get(position).getPath()));
+                                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" + data.get(finalPosition).getPath()));
                                 context.startActivity(Intent.createChooser(share, "Share Song"));
                                 return true;
                             case R.id.menu_delete:
-                                File file = new File(data.get(position).getPath());
+                                File file = new File(data.get(finalPosition).getPath());
                                 boolean deleted = file.delete();
                                 if (deleted) {
                                     Toast.makeText(context, "Song Deleted", Toast.LENGTH_SHORT).show();
                                     context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                            MediaStore.MediaColumns._ID + "='" + data.get(position).getId() + "'", null);
-                                    data.remove(position);
-                                    notifyItemRemoved(position);
+                                            MediaStore.MediaColumns._ID + "='" + data.get(finalPosition).getId() + "'", null);
+                                    data.remove(finalPosition);
+                                    notifyItemRemoved(finalPosition);
                                     updateListWithInterval();
                                 } else
                                     Toast.makeText(context, "Song Not Deleted", Toast.LENGTH_SHORT).show();
@@ -117,13 +117,12 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
             public void onClick(View v) {
                 Intent a = new Intent();
                 a.setAction(MusicService.ACTION_PLAY_SINGLE);
-                a.putExtra("songId", data.get(position).getId());
-                a.putExtra("songPath", data.get(position).getPath());
-                a.putExtra("songName", data.get(position).getName());
-                a.putExtra("songDesc", data.get(position).getDesc());
-                a.putExtra("songArt", data.get(position).getArt());
-                a.putExtra("songAlbumId", data.get(position).getAlbumId());
-                a.putExtra("songAlbumName", data.get(position).getAlbumName());
+                a.putExtra("songId", data.get(finalPosition).getId());
+                a.putExtra("songPath", data.get(finalPosition).getPath());
+                a.putExtra("songName", data.get(finalPosition).getName());
+                a.putExtra("songDesc", data.get(finalPosition).getDesc());
+                a.putExtra("songAlbumId", data.get(finalPosition).getAlbumId());
+                a.putExtra("songAlbumName", data.get(finalPosition).getAlbumName());
                 context.sendBroadcast(a);
             }
         });
@@ -147,9 +146,10 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
 
     static class MainViewHolder extends RecyclerView.ViewHolder {
 
-        View view;
-        TextView songName, songDesc;
-        public View menu;
+        final View view;
+        final TextView songName;
+        final TextView songDesc;
+        public final View menu;
 
         MainViewHolder(View itemView) {
             super(itemView);

@@ -21,7 +21,7 @@ public abstract class ArtistImgHandler extends SQLiteOpenHelper {
     private static final String ARTIST_KEY_NAME = "artist_name";
     private static final String ARTIST_KEY_URL = "artist_img";
     private final Integer[] randomNumbers;
-    private Context context;
+    private final Context context;
 
     protected ArtistImgHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -89,7 +89,7 @@ public abstract class ArtistImgHandler extends SQLiteOpenHelper {
         return null;
     }
 
-    public void removeArtistImgFromDB(String name) {
+    private void removeArtistImgFromDB(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE  FROM " + TABLE_PLAYBACK + " WHERE "
                 + ARTIST_KEY_NAME + "='" + name + "'";
@@ -97,7 +97,7 @@ public abstract class ArtistImgHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public Integer[] randomNumbers(int range) {
+    private Integer[] randomNumbers(int range) {
         Integer[] arr = new Integer[range];
         for (int i = 0; i < arr.length; i++) {
             arr[i] = i;

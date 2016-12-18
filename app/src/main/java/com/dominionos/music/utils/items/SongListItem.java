@@ -1,14 +1,15 @@
 package com.dominionos.music.utils.items;
 
-import android.graphics.Bitmap;
-
 public class SongListItem {
 
-    long id, albumId;
-    String name, desc, path, albumName;
-    Boolean fav;
-    Bitmap art;
-    int count;
+    private final long id;
+    private final long albumId;
+    private final String name;
+    private final String desc;
+    private final String path;
+    private final String albumName;
+    private final Boolean fav;
+    private final int count;
 
     public SongListItem(long id, String name, String desc, String path,
                         Boolean fav, long albumId, String albumName, int count) {
@@ -49,10 +50,6 @@ public class SongListItem {
 
     public Boolean getFav() {
         return this.fav;
-    }
-
-    public Bitmap getArt() {
-        return this.art;
     }
 
     public int getCount() {

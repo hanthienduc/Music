@@ -19,7 +19,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "PlaylistDB";
-    private Context context;
+    private final Context context;
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -154,7 +154,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             values.put(SONG_KEY_PLAYLISTID, playlistId);
             values.put(SONG_KEY_ALBUMID, item.getAlbumId());
             values.put(SONG_KEY_DESC, item.getDesc());
-            values.put(SONG_KEY_FAV, item.getFav());
             values.put(SONG_KEY_PATH, item.getPath());
             values.put(SONG_KEY_NAME, item.getName());
             values.put(SONG_KEY_COUNT, item.getCount());

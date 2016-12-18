@@ -27,12 +27,12 @@ import java.util.List;
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.SimpleItemViewHolder> {
 
     private final List<Playlist> items;
-    private Context context;
+    private final Context context;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        TextView gridName;
-        ImageView overflow;
-        View mainView;
+        final TextView gridName;
+        final ImageView overflow;
+        final View mainView;
 
         SimpleItemViewHolder(View view) {
             super(view);
@@ -58,7 +58,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
     }
 
     @Override
-    public void onBindViewHolder(final SimpleItemViewHolder holder, final int position) {
+    public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
+        position = holder.getAdapterPosition();
         holder.gridName.setText(items.get(position).getName());
         if (items.get(position).getId() == -1) {
             holder.overflow.setVisibility(View.GONE);
@@ -69,6 +70,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                 }
             });
         } else {
+            final int finalPosition = position;
             holder.overflow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -79,9 +81,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                             switch (item.getItemId()) {
                                 case R.id.menu_playlist_delete:
                                     MySQLiteHelper helper = new MySQLiteHelper(context);
-                                    helper.removePlayList(items.get(position).getId());
-                                    items.remove(position);
-                                    notifyItemRemoved(position);
+                                    helper.removePlayList(items.get(finalPosition).getId());
+                                    items.remove(finalPosition);
+                                    notifyItemRemoved(finalPosition);
                                     new CountDownTimer(400, 1000) {
 
                                         public void onTick(long millisUntilFinished) {
@@ -95,12 +97,12 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                                     return true;
                                 case R.id.menu_playlist_play:
                                     Intent i = new Intent();
-                                    i.putExtra("playlistId", items.get(position).getId());
+                                    i.putExtra("playlistId", items.get(finalPosition).getId());
                                     i.setAction(MusicService.ACTION_PLAY_PLAYLIST);
                                     context.sendBroadcast(i);
                                     return true;
                                 case R.id.menu_playlist_rename:
-                                    showRenamePlaylistPrompt(position);
+                                    showRenamePlaylistPrompt(finalPosition);
                                     return true;
                             }
                             return false;
@@ -114,8 +116,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(context, PlaylistActivity.class);
-                    i.putExtra("playlistId", items.get(position).getId());
-                    i.putExtra("title", items.get(position).getName());
+                    i.putExtra("playlistId", items.get(finalPosition).getId());
+                    i.putExtra("title", items.get(finalPosition).getName());
                     context.startActivity(i);
                 }
             });

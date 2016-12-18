@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         startService(i);
 
         setupViewPager(viewPager);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tablayout);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setCurrentItem(0);
     }
 
-    public void setDrawer() {
+    private void setDrawer() {
         PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs);
         PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.album);
         PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist);

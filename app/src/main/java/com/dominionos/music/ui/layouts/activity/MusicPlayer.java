@@ -53,7 +53,7 @@ public class MusicPlayer extends AppCompatActivity {
     public static final String ACTION_GET_SEEK_VALUE = "gte_seek_value";
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
-    public static int mainColor;
+    private static int mainColor;
     private String songName, songArt;
     private TextView currentTimeHolder, totalTimeHolder;
     private long albumId;
@@ -67,25 +67,25 @@ public class MusicPlayer extends AppCompatActivity {
     private boolean musicStopped;
     private AudioManager audioManager;
 
-    private BroadcastReceiver musicPlayer = new BroadcastReceiver() {
+    private final BroadcastReceiver musicPlayer = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_GET_SEEK_VALUE)) {
                 seekBar.setProgress(intent.getIntExtra("songSeekVal", 0));
                 currentDuration = intent.getIntExtra("songSeekVal", 0);
                 if (intent.getBooleanExtra("isPlaying", false)) {
-                    playButton.setImageResource(R.drawable.ic_pause_white_48dp);
+                    playButton.setImageResource(R.drawable.ic_pause);
                     musicStopped = false;
                 } else {
-                    playButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+                    playButton.setImageResource(R.drawable.ic_play);
                     musicStopped = true;
                 }
             } else if (intent.getAction().equals(ACTION_GET_PLAY_STATE)) {
                 if (intent.getBooleanExtra("isPlaying", false)) {
-                    playButton.setImageResource(R.drawable.ic_pause_white_48dp);
+                    playButton.setImageResource(R.drawable.ic_pause);
                     musicStopped = false;
                 } else {
-                    playButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+                    playButton.setImageResource(R.drawable.ic_play);
                     musicStopped = true;
                 }
             } else if (intent.getAction().equals(ACTION_GET_PLAYING_LIST)) {
@@ -213,7 +213,7 @@ public class MusicPlayer extends AppCompatActivity {
             Palette.from(BitmapFactory.decodeFile(songArt, options)).generate(paletteListener);
         } else {
             header.setImageResource(R.drawable.default_artwork_dark);
-            mainColor = Color.parseColor(String.valueOf(R.color.colorPrimary));
+            mainColor = ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null);
             collapsingToolbarLayout.setContentScrimColor(mainColor);
             collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
         }
@@ -239,12 +239,12 @@ public class MusicPlayer extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         if (!musicStopped) {
-                            int seekProg = seekBar.getProgress();
-                            if (seekProg < duration)
-                                seekBar.setProgress(seekProg + 100);
+                            int seekProgress = seekBar.getProgress();
+                            if (seekProgress < duration)
+                                seekBar.setProgress(seekProgress + 100);
                             else
                                 seekBar.setProgress(100);
-                            new ChangeSeekDetailUpdater(seekProg, currentTimeHolder).execute();
+                            new ChangeSeekDetailUpdater(seekProgress, currentTimeHolder).execute();
                         }
                     }
                 });
@@ -364,12 +364,7 @@ public class MusicPlayer extends AppCompatActivity {
         sendBroadcast(i);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    public int getAutoStatColor(int baseColor) {
+    private int getAutoStatColor(int baseColor) {
         float[] hsv = new float[3];
         Color.colorToHSV(baseColor, hsv);
         hsv[2] *= 0.8f;

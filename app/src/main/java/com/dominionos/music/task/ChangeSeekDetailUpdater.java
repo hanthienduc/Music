@@ -3,9 +3,8 @@ package com.dominionos.music.task;
 import android.os.AsyncTask;
 import android.widget.TextView;
 
-/**
- * Created by architjn on 10/07/15.
- */
+import java.util.Locale;
+
 public class ChangeSeekDetailUpdater extends AsyncTask<Void, Void, Void> {
 
     private int mSeekBarProgress;
@@ -19,8 +18,8 @@ public class ChangeSeekDetailUpdater extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        min = String.format("%02d", ((mSeekBarProgress / 1000) / 60));
-        sec = String.format("%02d", ((mSeekBarProgress / 1000) % 60));
+        min = String.format(Locale.getDefault(), "%02d", ((mSeekBarProgress / 1000) / 60));
+        sec = String.format(Locale.getDefault(), "%02d", ((mSeekBarProgress / 1000) % 60));
         return null;
     }
 

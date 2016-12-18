@@ -16,7 +16,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -40,13 +39,11 @@ import java.util.List;
 
 public class FetchArtistImg {
 
-    private int random;
-    private ArtistImgHandler handler;
+    private final int random;
+    private final ArtistImgHandler handler;
     private String url;
     private Context context;
     private String name;
-    private String jsonResult;
-    private Bitmap downloadedImg;
 
     public FetchArtistImg(Context context, String name, int random, ArtistImgHandler handler) {
         this.context = context;
@@ -55,8 +52,7 @@ public class FetchArtistImg {
         this.name = name;
         this.random = random;
         this.handler = handler;
-        if (name == null || name.matches("<unknown>")) {
-        } else {
+        if (name != null) {
             StringBuilder builder = new StringBuilder();
             builder.append(context.getResources().getString(R.string.artist_fetch_url));
             try {
@@ -99,31 +95,25 @@ public class FetchArtistImg {
         try {
             httppost.setEntity(new UrlEncodedFormEntity(params));
             HttpResponse response = httpclient.execute(httppost);
-            jsonResult = inputStreamToString(response.getEntity().getContent())
+            String jsonResult = inputStreamToString(response.getEntity().getContent())
                     .toString();
-            if (jsonResult != null) {
-                try {
-                    JSONObject jsonResponse = new JSONObject(jsonResult);
-                    JSONArray imageArray = jsonResponse.getJSONObject("artist").getJSONArray("image");
-                    for (int i = 0; i < imageArray.length(); i++) {
-                        JSONObject image = imageArray.getJSONObject(i);
-                        if (image.optString("size").matches("large") &&
-                                !image.optString("#text").matches("")) {
-                            downloadedImg = downloadBitmap(image.optString("#text"));
-                            String newUrl = saveImageToStorage(downloadedImg);
-                            handler.updateArtistArtWorkInDB(name, newUrl);
-                            handler.onDownloadComplete(newUrl);
-                        }
+            try {
+                JSONObject jsonResponse = new JSONObject(jsonResult);
+                JSONArray imageArray = jsonResponse.getJSONObject("artist").getJSONArray("image");
+                for (int i = 0; i < imageArray.length(); i++) {
+                    JSONObject image = imageArray.getJSONObject(i);
+                    if (image.optString("size").matches("large") &&
+                            !image.optString("#text").matches("")) {
+                        Bitmap downloadedImg = downloadBitmap(image.optString("#text"));
+                        String newUrl = saveImageToStorage(downloadedImg);
+                        handler.updateArtistArtWorkInDB(name, newUrl);
+                        handler.onDownloadComplete(newUrl);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (ClientProtocolException e) {
-            Log.e("e", "error1");
-            e.printStackTrace();
         } catch (IOException e) {
-            Log.e("e", "error2");
             e.printStackTrace();
         }
     }

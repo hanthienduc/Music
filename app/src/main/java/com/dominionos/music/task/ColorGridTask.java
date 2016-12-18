@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
 
@@ -14,16 +15,16 @@ import com.dominionos.music.utils.adapters.AlbumsAdapter;
 
 public class ColorGridTask extends AsyncTask<Void, Void, Void> {
 
-    private Context context;
-    private String artPath;
-    private AlbumsAdapter.SimpleItemViewHolder holder;
+    private final Context context;
+    private final String artPath;
+    private final AlbumsAdapter.SimpleItemViewHolder holder;
     private ValueAnimator colorAnimation;
 
     public ColorGridTask(Context context, String artPath, AlbumsAdapter.SimpleItemViewHolder holder) {
         this.context = context;
         this.artPath = artPath;
         this.holder = holder;
-        holder.textHolder.setBackgroundColor(context.getResources().getColor(R.color.card_background));
+        holder.textHolder.setBackgroundColor(ResourcesCompat.getColor(context.getResources(), R.color.card_background, null));
     }
 
     @Override
@@ -33,8 +34,8 @@ public class ColorGridTask extends AsyncTask<Void, Void, Void> {
                 new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(final Palette palette) {
-                        Integer colorFrom = context.getResources().getColor(R.color.card_background);
-                        Integer colorTo = palette.getVibrantColor(context.getResources().getColor(R.color.card_background));
+                        Integer colorFrom = ResourcesCompat.getColor(context.getResources(), R.color.card_background, null);
+                        Integer colorTo = palette.getVibrantColor(ResourcesCompat.getColor(context.getResources(), R.color.card_background, null));
                         colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
                         colorAnimation.setDuration(1000);
                         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

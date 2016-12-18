@@ -21,7 +21,6 @@
     <string name="fast_forward">Fast Forward</string>
     <string name="shuffle">Shuffle</string>
     <string name="album_art">Album Art</string>
-    <string name="artist_art">Artist Art</string>
     <string name="artist_fetch_url">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo</string>
     <string name="api">911da172e486f9339ebc82b65ee89993</string>
     <string name="artist_image">Artist Image</string>
@@ -31,4 +30,9 @@
     <string name="view_library_long">View Library</string>
     <string name="search_library_short">Search</string>
     <string name="search_library_long">Search Library</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="menu">Menu</string>
+    <string name="add_playlist">Create Playlist</string>
+    <string name="default_duration">00:00</string>
 </resources>

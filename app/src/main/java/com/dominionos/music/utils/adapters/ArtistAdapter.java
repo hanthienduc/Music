@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dominionos.music.R;
@@ -26,13 +25,14 @@ import java.util.List;
 public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItemViewHolder> {
 
     private final List<ArtistListItem> items;
-    private Context context;
+    private final Context context;
 
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        TextView artistName, artistDesc;
-        RoundedImageView artistImg;
-        View view;
+        final TextView artistName;
+        final TextView artistDesc;
+        final RoundedImageView artistImg;
+        final View view;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
@@ -56,7 +56,8 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
     }
 
     @Override
-    public void onBindViewHolder(SimpleItemViewHolder holder, final int position) {
+    public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
+        position = holder.getAdapterPosition();
         int albumCount = items.get(position).getNumOfAlbums();
         int songCount = items.get(position).getNumOfTracks();
         String artistItemsCount;
@@ -74,11 +75,12 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         }
         holder.artistDesc.setText(artistItemsCount);
 
+        final int finalPosition = position;
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(context, ArtistActivity.class);
-                i.putExtra("artistName", items.get(position).getName());
+                i.putExtra("artistName", items.get(finalPosition).getName());
                 context.startActivity(i);
             }
         });

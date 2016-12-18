@@ -2,7 +2,6 @@ package com.dominionos.music.task;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.support.v7.graphics.Palette;
@@ -12,9 +11,9 @@ import com.dominionos.music.R;
 
 public class ColorAnimateAlbumView extends AsyncTask<Void, Void, Void> {
 
-    private LinearLayout detailHolder;
-    private Integer colorFrom;
-    private Palette palette;
+    private final LinearLayout detailHolder;
+    private final Integer colorFrom;
+    private final Palette palette;
     private ValueAnimator colorAnimation;
     private boolean isVibrantSwatchNull = false;
 

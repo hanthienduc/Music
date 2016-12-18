@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="RelativeOverlap">
         <TextView
             android:id="@+id/song_item_name"
             android:layout_width="wrap_content"
@@ -40,6 +41,6 @@
         android:background="@drawable/unbounded_ripple"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:src="@drawable/abc_ic_menu_overflow_material"
+        android:src="@drawable/ic_overflow"
         tools:ignore="ContentDescription" />
 </RelativeLayout>

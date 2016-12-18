@@ -24,8 +24,8 @@ import java.util.ArrayList;
 
 public class AlbumsFragment extends Fragment {
 
-    View mainView;
-    RecyclerView gv;
+    private View mainView;
+    private RecyclerView gv;
     private SharedPreferences settingsPref;
 
     @Override
@@ -75,7 +75,7 @@ public class AlbumsFragment extends Fragment {
                 albumList.add(new AlbumListItem(musicCursor.getLong(idColumn),
                         musicCursor.getString(titleColumn),
                         musicCursor.getString(artistColumn),
-                        false, musicCursor.getString(albumArtColumn),
+                        musicCursor.getString(albumArtColumn),
                         musicCursor.getInt(numOfSongsColumn)));
             }
             while (musicCursor.moveToNext());

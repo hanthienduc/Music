@@ -4,7 +4,7 @@ import android.support.design.widget.AppBarLayout;
 
 
 public abstract class AppBarStateChangeListener implements AppBarLayout.OnOffsetChangedListener {
-    public enum State {
+    protected enum State {
         EXPANDED,
         COLLAPSED,
         IDLE

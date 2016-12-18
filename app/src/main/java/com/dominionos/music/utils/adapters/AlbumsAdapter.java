@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,14 +28,15 @@ import java.util.List;
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItemViewHolder> {
 
     private final List<AlbumListItem> items;
-    private Context context;
+    private final Context context;
 
     public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        public TextView albumName, albumDesc;
-        ImageView albumArt;
-        View realBackground;
-        public View textHolder;
-        View mainView;
+        public final TextView albumName;
+        public final TextView albumDesc;
+        final ImageView albumArt;
+        final View realBackground;
+        public final View textHolder;
+        final View mainView;
 
         SimpleItemViewHolder(View view) {
             super(view);
@@ -63,11 +65,12 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
     }
 
     @Override
-    public void onBindViewHolder(final SimpleItemViewHolder holder, final int position) {
-
+    public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
+        position = holder.getAdapterPosition();
         holder.albumName.setText(items.get(position).getName());
         holder.albumDesc.setText(items.get(position).getDesc());
-        int backCardColor = context.getResources().getColor(R.color.card_background);
+        int backCardColor = ResourcesCompat.getColor(context.getResources(), R.color.card_background, null);
+        final int finalPosition = position;
         if (((ColorDrawable) holder.textHolder.getBackground()).getColor() != backCardColor)
             holder.textHolder.setBackgroundColor(backCardColor);
         try {
@@ -76,7 +79,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
                     .into(holder.albumArt, new Callback() {
                         @Override
                         public void onSuccess() {
-                            new ColorGridTask(context, items.get(position).getArtString(), holder).execute();
+                            new ColorGridTask(context, items.get(finalPosition).getArtString(), holder).execute();
                         }
 
                         @Override
@@ -92,8 +95,8 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, AlbumActivity.class);
-                intent.putExtra("albumName", items.get(position).getName());
-                intent.putExtra("albumId", items.get(position).getId());
+                intent.putExtra("albumName", items.get(finalPosition).getName());
+                intent.putExtra("albumId", items.get(finalPosition).getId());
                 String transitionName = "albumArt";
                 ActivityOptionsCompat options =
                         ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,

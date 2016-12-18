@@ -30,10 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistActivity extends AppCompatActivity {
-    RecyclerView recyclerView;
     private AudioManager audioManager;
     private List<CheckableSongListItem> songList;
-    int playlistId;
+    private int playlistId;
     private CheckableSongsAdapter adapter;
     private String title;
 
@@ -44,8 +43,10 @@ public class PlaylistActivity extends AppCompatActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.playlist_toolbar));
         title = getIntent().getStringExtra("title");
         setTitle(title);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        recyclerView = (RecyclerView) findViewById(R.id.rv_playlist_activity);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_playlist_activity);
         MySQLiteHelper helper = new MySQLiteHelper(this);
         playlistId = getIntent().getIntExtra("playlistId", -1);
         if (playlistId == -1) {
@@ -84,7 +85,7 @@ public class PlaylistActivity extends AppCompatActivity {
                         songList.add(new CheckableSongListItem(musicCursor2.getLong(idColumn),
                                 musicCursor2.getString(titleColumn),
                                 musicCursor2.getString(artistColumn),
-                                musicCursor2.getString(pathColumn), false,
+                                musicCursor2.getString(pathColumn),
                                 musicCursor2.getLong(albumIdColumn),
                                 musicCursor2.getString(albumColumn),
                                 i2));

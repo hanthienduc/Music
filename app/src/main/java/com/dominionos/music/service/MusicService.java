@@ -39,7 +39,7 @@ import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
 
 public class MusicService extends Service {
 
-    MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
 
     private Notification notificationCompat;
     private NotificationManager notificationManager;
@@ -47,14 +47,14 @@ public class MusicService extends Service {
     private long albumId;
     private boolean singleSong;
     private int currentPlaylistSongId = -1, pausedSongPlaylistId = -1, pausedSongSeek;
-    long currentPlaylistAlbumId = -1;
+    private long currentPlaylistAlbumId = -1;
     private SongListItem pausedSong;
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSession mediaSession;
     private ArrayList<SongListItem> songList;
 
-    AudioManager.OnAudioFocusChangeListener afChangeListener =
+    private final AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
                 public void onAudioFocusChange(int focusChange) {
                     if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT) {
@@ -69,7 +69,7 @@ public class MusicService extends Service {
             };
 
     public static final int NOTIFICATION_ID = 104;
-    public static final String ACTION_PLAY = "play";
+    private static final String ACTION_PLAY = "play";
     public static final String ACTION_PREV = "prev";
     public static final String ACTION_NEXT = "next";
     public static final String ACTION_STOP = "stop";
@@ -79,7 +79,7 @@ public class MusicService extends Service {
     public static final String ACTION_PLAY_FROM_PLAYLIST = "player_play_from_playlist";
     public static final String ACTION_PLAY_PLAYLIST = "player_play_playlist";
     public static final String ACTION_PLAY_NEXT = "player_play_next";
-    public static final String ACTION_REMOVE_SERVICE = "player_remove_service";
+    private static final String ACTION_REMOVE_SERVICE = "player_remove_service";
     public static final String ACTION_PLAY_SINGLE = "play_single_song";
     public static final String ACTION_ADD_SONG = "add_song_to_playlist";
     public static final String ACTION_ADD_SONG_MULTI = "add_song_to_playlist_multi";
@@ -93,7 +93,7 @@ public class MusicService extends Service {
     public static final String ACTION_MENU_SHARE = "menu_share";
     public static final String ACTION_MENU_DELETE = "menu_delete";
 
-    private BroadcastReceiver musicPlayer = new BroadcastReceiver() {
+    private final BroadcastReceiver musicPlayer = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
             handleBroadcastReceived(context, intent);
@@ -240,8 +240,7 @@ public class MusicService extends Service {
                     stopMusic();
                     stopForeground(true);
                     changeNotificationDetails(pausedSong.getPath(), pausedSong.getName(),
-                            pausedSong.getDesc(), pausedSong.getDesc(),
-                            pausedSong.getAlbumId(), pausedSong.getAlbumName());
+                            pausedSong.getDesc(), pausedSong.getAlbumId(), pausedSong.getAlbumName());
                 } else {
                     if (!singleSong) {
                         playMusic(pausedSongPlaylistId);
@@ -361,7 +360,7 @@ public class MusicService extends Service {
         }
     }
 
-    public void updateCurrentPlaying() {
+    private void updateCurrentPlaying() {
         Intent sendDetails = new Intent();
         sendDetails.putExtra("songPath", songPath);
         sendDetails.putExtra("songName", songName);
@@ -378,13 +377,13 @@ public class MusicService extends Service {
         sendBroadcast(sendDetails);
     }
 
-    public void updatePlaylist() {
+    private void updatePlaylist() {
         Intent playlistIntent = new Intent();
         playlistIntent.setAction(MusicPlayer.ACTION_GET_PLAYING_LIST);
         sendBroadcast(playlistIntent);
     }
 
-    public void addSong(SongListItem song) {
+    private void addSong(SongListItem song) {
         playList.addSong(song);
         if (mediaPlayer != null) {
             if (currentPlaylistAlbumId != song.getAlbumId()) {
@@ -397,7 +396,7 @@ public class MusicService extends Service {
         }
     }
 
-    public void stopMusic() {
+    private void stopMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
@@ -406,7 +405,7 @@ public class MusicService extends Service {
         }
     }
 
-    public void playMusic(int playingPos) {
+    private void playMusic(int playingPos) {
         if (playList.getPlaybackTableSize() > 0) {
             try {
                 SongListItem song = playList.getSong(playingPos);
@@ -423,12 +422,12 @@ public class MusicService extends Service {
         }
     }
 
-    public void playMusic(SongListItem song) {
+    private void playMusic(SongListItem song) {
         playMusic((int) song.getId(), song.getPath(), song.getName(), song.getDesc(), "", song.getAlbumId(), song.getAlbumName(), true);
     }
 
-    public void playMusic(final int songId, final String songPath, final String songName, final String songDesc,
-                          final String songArt, final long albumId, final String albumName, boolean singlePlay) {
+    private void playMusic(final int songId, final String songPath, final String songName, final String songDesc,
+                           final String songArt, final long albumId, final String albumName, boolean singlePlay) {
 
         if (singlePlay) {
             currentPlaylistSongId = -1;
@@ -469,10 +468,10 @@ public class MusicService extends Service {
             mediaPlayer.start();
             mediaPlayer.seekTo(pausedSongSeek);
             setNotificationPlayer(false);
-            changeNotificationDetails(songPath, songName, songDesc, songArt, albumId, albumName);
+            changeNotificationDetails(songPath, songName, songDesc, albumId, albumName);
             if (Build.VERSION.SDK_INT >= 16) {
                 notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-                        R.drawable.ic_pause_white_36dp);
+                        R.drawable.ic_pause);
             }
         } catch (IOException e) {
             Toast.makeText(MusicService.this, "File not valid", Toast.LENGTH_SHORT).show();
@@ -488,7 +487,7 @@ public class MusicService extends Service {
         if (Build.VERSION.SDK_INT >= 16) {
             notificationCompat.bigContentView = notiLayoutBig;
             notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-                    R.drawable.ic_play_arrow_white_36dp);
+                    R.drawable.ic_play);
         }
         notificationCompat.priority = Notification.PRIORITY_MAX;
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -496,12 +495,11 @@ public class MusicService extends Service {
         notificationManager.notify(NOTIFICATION_ID, notificationCompat);
     }
 
-    public void changeNotificationDetails(String songPathArg, String songNameArg, String songDescArg,
-                                          String songArtArg, long albumIdArg, String albumNameArg) {
+    private void changeNotificationDetails(String songPathArg, String songNameArg, String songDescArg,
+                                           long albumIdArg, String albumNameArg) {
         this.songName = songNameArg;
         this.albumName = albumNameArg;
         this.songDesc = songDescArg;
-//        this.songArt = songArtArg;
         this.songPath = songPathArg;
         this.albumId = albumIdArg;
 

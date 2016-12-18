@@ -7,7 +7,5 @@
     <color name="tabInactiveTextColor">@android:color/tab_indicator_text</color>
     <color name="card_background">@color/colorPrimary</color>
     <color name="noti_background">#333333</color>
-    <color name="titleText">@android:color/primary_text_dark</color>
-    <color name="bodyText">@android:color/secondary_text_dark</color>
     <color name="windowBackground">#FFFAFAFA</color>
 </resources>

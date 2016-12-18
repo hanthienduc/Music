@@ -1,6 +1,5 @@
 package com.dominionos.music.ui.layouts.fragments;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,16 +22,13 @@ import java.util.Comparator;
 
 public class SongsFragment extends Fragment {
 
-    Cursor musicCursor;
-    View mainView;
-    FastScrollRecyclerView rv;
-    Context context;
+    private View mainView;
+    private FastScrollRecyclerView rv;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_songs, container, false);
         mainView = v;
-        context = getContext();
 
         init();
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
@@ -61,7 +57,7 @@ public class SongsFragment extends Fragment {
         final ArrayList<SongListItem> songList = new ArrayList<>();
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final String orderBy = MediaStore.Audio.Media.TITLE;
-        musicCursor = mainView.getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        Cursor musicCursor = mainView.getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null, where, null, orderBy);
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleColumn = musicCursor.getColumnIndex
@@ -94,6 +90,9 @@ public class SongsFragment extends Fragment {
                 }
             });
             rv.setAdapter(new SongsAdapter(mainView.getContext(), songList));
+        }
+        if (musicCursor != null) {
+            musicCursor.close();
         }
     }
 

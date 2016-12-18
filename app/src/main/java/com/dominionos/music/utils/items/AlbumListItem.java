@@ -2,25 +2,17 @@ package com.dominionos.music.utils.items;
 
 public class AlbumListItem {
 
-    long id;
-    String name, desc, artString;
-    Boolean fav;
-    int numOfSongs;
+    private final long id;
+    private final String name;
+    private final String desc;
+    private String artString;
+    private final int numOfSongs;
 
-    public AlbumListItem(long id, String name, String desc, Boolean fav, String artString, int numOfSongs) {
+    public AlbumListItem(long id, String name, String desc, String artString, int numOfSongs) {
         this.desc = desc;
-        this.fav = fav;
         this.id = id;
         this.name = name;
         this.artString = artString;
-        this.numOfSongs = numOfSongs;
-    }
-
-    public AlbumListItem(long id, String name, String desc, Boolean fav, int numOfSongs) {
-        this.desc = desc;
-        this.fav = fav;
-        this.id = id;
-        this.name = name;
         this.numOfSongs = numOfSongs;
     }
 
@@ -41,10 +33,6 @@ public class AlbumListItem {
     }
     public String getArtString() {
         return this.artString;
-    }
-
-    public Boolean getFav() {
-        return this.fav;
     }
 
 }

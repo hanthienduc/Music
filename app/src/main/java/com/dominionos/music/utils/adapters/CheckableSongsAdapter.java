@@ -15,13 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAdapter.SimpleItemViewHolder> {
-    private List<CheckableSongListItem> items;
-    private List<CheckableSongListItem> checkedItems;
+    private final List<CheckableSongListItem> items;
+    private final List<CheckableSongListItem> checkedItems;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        TextView title, desc;
-        public View view;
-        CheckBox checkBox;
+        final TextView title;
+        final TextView desc;
+        public final View view;
+        final CheckBox checkBox;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
@@ -45,7 +46,8 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
     }
 
     @Override
-    public void onBindViewHolder(final CheckableSongsAdapter.SimpleItemViewHolder holder, final int position) {
+    public void onBindViewHolder(final CheckableSongsAdapter.SimpleItemViewHolder holder, int position) {
+        position = holder.getAdapterPosition();
         holder.title.setText(items.get(position).getName());
         holder.desc.setText(items.get(position).getDesc());
         holder.checkBox.setOnCheckedChangeListener(null);
@@ -55,17 +57,18 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
                 holder.checkBox.setChecked(!holder.checkBox.isChecked());
             }
         });
+        final int finalPosition = position;
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
-                    if(!checkedItems.contains(items.get(position))) {
-                        checkedItems.add(items.get(position));
+                    if(!checkedItems.contains(items.get(finalPosition))) {
+                        checkedItems.add(items.get(finalPosition));
                     }
                 } else {
-                    checkedItems.remove(items.get(position));
+                    checkedItems.remove(items.get(finalPosition));
                 }
-                items.get(position).setSelected(b);
+                items.get(finalPosition).setSelected(b);
             }
         });
         holder.checkBox.setChecked(items.get(position).isSelected);

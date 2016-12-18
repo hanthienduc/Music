@@ -50,7 +50,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="start"
-                            android:text="00:00"
+                            android:text="@string/default_duration"
                             android:textColor="@android:color/white"
                             android:textSize="16sp"
                             android:translationZ="4dp" />
@@ -61,7 +61,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="end"
-                            android:text="00:00"
+                            android:text="@string/default_duration"
                             android:textColor="@android:color/white"
                             android:textSize="16sp"
                             android:translationZ="4dp" />
@@ -82,7 +82,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/unbounded_ripple"
                             android:padding="5dp"
-                            android:src="@drawable/ic_repeat_white_48dp"
+                            android:src="@drawable/ic_repeat"
                             android:contentDescription="@string/repeat" />
 
                         <ImageView
@@ -93,7 +93,7 @@
                             android:background="@drawable/unbounded_ripple"
                             android:drawSelectorOnTop="true"
                             android:padding="5dp"
-                            android:src="@drawable/ic_skip_previous_white_48dp"
+                            android:src="@drawable/ic_skip_previous"
                             android:contentDescription="@string/rewind" />
 
                         <ImageView
@@ -104,7 +104,7 @@
                             android:background="@drawable/unbounded_ripple"
                             android:drawSelectorOnTop="true"
                             android:padding="5dp"
-                            android:src="@drawable/ic_play_arrow_white_48dp"
+                            android:src="@drawable/ic_play"
                             android:contentDescription="@string/play" />
 
                         <ImageView
@@ -115,7 +115,7 @@
                             android:background="@drawable/unbounded_ripple"
                             android:drawSelectorOnTop="true"
                             android:padding="5dp"
-                            android:src="@drawable/ic_skip_next_white_48dp"
+                            android:src="@drawable/ic_skip_next"
                             android:contentDescription="@string/fast_forward" />
 
                         <ImageView
@@ -126,7 +126,7 @@
                             android:background="@drawable/unbounded_ripple"
                             android:drawSelectorOnTop="true"
                             android:padding="5dp"
-                            android:src="@drawable/ic_shuffle_white_48dp"
+                            android:src="@drawable/ic_shuffle"
                             android:contentDescription="@string/shuffle" />
 
                 </LinearLayout>
