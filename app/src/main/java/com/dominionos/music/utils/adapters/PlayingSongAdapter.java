@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.dominionos.music.R;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.MySQLiteHelper;
+import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.items.Playlist;
 import com.dominionos.music.utils.items.SongListItem;
 
@@ -123,38 +124,9 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     }
 
     private void addToPlaylist(int position) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AppTheme_Main));
-        alertDialogBuilder.setTitle("Choose playlist");
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.dialog_listview, null);
-        MySQLiteHelper sqLiteHelper = new MySQLiteHelper(context);
-        List<Playlist> playlist = sqLiteHelper.getAllPlaylist();
-        playlist.add(new Playlist(-1, "+ Create new Playlist"));
-        RecyclerView gv = (RecyclerView) view.findViewById(R.id.dialog_playlist_rv);
-        LinearLayoutManager gridLayoutManager = new LinearLayoutManager(context);
-        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        gridLayoutManager.scrollToPosition(0);
-        gv.setLayoutManager(gridLayoutManager);
-        gv.setHasFixedSize(true);
-        alertDialogBuilder.setView(view);
-        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = alertDialogBuilder.create();
-        DialogPlaylistAdapter adapter = new DialogPlaylistAdapter(context,
-                playlist, new SongListItem(-1, songs.get(position).getName(),
-                null, null, null, -1, null, -1), dialog);
-        gv.setAdapter(adapter);
-        dialog.show();
+        SongListItem item = songs.get(position);
+        Utils utils = new Utils();
+        utils.addToPlaylistDialog(context, item);
     }
 
     @Override

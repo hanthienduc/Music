@@ -86,7 +86,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                                     notifyItemRemoved(finalPosition);
                                     new CountDownTimer(400, 1000) {
 
-                                        public void onTick(long millisUntilFinished) {
+                                        @Override
+                                        public void onTick(long l) {
+
                                         }
 
                                         public void onFinish() {
@@ -126,7 +128,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
 
     private void showNewPlaylistPrompt() {
-
         new MaterialDialog.Builder(context)
                 .title("Create playlist")
                 .inputType(InputType.TYPE_CLASS_TEXT)

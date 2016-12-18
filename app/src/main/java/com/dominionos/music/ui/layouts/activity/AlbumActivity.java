@@ -85,8 +85,6 @@ public class AlbumActivity extends AppCompatActivity {
                 bro.setAction(MusicService.ACTION_PLAY_ALBUM);
                 bro.putExtra("albumId", getIntent().getLongExtra("albumId", 0));
                 sendBroadcast(bro);
-//                new AddSongToPlaylist(AlbumActivity.this, songName, songArtist, songPath,
-//                        songAlbum, songId, songAlbumId).execute();
             }
         });
 
@@ -144,7 +142,6 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
     private void setSongList() {
-        System.gc();
         Cursor musicCursor;
 
         String where = MediaStore.Audio.Media.ALBUM_ID + "=?";

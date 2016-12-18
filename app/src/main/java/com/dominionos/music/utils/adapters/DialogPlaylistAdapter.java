@@ -25,12 +25,11 @@ import com.dominionos.music.utils.items.SongListItem;
 
 import java.util.List;
 
-class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAdapter.SimpleItemViewHolder> {
+public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAdapter.SimpleItemViewHolder> {
 
     private final List<Playlist> items;
     private final Context context;
     private final SongListItem songToAdd;
-    private final AlertDialog dialog;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         public final TextView title;
@@ -47,12 +46,11 @@ class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAdapter.S
         }
     }
 
-    DialogPlaylistAdapter(Context context, List<Playlist> items,
-                          SongListItem songListItem, AlertDialog dialog) {
+    public DialogPlaylistAdapter(Context context, List<Playlist> items,
+                                 SongListItem songListItem) {
         this.context = context;
         this.items = items;
         this.songToAdd = songListItem;
-        this.dialog = dialog;
     }
 
     @Override
@@ -126,8 +124,7 @@ class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAdapter.S
                         helper.addSong(songToAdd, items.get(finalPosition).getId());
                     else
                         helper.addSong(songToAdd.getName(), items.get(finalPosition).getId());
-                    dialog.dismiss();
-                    Toast.makeText(context, "Song added to playlist", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Song added to " + items.get(finalPosition).getName(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
