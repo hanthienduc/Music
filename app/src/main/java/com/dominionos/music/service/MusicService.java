@@ -155,6 +155,7 @@ public class MusicService extends Service {
                 if (musicCursor != null) {
                     musicCursor.close();
                 }
+                playMusic(0);
                 break;
             case ACTION_REMOVE_SERVICE:
                 MusicService.this.stopSelf();
@@ -367,12 +368,8 @@ public class MusicService extends Service {
         sendDetails.putExtra("songDesc", songDesc);
         sendDetails.putExtra("songAlbumId", albumId);
         sendDetails.putExtra("songAlbumName", albumName);
-        try {
-            sendDetails.putExtra("songDuration", mediaPlayer.getDuration());
-            sendDetails.putExtra("songCurrTime", mediaPlayer.getCurrentPosition());
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+        sendDetails.putExtra("songDuration", mediaPlayer.getDuration());
+        sendDetails.putExtra("songCurrTime", mediaPlayer.getCurrentPosition());
         sendDetails.setAction(MusicPlayer.ACTION_GET_PLAYING_DETAIL);
         sendBroadcast(sendDetails);
     }
@@ -385,15 +382,7 @@ public class MusicService extends Service {
 
     private void addSong(SongListItem song) {
         playList.addSong(song);
-        if (mediaPlayer != null) {
-            if (currentPlaylistAlbumId != song.getAlbumId()) {
-                pausedSongSeek = 0;
-                playMusic(0);
-            }
-        } else {
-            pausedSongSeek = 0;
-            playMusic(0);
-        }
+        pausedSongSeek = 0;
     }
 
     private void stopMusic() {
@@ -448,7 +437,7 @@ public class MusicService extends Service {
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    if (currentPlaylistSongId < playList.getPlaybackTableSize() - 1) {
+                    if (currentPlaylistSongId != playList.getPlaybackTableSize()) {
                         pausedSongSeek = 0;
                         SongListItem song = playList.getNextSong(currentPlaylistSongId);
                         playMusic((int) song.getId(), song.getPath(), song.getName(),
