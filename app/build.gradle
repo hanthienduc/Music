@@ -47,4 +47,5 @@ dependencies {
     compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     compile 'com.makeramen:roundedimageview:2.2.1'
     compile 'com.simplecityapps:recyclerview-fastscroll:1.0.11'
+    compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
 }
