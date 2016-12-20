@@ -1,10 +1,8 @@
 package com.dominionos.music.ui.layouts.fragments;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,13 +24,12 @@ public class AlbumsFragment extends Fragment {
 
     private View mainView;
     private RecyclerView gv;
-    private SharedPreferences settingsPref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_albums, container, false);
         this.mainView = v;
-        init();
+        gv = (RecyclerView) mainView.findViewById(R.id.album_grid);
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
 
         Runnable myRunnable = new Runnable() {
@@ -44,11 +41,6 @@ public class AlbumsFragment extends Fragment {
         mainHandler.post(myRunnable);
 
         return v;
-    }
-
-    private void init() {
-        settingsPref = PreferenceManager.getDefaultSharedPreferences(mainView.getContext());
-        gv = (RecyclerView) mainView.findViewById(R.id.album_grid);
     }
 
     private void getAlbumList() {
@@ -83,8 +75,7 @@ public class AlbumsFragment extends Fragment {
         if (musicCursor != null) {
             musicCursor.close();
         }
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(),
-                settingsPref.getInt("pref_grid_num", 2));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(), 2);
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);

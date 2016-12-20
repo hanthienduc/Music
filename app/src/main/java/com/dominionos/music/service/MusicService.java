@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.Build;
@@ -34,9 +35,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.media.AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK;
-import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
-
 public class MusicService extends Service {
 
     private MediaPlayer mediaPlayer;
@@ -47,20 +45,24 @@ public class MusicService extends Service {
     private long albumId;
     private boolean singleSong;
     private int currentPlaylistSongId = -1, pausedSongPlaylistId = -1, pausedSongSeek;
-    private long currentPlaylistAlbumId = -1;
     private SongListItem pausedSong;
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSession mediaSession;
+    private MediaController mediaController;
     private ArrayList<SongListItem> songList;
 
-    private final AudioManager.OnAudioFocusChangeListener afChangeListener =
+    private AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
                 public void onAudioFocusChange(int focusChange) {
-                    if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT) {
-                        mediaPlayer.pause();
+                    if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                        if(mediaPlayer.isPlaying()) {
+                            mediaPlayer.pause();
+                        }
                     } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                        mediaPlayer.start();
+                        if(!mediaPlayer.isPlaying()) {
+                            mediaPlayer.start();
+                        }
                     } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                         audioManager.abandonAudioFocus(afChangeListener);
                         stopMusic();
@@ -69,17 +71,17 @@ public class MusicService extends Service {
             };
 
     public static final int NOTIFICATION_ID = 104;
-    private static final String ACTION_PLAY = "play";
+    public static final String ACTION_PLAY = "play";
     public static final String ACTION_PREV = "prev";
     public static final String ACTION_NEXT = "next";
     public static final String ACTION_STOP = "stop";
     public static final String ACTION_PLAY_ALBUM = "player_play_album";
-    public static final String ACTION_PLAY_ALL_SONGS = "ACTION_PLAY_ALL_SONGS";
+    public static final String ACTION_PLAY_ALL_SONGS = "play_all_songs";
     public static final String ACTION_MENU_FROM_PLAYLIST = "player_menu_from_playlist";
     public static final String ACTION_PLAY_FROM_PLAYLIST = "player_play_from_playlist";
     public static final String ACTION_PLAY_PLAYLIST = "player_play_playlist";
     public static final String ACTION_PLAY_NEXT = "player_play_next";
-    private static final String ACTION_REMOVE_SERVICE = "player_remove_service";
+    public static final String ACTION_REMOVE_SERVICE = "player_remove_service";
     public static final String ACTION_PLAY_SINGLE = "play_single_song";
     public static final String ACTION_ADD_SONG = "add_song_to_playlist";
     public static final String ACTION_ADD_SONG_MULTI = "add_song_to_playlist_multi";
@@ -155,6 +157,7 @@ public class MusicService extends Service {
                 if (musicCursor != null) {
                     musicCursor.close();
                 }
+                playMusic(0);
                 break;
             case ACTION_REMOVE_SERVICE:
                 MusicService.this.stopSelf();
@@ -367,12 +370,8 @@ public class MusicService extends Service {
         sendDetails.putExtra("songDesc", songDesc);
         sendDetails.putExtra("songAlbumId", albumId);
         sendDetails.putExtra("songAlbumName", albumName);
-        try {
-            sendDetails.putExtra("songDuration", mediaPlayer.getDuration());
-            sendDetails.putExtra("songCurrTime", mediaPlayer.getCurrentPosition());
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+        sendDetails.putExtra("songDuration", mediaPlayer.getDuration());
+        sendDetails.putExtra("songCurrTime", mediaPlayer.getCurrentPosition());
         sendDetails.setAction(MusicPlayer.ACTION_GET_PLAYING_DETAIL);
         sendBroadcast(sendDetails);
     }
@@ -385,15 +384,7 @@ public class MusicService extends Service {
 
     private void addSong(SongListItem song) {
         playList.addSong(song);
-        if (mediaPlayer != null) {
-            if (currentPlaylistAlbumId != song.getAlbumId()) {
-                pausedSongSeek = 0;
-                playMusic(0);
-            }
-        } else {
-            pausedSongSeek = 0;
-            playMusic(0);
-        }
+        pausedSongSeek = 0;
     }
 
     private void stopMusic() {
@@ -413,7 +404,6 @@ public class MusicService extends Service {
                         song.getDesc(), "", song.getAlbumId(),
                         song.getAlbumName(), false);
                 currentPlaylistSongId = playingPos;
-                currentPlaylistAlbumId = song.getAlbumId();
             } catch (NullPointerException e) {
                 playMusic(playList.getFirstSong());
             }
@@ -429,52 +419,59 @@ public class MusicService extends Service {
     private void playMusic(final int songId, final String songPath, final String songName, final String songDesc,
                            final String songArt, final long albumId, final String albumName, boolean singlePlay) {
 
-        if (singlePlay) {
-            currentPlaylistSongId = -1;
-            currentPlaylistAlbumId = -1;
-            pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
-            pausedSongPlaylistId = -1;
-            singleSong = true;
-        } else {
-            singleSong = false;
-        }
-        try {
-            stopMusic();
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(songPath);
-            mediaPlayer.prepare();
-            currentPlaylistSongId = songId;
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    if (currentPlaylistSongId < playList.getPlaybackTableSize() - 1) {
-                        pausedSongSeek = 0;
-                        SongListItem song = playList.getNextSong(currentPlaylistSongId);
-                        playMusic((int) song.getId(), song.getPath(), song.getName(),
-                                song.getDesc(), "", song.getAlbumId(),
-                                song.getAlbumName(), false);
-                        updateCurrentPlaying();
-                    } else {
-                        currentPlaylistSongId = -1;
-                        currentPlaylistAlbumId = -1;
-                        pausedSongPlaylistId = -1;
-                        pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
-                        pausedSongSeek = 0;
-                        stopMusic();
-                    }
-                }
-            });
-            mediaPlayer.start();
-            mediaPlayer.seekTo(pausedSongSeek);
-            setNotificationPlayer(false);
-            changeNotificationDetails(songPath, songName, songDesc, albumId, albumName);
-            if (Build.VERSION.SDK_INT >= 16) {
-                notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-                        R.drawable.ic_pause);
+        int result = audioManager.requestAudioFocus(afChangeListener,
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
+        if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            if (singlePlay) {
+                currentPlaylistSongId = -1;
+                pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
+                pausedSongPlaylistId = -1;
+                singleSong = true;
+            } else {
+                singleSong = false;
             }
-        } catch (IOException e) {
-            Toast.makeText(MusicService.this, "File not valid", Toast.LENGTH_SHORT).show();
+            try {
+                stopMusic();
+                mediaPlayer = new MediaPlayer();
+                mediaSession = new MediaSession(this, "MusicService");
+                mediaController = new MediaController(this, mediaSession.getSessionToken());
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer.setDataSource(songPath);
+                mediaPlayer.prepare();
+                currentPlaylistSongId = songId;
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        if (currentPlaylistSongId != playList.getPlaybackTableSize()) {
+                            pausedSongSeek = 0;
+                            SongListItem song = playList.getNextSong(currentPlaylistSongId);
+                            playMusic((int) song.getId(), song.getPath(), song.getName(),
+                                    song.getDesc(), "", song.getAlbumId(),
+                                    song.getAlbumName(), false);
+                            updateCurrentPlaying();
+                        } else {
+                            currentPlaylistSongId = -1;
+                            pausedSongPlaylistId = -1;
+                            pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
+                            pausedSongSeek = 0;
+                            stopMusic();
+                        }
+                    }
+                });
+                mediaPlayer.start();
+                mediaPlayer.seekTo(pausedSongSeek);
+                setNotificationPlayer(false);
+                changeNotificationDetails(songPath, songName, songDesc, albumId, albumName);
+                if (Build.VERSION.SDK_INT >= 16) {
+                    notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
+                            R.drawable.ic_pause);
+                }
+            } catch (IOException e) {
+                Toast.makeText(MusicService.this, "File not valid", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(MusicService.this, "Cannot gain Audio Focus", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -549,15 +546,6 @@ public class MusicService extends Service {
         registerReceiver(musicPlayer, commandFilter);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        audioManager.requestAudioFocus(afChangeListener,
-                AudioManager.STREAM_MUSIC, AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
-
-        mediaSession = new MediaSession(this, "MusicService");
-        Intent intent2 = new Intent(this, MusicPlayer.class);
-        PendingIntent pi = PendingIntent.getActivity(this, 99 /*request code*/,
-                intent2, PendingIntent.FLAG_UPDATE_CURRENT);
-        mediaSession.setSessionActivity(pi);
-        mediaSession.setActive(true);
 
         new Runnable() {
             @Override
@@ -640,6 +628,7 @@ public class MusicService extends Service {
         super.onDestroy();
         audioManager.abandonAudioFocus(afChangeListener);
         mediaSession.release();
+        mediaPlayer.release();
     }
 
 }

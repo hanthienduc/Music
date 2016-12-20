@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.res.ResourcesCompat;
@@ -28,8 +26,6 @@ import android.transition.Fade;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -113,27 +109,8 @@ public class MusicPlayer extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        SharedPreferences settingsPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        if (settingsPref.getBoolean("pref_album_status_trans", true)) {
-            if (Build.VERSION.SDK_INT >= 21) {
-                getWindow().setStatusBarColor(Color.TRANSPARENT);
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= 21) {
-                Window w = getWindow();
-                w.setFlags(
-                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            }
-        }
-
-        if (settingsPref.getBoolean("pref_nav_trans", false)) {
-            if (Build.VERSION.SDK_INT >= 21) {
-                getWindow().getDecorView().setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-                getWindow().setNavigationBarColor(Color.TRANSPARENT);
-            }
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
         setContentView(R.layout.activity_player);
@@ -183,7 +160,7 @@ public class MusicPlayer extends AppCompatActivity {
         Drawable artWork = new BitmapDrawable(this.getResources(), BitmapFactory.decodeFile(songArt, options));
         ((ImageView) findViewById(R.id.header)).setImageDrawable(artWork);
         if(getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(songName);
+            collapsingToolbarLayout.setTitle(songName);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
