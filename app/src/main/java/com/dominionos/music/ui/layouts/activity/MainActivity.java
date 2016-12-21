@@ -121,23 +121,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDrawer() {
-        PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs);
-        PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.album);
-        PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist);
-        PrimaryDrawerItem playlists = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist);
-        SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about).withSelectable(false);
+        PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(GoogleMaterial.Icon.gmd_audiotrack);
+        PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.album).withIcon(GoogleMaterial.Icon.gmd_library_music);
+        PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(GoogleMaterial.Icon.gmd_account_circle);
+        PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(GoogleMaterial.Icon.gmd_queue_music);
+        SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
 
         final Drawer drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withCloseOnClick(true)
                 .addDrawerItems(
-                        songs.withIcon(GoogleMaterial.Icon.gmd_audiotrack),
-                        albums.withIcon(GoogleMaterial.Icon.gmd_library_music),
-                        artists.withIcon(GoogleMaterial.Icon.gmd_account_circle),
-                        playlists.withIcon(GoogleMaterial.Icon.gmd_queue_music),
+                        songs,
+                        albums,
+                        artists,
+                        playlist,
                         new DividerDrawerItem(),
-                        about.withIcon(GoogleMaterial.Icon.gmd_info_outline)
+                        about
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
 
