@@ -41,6 +41,6 @@
         android:background="@drawable/unbounded_ripple"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:src="@drawable/ic_overflow"
+        android:src="@drawable/ic_overflow_dark"
         tools:ignore="ContentDescription" />
 </RelativeLayout>
