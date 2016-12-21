@@ -27,7 +27,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.dominionos.music.R;
-import com.dominionos.music.utils.AppBarStateChangeListener;
 import com.dominionos.music.utils.adapters.AlbumSongAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 import com.dominionos.music.service.MusicService;
@@ -68,16 +67,6 @@ public class AlbumActivity extends AppCompatActivity {
         final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_album);
         View toolbarBackground = findViewById(R.id.title_background);
         fab = (FloatingActionButton) findViewById(R.id.fab_album);
-        appBarLayout.addOnOffsetChangedListener(new AppBarStateChangeListener() {
-            @Override
-            public void onStateChanged(AppBarLayout appBarLayout, State state) {
-                if(state == State.COLLAPSED) {
-                    fab.hide();
-                } else if (state == State.EXPANDED) {
-                    fab.show();
-                }
-            }
-        });
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
