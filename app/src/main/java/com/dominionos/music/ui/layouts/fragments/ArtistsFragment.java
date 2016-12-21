@@ -19,6 +19,8 @@ import com.dominionos.music.utils.items.ArtistListItem;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ArtistsFragment extends Fragment {
 
@@ -51,7 +53,7 @@ public class ArtistsFragment extends Fragment {
     }
 
     private void getArtistList() {
-        ArrayList<ArtistListItem> albumList = new ArrayList<>();
+        ArrayList<ArtistListItem> artistList = new ArrayList<>();
         System.gc();
         final String orderBy = MediaStore.Audio.Artists.ARTIST;
         Cursor musicCursor = context.getContentResolver().
@@ -69,7 +71,7 @@ public class ArtistsFragment extends Fragment {
                     (MediaStore.Audio.Artists.NUMBER_OF_TRACKS);
             //add albums to list
             do {
-                albumList.add(new ArtistListItem(
+                artistList.add(new ArtistListItem(
                         musicCursor.getLong(idColumn),
                         musicCursor.getString(titleColumn),
                         musicCursor.getInt(numOfTracksColumn),
@@ -77,6 +79,12 @@ public class ArtistsFragment extends Fragment {
             }
             while (musicCursor.moveToNext());
         }
+        Collections.sort(artistList, new Comparator<ArtistListItem>() {
+            @Override
+            public int compare(ArtistListItem artistListItem, ArtistListItem t1) {
+                return artistListItem.getName().compareTo(t1.getName());
+            }
+        });
         if (musicCursor != null) {
             musicCursor.close();
         }
@@ -86,7 +94,7 @@ public class ArtistsFragment extends Fragment {
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
         rv.setHasFixedSize(true);
-        rv.setAdapter(new ArtistAdapter(context, albumList));
+        rv.setAdapter(new ArtistAdapter(context, artistList));
         rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
