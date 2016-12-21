@@ -161,20 +161,18 @@ public class MusicService extends Service {
                 break;
             case ACTION_REMOVE_SERVICE:
                 MusicService.this.stopSelf();
-                if (Build.VERSION.SDK_INT >= 21) {
-                    ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-                    if (am != null) {
-                        List<ActivityManager.AppTask> tasks = am.getAppTasks();
-                        if (tasks != null) {
-                            try {
-                                tasks.get(0).finishAndRemoveTask();
-                            } catch (RuntimeException e) {
-                                Log.e("MusicService", "Failed to remove tasks");
-                            }
+                ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+                if (am != null) {
+                    List<ActivityManager.AppTask> tasks = am.getAppTasks();
+                    if (tasks != null) {
+                        try {
+                            tasks.get(0).finishAndRemoveTask();
+                        } catch (RuntimeException e) {
+                            Log.e("MusicService", "Failed to remove tasks");
                         }
                     }
-                    unregisterReceiver(musicPlayer);
                 }
+                    unregisterReceiver(musicPlayer);
                 break;
             case ACTION_NEXT:
                 pausedSongSeek = 0;
@@ -463,10 +461,8 @@ public class MusicService extends Service {
                 mediaPlayer.seekTo(pausedSongSeek);
                 setNotificationPlayer(false);
                 changeNotificationDetails(songPath, songName, songDesc, albumId, albumName);
-                if (Build.VERSION.SDK_INT >= 16) {
-                    notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-                            R.drawable.ic_pause);
-                }
+                notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
+                        R.drawable.ic_pause);
             } catch (IOException e) {
                 Toast.makeText(MusicService.this, "File not valid", Toast.LENGTH_SHORT).show();
             }
@@ -481,11 +477,9 @@ public class MusicService extends Service {
         else
             notificationCompat = createBuiderNotification().build();
         RemoteViews notiLayoutBig = new RemoteViews(getPackageName(), R.layout.notification_layout);
-        if (Build.VERSION.SDK_INT >= 16) {
-            notificationCompat.bigContentView = notiLayoutBig;
-            notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-                    R.drawable.ic_play);
-        }
+        notificationCompat.bigContentView = notiLayoutBig;
+        notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
+                R.drawable.ic_play);
         notificationCompat.priority = Notification.PRIORITY_MAX;
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         startForeground(NOTIFICATION_ID, notificationCompat);
@@ -500,24 +494,23 @@ public class MusicService extends Service {
         this.songPath = songPathArg;
         this.albumId = albumIdArg;
 
-        if (Build.VERSION.SDK_INT >= 16) {
-            notificationCompat.bigContentView.setTextViewText(R.id.noti_song_name, songName);
-            notificationCompat.bigContentView.setTextViewText(R.id.noti_song_artist, songDesc);
-            notificationCompat.bigContentView.setTextViewText(R.id.noti_song_album, albumName);
-            Intent playClick = new Intent();
-            playClick.setAction(MusicService.ACTION_STOP);
-            PendingIntent playClickIntent = PendingIntent.getBroadcast(MusicService.this, 21021, playClick, 0);
-            notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_play_button, playClickIntent);
-            Intent prevClick = new Intent();
-            prevClick.setAction(MusicService.ACTION_PREV);
-            PendingIntent prevClickIntent = PendingIntent.getBroadcast(MusicService.this, 21121, prevClick, 0);
-            notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_prev_button, prevClickIntent);
-            Intent nextClick = new Intent();
-            nextClick.setAction(MusicService.ACTION_NEXT);
-            PendingIntent nextClickIntent = PendingIntent.getBroadcast(MusicService.this, 21221, nextClick, 0);
-            notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_next_button, nextClickIntent);
-            notificationManager.notify(NOTIFICATION_ID, notificationCompat);
-        }
+        notificationCompat.bigContentView.setTextViewText(R.id.noti_song_name, songName);
+        notificationCompat.bigContentView.setTextViewText(R.id.noti_song_artist, songDesc);
+        notificationCompat.bigContentView.setTextViewText(R.id.noti_song_album, albumName);
+        Intent playClick = new Intent();
+        playClick.setAction(MusicService.ACTION_STOP);
+        PendingIntent playClickIntent = PendingIntent.getBroadcast(MusicService.this, 21021, playClick, 0);
+        notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_play_button, playClickIntent);
+        Intent prevClick = new Intent();
+        prevClick.setAction(MusicService.ACTION_PREV);
+        PendingIntent prevClickIntent = PendingIntent.getBroadcast(MusicService.this, 21121, prevClick, 0);
+        notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_prev_button, prevClickIntent);
+        Intent nextClick = new Intent();
+        nextClick.setAction(MusicService.ACTION_NEXT);
+        PendingIntent nextClickIntent = PendingIntent.getBroadcast(MusicService.this, 21221, nextClick, 0);
+        notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_next_button, nextClickIntent);
+        notificationManager.notify(NOTIFICATION_ID, notificationCompat);
+
         new ChangeNotificationDetails(MusicService.this, albumId, notificationManager, notificationCompat).execute();
     }
 

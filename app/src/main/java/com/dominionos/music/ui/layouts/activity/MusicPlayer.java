@@ -109,9 +109,7 @@ public class MusicPlayer extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= 21) {
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         setContentView(R.layout.activity_player);
 
@@ -122,8 +120,7 @@ public class MusicPlayer extends AppCompatActivity {
         filter.addAction(ACTION_GET_PLAYING_DETAIL);
         registerReceiver(musicPlayer, filter);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setEnterTransition(new Fade());
+        getWindow().setEnterTransition(new Fade());
 
         songName = getIntent().getStringExtra("songName");
         albumId = getIntent().getLongExtra("songAlbumId", 0);
@@ -169,12 +166,10 @@ public class MusicPlayer extends AppCompatActivity {
                 public void onGenerated(Palette palette) {
                     int defaultColor = 0x000000;
                     mainColor = palette.getVibrantColor(defaultColor);
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(getResources().getString(R.string.app_name),
-                                    BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                                    palette.getVibrantColor(defaultColor));
-                        setTaskDescription(taskDescription);
-                    }
+                    ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(getResources().getString(R.string.app_name),
+                            BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
+                            palette.getVibrantColor(defaultColor));
+                    setTaskDescription(taskDescription);
                     new ColorAnimateAlbumView(detailHolder, palette).execute();
                     new ColorAnimateAlbumView(controlHolder, palette).execute();
                     if(mainColor != 0) {
