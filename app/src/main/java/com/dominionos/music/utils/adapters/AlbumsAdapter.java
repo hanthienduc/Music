@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -19,16 +20,24 @@ import com.dominionos.music.R;
 import com.dominionos.music.utils.items.AlbumListItem;
 import com.dominionos.music.task.ColorGridTask;
 import com.dominionos.music.ui.layouts.activity.AlbumActivity;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.List;
 
-public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItemViewHolder> {
+public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItemViewHolder>
+        implements FastScrollRecyclerView.SectionedAdapter {
 
     private final List<AlbumListItem> items;
     private final Context context;
+
+    @NonNull
+    @Override
+    public String getSectionName(int position) {
+        return items.get(position).getName().substring(0,1);
+    }
 
     public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         public final TextView albumName;

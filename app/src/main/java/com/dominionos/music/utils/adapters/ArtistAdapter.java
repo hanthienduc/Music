@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,16 +17,24 @@ import com.dominionos.music.ui.layouts.activity.ArtistActivity;
 import com.dominionos.music.utils.ArtistImgHandler;
 import com.dominionos.music.utils.items.ArtistListItem;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.util.List;
 
-public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItemViewHolder> {
+public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItemViewHolder>
+        implements FastScrollRecyclerView.SectionedAdapter {
 
     private final List<ArtistListItem> items;
     private final Context context;
+
+    @NonNull
+    @Override
+    public String getSectionName(int position) {
+        return items.get(position).getName().substring(0,1);
+    }
 
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {

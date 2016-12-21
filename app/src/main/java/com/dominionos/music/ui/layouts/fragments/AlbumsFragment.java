@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,19 +16,22 @@ import com.dominionos.music.R;
 import com.dominionos.music.utils.SpacesItemDecoration;
 import com.dominionos.music.utils.adapters.AlbumsAdapter;
 import com.dominionos.music.utils.items.AlbumListItem;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AlbumsFragment extends Fragment {
 
     private View mainView;
-    private RecyclerView gv;
+    private FastScrollRecyclerView gv;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_albums, container, false);
         this.mainView = v;
-        gv = (RecyclerView) mainView.findViewById(R.id.album_grid);
+        gv = (FastScrollRecyclerView) mainView.findViewById(R.id.album_grid);
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
 
         Runnable myRunnable = new Runnable() {
@@ -72,6 +74,12 @@ public class AlbumsFragment extends Fragment {
             }
             while (musicCursor.moveToNext());
         }
+        Collections.sort(albumList, new Comparator<AlbumListItem>() {
+            @Override
+            public int compare(AlbumListItem albumListItem, AlbumListItem t1) {
+                return albumListItem.getName().compareTo(t1.getName());
+            }
+        });
         if (musicCursor != null) {
             musicCursor.close();
         }
