@@ -16,13 +16,14 @@ import android.view.ViewGroup;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.adapters.ArtistAdapter;
 import com.dominionos.music.utils.items.ArtistListItem;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 
 public class ArtistsFragment extends Fragment {
 
     private View mainView;
-    private RecyclerView rv;
+    private FastScrollRecyclerView rv;
     private Context context;
 
     @Override
@@ -46,7 +47,7 @@ public class ArtistsFragment extends Fragment {
     }
 
     private void init() {
-        rv = (RecyclerView) mainView.findViewById(R.id.artist_list);
+        rv = (FastScrollRecyclerView) mainView.findViewById(R.id.artist_list);
     }
 
     private void getArtistList() {

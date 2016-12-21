@@ -27,6 +27,7 @@ import com.dominionos.music.ui.layouts.fragments.ArtistsFragment;
 import com.dominionos.music.ui.layouts.fragments.SongsFragment;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -131,12 +132,12 @@ public class MainActivity extends AppCompatActivity {
                 .withToolbar(toolbar)
                 .withCloseOnClick(true)
                 .addDrawerItems(
-                        songs,
-                        albums,
-                        artists,
-                        playlists,
+                        songs.withIcon(GoogleMaterial.Icon.gmd_audiotrack),
+                        albums.withIcon(GoogleMaterial.Icon.gmd_library_music),
+                        artists.withIcon(GoogleMaterial.Icon.gmd_account_circle),
+                        playlists.withIcon(GoogleMaterial.Icon.gmd_queue_music),
                         new DividerDrawerItem(),
-                        about
+                        about.withIcon(GoogleMaterial.Icon.gmd_info_outline)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
 
