@@ -71,10 +71,7 @@ public class SearchActivity extends AppCompatActivity {
                             (MediaStore.Audio.Media.ALBUM);
                     int i = 1;
                     do {
-                        if(musicCursor.getString(titleColumn).toLowerCase().trim().contains(query.toLowerCase()) ||
-                                musicCursor.getString(titleColumn).trim().contains(query) ||
-                                musicCursor.getString(artistColumn).toLowerCase().trim().contains(query.toLowerCase()) ||
-                                musicCursor.getString(artistColumn).trim().contains(query)) {
+                        if(musicCursor.getString(titleColumn).toLowerCase().trim().contains(query.toLowerCase())) {
                             searchResults.add(new SongListItem(musicCursor.getLong(idColumn),
                                     musicCursor.getString(titleColumn),
                                     musicCursor.getString(artistColumn),

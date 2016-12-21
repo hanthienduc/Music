@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -64,7 +63,6 @@ public class AlbumActivity extends AppCompatActivity {
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_album);
         View toolbarBackground = findViewById(R.id.title_background);
         fab = (FloatingActionButton) findViewById(R.id.fab_album);
         fab.setOnClickListener(new View.OnClickListener() {
