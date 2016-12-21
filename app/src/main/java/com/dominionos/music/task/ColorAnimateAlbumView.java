@@ -41,17 +41,14 @@ public class ColorAnimateAlbumView extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        if (!isVibrantSwatchNull) {
-            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-                @Override
-                public void onAnimationUpdate(ValueAnimator animator) {
-                    detailHolder.setBackgroundColor((Integer) animator.getAnimatedValue());
-                }
-
-            });
-            colorAnimation.start();
-        }
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                detailHolder.setBackgroundColor((Integer) animator.getAnimatedValue());
+            }
+        });
+        colorAnimation.start();
 
         super.onPostExecute(aVoid);
     }
