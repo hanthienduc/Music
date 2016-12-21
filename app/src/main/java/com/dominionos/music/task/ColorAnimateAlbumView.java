@@ -15,6 +15,7 @@ public class ColorAnimateAlbumView extends AsyncTask<Void, Void, Void> {
     private final Integer colorFrom;
     private final Palette palette;
     private ValueAnimator colorAnimation;
+    private boolean isVibrantSwatchNull = false;
 
     public ColorAnimateAlbumView(LinearLayout detailHolder, Palette palette) {
         this.detailHolder = detailHolder;
@@ -28,8 +29,10 @@ public class ColorAnimateAlbumView extends AsyncTask<Void, Void, Void> {
         Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
         if (vibrantSwatch != null) {
             colorTo = vibrantSwatch.getRgb();
+            isVibrantSwatchNull = false;
         } else {
             colorTo = R.color.colorPrimary;
+            isVibrantSwatchNull = true;
         }
         colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
         colorAnimation.setDuration(1000);
@@ -38,14 +41,17 @@ public class ColorAnimateAlbumView extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        if (!isVibrantSwatchNull) {
+            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                detailHolder.setBackgroundColor((Integer) animator.getAnimatedValue());
-            }
-        });
-        colorAnimation.start();
+                @Override
+                public void onAnimationUpdate(ValueAnimator animator) {
+                    detailHolder.setBackgroundColor((Integer) animator.getAnimatedValue());
+                }
+
+            });
+            colorAnimation.start();
+        }
 
         super.onPostExecute(aVoid);
     }
