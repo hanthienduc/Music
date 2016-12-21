@@ -68,6 +68,6 @@
         app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
         app:layout_anchor="@+id/title_background"
-        app:layout_anchorGravity="top|end" />
+        app:layout_anchorGravity="bottom|end" />
 
 </android.support.design.widget.CoordinatorLayout>
