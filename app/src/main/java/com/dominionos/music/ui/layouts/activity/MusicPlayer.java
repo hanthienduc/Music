@@ -208,8 +208,12 @@ public class MusicPlayer extends AppCompatActivity {
         seekBar.setProgress(currentDuration);
         String totalDurationSeconds = String.valueOf((duration / 1000) % 60);
         String totalDurationMinutes = String.valueOf((duration / 1000) / 60);
-        if(totalDurationSeconds.length() == 1) {
+        if(totalDurationMinutes.length() == 1 &&  totalDurationSeconds.length() == 1) {
+            totalTimeHolder.setText("0" + totalDurationMinutes + ":" + "0" + totalDurationSeconds);
+        } else if(totalDurationSeconds.length() == 1) {
             totalTimeHolder.setText(totalDurationMinutes + ":" + "0" + totalDurationSeconds);
+        } else if(totalDurationMinutes.length() == 1) {
+            totalTimeHolder.setText("0" + totalDurationMinutes + ":" + totalDurationSeconds);
         } else {
             totalTimeHolder.setText(totalDurationMinutes + ":" + totalDurationSeconds);
         }
