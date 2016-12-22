@@ -187,6 +187,7 @@ public class MusicPlayer extends AppCompatActivity {
                     if(mainColor != 0) {
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
                         collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
+                        seekBar.setProgressBackgroundColor(getAutoStatColor(mainColor));
                     } else {
                         mainColor = ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null);
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
