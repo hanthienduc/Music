@@ -105,7 +105,7 @@ public class MusicPlayer extends AppCompatActivity {
                 updateView();
             } else if (intent.getAction().equals(ACTION_GET_REPEAT_STATE)) {
                 if (intent.getBooleanExtra("isLooping", true)) {
-                    repeatButton.setColorFilter(getAutoStatColor(android.R.color.white));
+                    repeatButton.setColorFilter(getAutoStatColor(mainColor));
                 } else {
                     repeatButton.setColorFilter(android.R.color.white);
                 }
@@ -125,6 +125,7 @@ public class MusicPlayer extends AppCompatActivity {
         filter.addAction(ACTION_GET_PLAY_STATE);
         filter.addAction(ACTION_GET_PLAYING_LIST);
         filter.addAction(ACTION_GET_PLAYING_DETAIL);
+        filter.addAction(ACTION_GET_REPEAT_STATE);
         registerReceiver(musicPlayer, filter);
 
         getWindow().setEnterTransition(new Fade());
