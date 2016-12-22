@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -43,8 +42,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import app.minimize.com.seek_bar_compat.SeekBarCompat;
-
-import static com.dominionos.music.service.MusicService.ACTION_REPEAT;
 
 public class MusicPlayer extends AppCompatActivity {
 
@@ -277,7 +274,7 @@ public class MusicPlayer extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent repeatMusic = new Intent();
-                repeatMusic.setAction(ACTION_REPEAT);
+                repeatMusic.setAction(MusicService.ACTION_REPEAT);
                 sendBroadcast(repeatMusic);
             }
         });
