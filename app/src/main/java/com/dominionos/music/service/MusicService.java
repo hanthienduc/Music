@@ -549,6 +549,7 @@ public class MusicService extends Service {
         commandFilter.addAction(ACTION_ADD_SONG_MULTI);
         commandFilter.addAction(ACTION_PLAY_ALBUM);
         commandFilter.addAction(ACTION_SHUFFLE_PLAYLIST);
+        commandFilter.addAction(ACTION_REPEAT);
         registerReceiver(musicPlayer, commandFilter);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
