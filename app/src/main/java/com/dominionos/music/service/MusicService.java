@@ -290,12 +290,12 @@ public class MusicService extends Service {
             case ACTION_REPEAT:
                 Intent r = new Intent();
                 r.setAction(MusicPlayer.ACTION_GET_REPEAT_STATE);
-                if (mediaPlayer.isLooping()) {
-                    mediaPlayer.setLooping(false);
+                if (mediaPlayer != null && mediaPlayer.isLooping()) {
                     r.putExtra("isLooping", true);
+                    mediaPlayer.setLooping(false);
                 } else {
-                    mediaPlayer.setLooping(true);
                     r.putExtra("isLooping", false);
+                    mediaPlayer.setLooping(true);
                 }
                 sendBroadcast(r);
                 break;
