@@ -325,6 +325,10 @@ public class MusicPlayer extends AppCompatActivity {
         detailHolder = (LinearLayout) findViewById(R.id.detail_holder);
         controlHolder = (LinearLayout) findViewById(R.id.control_holder);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsingtoolbarlayout_player);
+
+        Intent repeatMusic = new Intent();
+        repeatMusic.setAction(MusicService.ACTION_REPEAT);
+        sendBroadcast(repeatMusic);
     }
 
     @Override
