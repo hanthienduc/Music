@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -49,6 +50,7 @@ public class MusicPlayer extends AppCompatActivity {
     public static final String ACTION_GET_SEEK_VALUE = "gte_seek_value";
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
+    public static final String ACTION_GET_REPEAT_STATE = "get_repeat_state";
     private static int mainColor;
     private String songName, songArt;
     private TextView currentTimeHolder, totalTimeHolder;
@@ -57,10 +59,11 @@ public class MusicPlayer extends AppCompatActivity {
     private LinearLayout detailHolder, controlHolder;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView playButton, rewindButton,
-            nextButton, shuffleButton, header;
+            nextButton, shuffleButton, repeatButton, header;
     private SeekBarCompat seekBar;
     private int duration, currentDuration;
     private boolean musicStopped;
+    private boolean musicRepeat;
     private AudioManager audioManager;
 
     private final BroadcastReceiver musicPlayer = new BroadcastReceiver() {
@@ -102,6 +105,14 @@ public class MusicPlayer extends AppCompatActivity {
                 musicStopped = false;
                 updateSeeker();
                 updateView();
+            } else if (intent.getAction().equals(ACTION_GET_REPEAT_STATE)) {
+                if (intent.getBooleanExtra("isLooping", true)) {
+                    repeatButton.setColorFilter(getAutoStatColor(mainColor), PorterDuff.Mode.SRC_ATOP);
+                    musicRepeat= true;
+                } else {
+                    repeatButton.setColorFilter(android.R.color.white, PorterDuff.Mode.SRC_ATOP);
+                    musicRepeat = false;
+                }
             }
         }
     };
@@ -118,6 +129,7 @@ public class MusicPlayer extends AppCompatActivity {
         filter.addAction(ACTION_GET_PLAY_STATE);
         filter.addAction(ACTION_GET_PLAYING_LIST);
         filter.addAction(ACTION_GET_PLAYING_DETAIL);
+        filter.addAction(ACTION_GET_REPEAT_STATE);
         registerReceiver(musicPlayer, filter);
 
         getWindow().setEnterTransition(new Fade());
@@ -175,6 +187,7 @@ public class MusicPlayer extends AppCompatActivity {
                     if(mainColor != 0) {
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
                         collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
+                        seekBar.setProgressBackgroundColor(getAutoStatColor(mainColor));
                     } else {
                         mainColor = ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null);
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
@@ -196,8 +209,12 @@ public class MusicPlayer extends AppCompatActivity {
         seekBar.setProgress(currentDuration);
         String totalDurationSeconds = String.valueOf((duration / 1000) % 60);
         String totalDurationMinutes = String.valueOf((duration / 1000) / 60);
-        if(totalDurationSeconds.length() == 1) {
-            totalTimeHolder.setText(totalDurationMinutes + ":" + totalDurationSeconds + "0");
+        if(totalDurationMinutes.length() == 1 &&  totalDurationSeconds.length() == 1) {
+            totalTimeHolder.setText("0" + totalDurationMinutes + ":" + "0" + totalDurationSeconds);
+        } else if(totalDurationSeconds.length() == 1) {
+            totalTimeHolder.setText(totalDurationMinutes + ":" + "0" + totalDurationSeconds);
+        } else if(totalDurationMinutes.length() == 1) {
+            totalTimeHolder.setText("0" + totalDurationMinutes + ":" + totalDurationSeconds);
         } else {
             totalTimeHolder.setText(totalDurationMinutes + ":" + totalDurationSeconds);
         }
@@ -263,6 +280,15 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
+        repeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent repeatMusic = new Intent();
+                repeatMusic.setAction(MusicService.ACTION_REPEAT);
+                sendBroadcast(repeatMusic);
+            }
+        });
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -276,6 +302,11 @@ public class MusicPlayer extends AppCompatActivity {
                     if (seekBar.getProgress() == duration) {
                         seekBar.setProgress(100);
                         musicStopped = true;
+                        if (!musicRepeat) {
+                            Intent stopMusic = new Intent();
+                            stopMusic.setAction(MusicService.ACTION_STOP);
+                            sendBroadcast(stopMusic);
+                        }
                     }
                 }
             }
@@ -300,12 +331,17 @@ public class MusicPlayer extends AppCompatActivity {
         rewindButton = (ImageView) findViewById(R.id.player_rewind);
         nextButton = (ImageView) findViewById(R.id.player_forward);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
+        repeatButton = (ImageView) findViewById(R.id.player_repeat);
         seekBar = (SeekBarCompat) findViewById(R.id.player_seekbar);
         currentTimeHolder = (TextView) findViewById(R.id.player_current_time);
         totalTimeHolder = (TextView) findViewById(R.id.player_total_time);
         detailHolder = (LinearLayout) findViewById(R.id.detail_holder);
         controlHolder = (LinearLayout) findViewById(R.id.control_holder);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsingtoolbarlayout_player);
+
+        Intent repeatMusic = new Intent();
+        repeatMusic.setAction(MusicService.ACTION_REPEAT);
+        sendBroadcast(repeatMusic);
     }
 
     @Override
