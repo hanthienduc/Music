@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -105,9 +106,9 @@ public class MusicPlayer extends AppCompatActivity {
                 updateView();
             } else if (intent.getAction().equals(ACTION_GET_REPEAT_STATE)) {
                 if (intent.getBooleanExtra("isLooping", true)) {
-                    repeatButton.setColorFilter(getAutoStatColor(mainColor));
+                    repeatButton.setColorFilter(getAutoStatColor(mainColor), PorterDuff.Mode.SRC_ATOP);
                 } else {
-                    repeatButton.setColorFilter(android.R.color.white);
+                    repeatButton.setColorFilter(android.R.color.white, PorterDuff.Mode.SRC_ATOP);
                 }
             }
         }
