@@ -63,6 +63,7 @@ public class MusicPlayer extends AppCompatActivity {
     private SeekBarCompat seekBar;
     private int duration, currentDuration;
     private boolean musicStopped;
+    private boolean musicRepeat;
     private AudioManager audioManager;
 
     private final BroadcastReceiver musicPlayer = new BroadcastReceiver() {
@@ -107,8 +108,10 @@ public class MusicPlayer extends AppCompatActivity {
             } else if (intent.getAction().equals(ACTION_GET_REPEAT_STATE)) {
                 if (intent.getBooleanExtra("isLooping", true)) {
                     repeatButton.setColorFilter(getAutoStatColor(mainColor), PorterDuff.Mode.SRC_ATOP);
+                    musicRepeat= true;
                 } else {
                     repeatButton.setColorFilter(android.R.color.white, PorterDuff.Mode.SRC_ATOP);
+                    musicRepeat = false;
                 }
             }
         }
@@ -294,9 +297,11 @@ public class MusicPlayer extends AppCompatActivity {
                     if (seekBar.getProgress() == duration) {
                         seekBar.setProgress(100);
                         musicStopped = true;
-                        Intent stopMusic = new Intent();
-                        stopMusic.setAction(MusicService.ACTION_STOP);
-                        sendBroadcast(stopMusic);
+                        if (!musicRepeat) {
+                            Intent stopMusic = new Intent();
+                            stopMusic.setAction(MusicService.ACTION_STOP);
+                            sendBroadcast(stopMusic);
+                        }
                     }
                 }
             }
