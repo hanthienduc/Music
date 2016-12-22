@@ -53,6 +53,9 @@
         android:id="@+id/rv_artist_activity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false"
         android:background="@color/windowBackground"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
@@ -64,10 +67,9 @@
         android:clickable="true"
         android:elevation="12dp"
         android:src="@drawable/ic_play"
-        android:visibility="invisible"
         app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
-        app:layout_anchor="@+id/appbar_album"
+        app:layout_anchor="@id/appbar_album"
         app:layout_anchorGravity="bottom|end" />
 
 </android.support.design.widget.CoordinatorLayout>
