@@ -89,6 +89,7 @@ public class MusicService extends Service {
     public static final String ACTION_SEEK_TO = "player_seek_to_song";
     public static final String ACTION_SEEK_GET = "player_seek_get_song";
     public static final String ACTION_SHUFFLE_PLAYLIST = "player_shuffle_playlist";
+    public static final String ACTION_REPEAT = "player_repeat";
 
     public static final String ACTION_MENU_PLAY_NEXT = "menu_play_next";
     public static final String ACTION_MENU_REMOVE_FROM_QUEUE = "menu_from_queue";
@@ -285,6 +286,18 @@ public class MusicService extends Service {
                         break;
                     }
                 }
+                break;
+            case ACTION_REPEAT:
+                Intent r = new Intent();
+                r.setAction(MusicPlayer.ACTION_GET_REPEAT_STATE);
+                if (mediaPlayer.isLooping()) {
+                    mediaPlayer.setLooping(false);
+                    r.putExtra("isLooping", true);
+                } else {
+                    mediaPlayer.setLooping(true);
+                    r.putExtra("isLooping", false);
+                }
+                sendBroadcast(r);
                 break;
             case ACTION_PLAY_NEXT:
                 if (currentPlaylistSongId == playList.getLastSong().getId() && currentPlaylistSongId != -1) {

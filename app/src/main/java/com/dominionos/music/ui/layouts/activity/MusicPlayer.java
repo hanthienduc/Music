@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -43,12 +44,15 @@ import java.util.TimerTask;
 
 import app.minimize.com.seek_bar_compat.SeekBarCompat;
 
+import static com.dominionos.music.service.MusicService.ACTION_REPEAT;
+
 public class MusicPlayer extends AppCompatActivity {
 
     public static final String ACTION_GET_PLAY_STATE = "get_play_state";
     public static final String ACTION_GET_SEEK_VALUE = "gte_seek_value";
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
+    public static final String ACTION_GET_REPEAT_STATE = "get_repeat_state";
     private static int mainColor;
     private String songName, songArt;
     private TextView currentTimeHolder, totalTimeHolder;
@@ -57,7 +61,7 @@ public class MusicPlayer extends AppCompatActivity {
     private LinearLayout detailHolder, controlHolder;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView playButton, rewindButton,
-            nextButton, shuffleButton, header;
+            nextButton, shuffleButton, repeatButton, header;
     private SeekBarCompat seekBar;
     private int duration, currentDuration;
     private boolean musicStopped;
@@ -102,6 +106,12 @@ public class MusicPlayer extends AppCompatActivity {
                 musicStopped = false;
                 updateSeeker();
                 updateView();
+            } else if (intent.getAction().equals(ACTION_GET_REPEAT_STATE)) {
+                if (intent.getBooleanExtra("isLooping", true)) {
+                    repeatButton.setColorFilter(getAutoStatColor(android.R.color.white));
+                } else {
+                    repeatButton.setColorFilter(android.R.color.white);
+                }
             }
         }
     };
@@ -263,6 +273,15 @@ public class MusicPlayer extends AppCompatActivity {
             }
         });
 
+        repeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent repeatMusic = new Intent();
+                repeatMusic.setAction(ACTION_REPEAT);
+                sendBroadcast(repeatMusic);
+            }
+        });
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -300,6 +319,7 @@ public class MusicPlayer extends AppCompatActivity {
         rewindButton = (ImageView) findViewById(R.id.player_rewind);
         nextButton = (ImageView) findViewById(R.id.player_forward);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
+        repeatButton = (ImageView) findViewById(R.id.player_repeat);
         seekBar = (SeekBarCompat) findViewById(R.id.player_seekbar);
         currentTimeHolder = (TextView) findViewById(R.id.player_current_time);
         totalTimeHolder = (TextView) findViewById(R.id.player_total_time);
