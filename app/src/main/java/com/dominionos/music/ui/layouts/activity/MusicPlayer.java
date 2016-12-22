@@ -197,7 +197,7 @@ public class MusicPlayer extends AppCompatActivity {
         String totalDurationSeconds = String.valueOf((duration / 1000) % 60);
         String totalDurationMinutes = String.valueOf((duration / 1000) / 60);
         if(totalDurationSeconds.length() == 1) {
-            totalTimeHolder.setText(totalDurationMinutes + ":" + totalDurationSeconds + "0");
+            totalTimeHolder.setText(totalDurationMinutes + ":" + "0" + totalDurationSeconds);
         } else {
             totalTimeHolder.setText(totalDurationMinutes + ":" + totalDurationSeconds);
         }
