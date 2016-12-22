@@ -170,7 +170,7 @@ public class AlbumActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
-        RecyclerView rv = (RecyclerView) findViewById(R.id.rv_artist_activity);
+        RecyclerView rv = (RecyclerView) findViewById(R.id.rv_album);
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
 
