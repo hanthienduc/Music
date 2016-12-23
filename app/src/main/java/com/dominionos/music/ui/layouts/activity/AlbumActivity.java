@@ -104,7 +104,7 @@ public class AlbumActivity extends AppCompatActivity {
         try {
             Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
             int vibrantRgb = vibrantSwatch.getRgb();
-            int vibrantTitleText = vibrantSwatch.getTitleTextColor();
+            int vibrantTitleText = vibrantSwatch.getBodyTextColor();
             toolbarBackground.setBackgroundColor(vibrantRgb);
             collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(vibrantRgb));
             collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
@@ -170,7 +170,7 @@ public class AlbumActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
-        RecyclerView rv = (RecyclerView) findViewById(R.id.rv_artist_activity);
+        RecyclerView rv = (RecyclerView) findViewById(R.id.rv_album);
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
 

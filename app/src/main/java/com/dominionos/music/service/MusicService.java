@@ -12,10 +12,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.net.Uri;
-import android.os.Build;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
@@ -49,7 +47,6 @@ public class MusicService extends Service {
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSession mediaSession;
-    private MediaController mediaController;
     private ArrayList<SongListItem> songList;
 
     private AudioManager.OnAudioFocusChangeListener afChangeListener =
@@ -89,7 +86,6 @@ public class MusicService extends Service {
     public static final String ACTION_SEEK_TO = "player_seek_to_song";
     public static final String ACTION_SEEK_GET = "player_seek_get_song";
     public static final String ACTION_SHUFFLE_PLAYLIST = "player_shuffle_playlist";
-    public static final String ACTION_REPEAT = "player_repeat";
 
     public static final String ACTION_MENU_PLAY_NEXT = "menu_play_next";
     public static final String ACTION_MENU_REMOVE_FROM_QUEUE = "menu_from_queue";
@@ -287,18 +283,6 @@ public class MusicService extends Service {
                     }
                 }
                 break;
-            case ACTION_REPEAT:
-                Intent r = new Intent();
-                r.setAction(MusicPlayer.ACTION_GET_REPEAT_STATE);
-                if (mediaPlayer.isLooping()) {
-                    r.putExtra("isLooping", true);
-                    mediaPlayer.setLooping(false);
-                } else {
-                    r.putExtra("isLooping", false);
-                    mediaPlayer.setLooping(true);
-                }
-                sendBroadcast(r);
-                break;
             case ACTION_PLAY_NEXT:
                 if (currentPlaylistSongId == playList.getLastSong().getId() && currentPlaylistSongId != -1) {
                     playList.addSong(new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
@@ -446,7 +430,6 @@ public class MusicService extends Service {
                 stopMusic();
                 mediaPlayer = new MediaPlayer();
                 mediaSession = new MediaSession(this, "MusicService");
-                mediaController = new MediaController(this, mediaSession.getSessionToken());
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(songPath);
                 mediaPlayer.prepare();
@@ -549,7 +532,6 @@ public class MusicService extends Service {
         commandFilter.addAction(ACTION_ADD_SONG_MULTI);
         commandFilter.addAction(ACTION_PLAY_ALBUM);
         commandFilter.addAction(ACTION_SHUFFLE_PLAYLIST);
-        commandFilter.addAction(ACTION_REPEAT);
         registerReceiver(musicPlayer, commandFilter);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -634,8 +616,12 @@ public class MusicService extends Service {
     public void onDestroy() {
         super.onDestroy();
         audioManager.abandonAudioFocus(afChangeListener);
-        mediaSession.release();
-        mediaPlayer.release();
+        if(mediaSession != null) {
+            mediaSession.release();
+        }
+        if(mediaPlayer != null) {
+            mediaPlayer.release();
+        }
     }
 
 }
