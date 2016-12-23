@@ -89,7 +89,6 @@ public class MusicService extends Service {
     public static final String ACTION_SEEK_TO = "player_seek_to_song";
     public static final String ACTION_SEEK_GET = "player_seek_get_song";
     public static final String ACTION_SHUFFLE_PLAYLIST = "player_shuffle_playlist";
-    public static final String ACTION_REPEAT = "player_repeat";
 
     public static final String ACTION_MENU_PLAY_NEXT = "menu_play_next";
     public static final String ACTION_MENU_REMOVE_FROM_QUEUE = "menu_from_queue";
@@ -286,18 +285,6 @@ public class MusicService extends Service {
                         break;
                     }
                 }
-                break;
-            case ACTION_REPEAT:
-                Intent r = new Intent();
-                r.setAction(MusicPlayer.ACTION_GET_REPEAT_STATE);
-                if (mediaPlayer.isLooping()) {
-                    r.putExtra("isLooping", true);
-                    mediaPlayer.setLooping(false);
-                } else {
-                    r.putExtra("isLooping", false);
-                    mediaPlayer.setLooping(true);
-                }
-                sendBroadcast(r);
                 break;
             case ACTION_PLAY_NEXT:
                 if (currentPlaylistSongId == playList.getLastSong().getId() && currentPlaylistSongId != -1) {
@@ -549,7 +536,6 @@ public class MusicService extends Service {
         commandFilter.addAction(ACTION_ADD_SONG_MULTI);
         commandFilter.addAction(ACTION_PLAY_ALBUM);
         commandFilter.addAction(ACTION_SHUFFLE_PLAYLIST);
-        commandFilter.addAction(ACTION_REPEAT);
         registerReceiver(musicPlayer, commandFilter);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
