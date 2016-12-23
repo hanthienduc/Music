@@ -12,10 +12,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.net.Uri;
-import android.os.Build;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
@@ -49,7 +47,6 @@ public class MusicService extends Service {
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSession mediaSession;
-    private MediaController mediaController;
     private ArrayList<SongListItem> songList;
 
     private AudioManager.OnAudioFocusChangeListener afChangeListener =
@@ -433,7 +430,6 @@ public class MusicService extends Service {
                 stopMusic();
                 mediaPlayer = new MediaPlayer();
                 mediaSession = new MediaSession(this, "MusicService");
-                mediaController = new MediaController(this, mediaSession.getSessionToken());
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(songPath);
                 mediaPlayer.prepare();
