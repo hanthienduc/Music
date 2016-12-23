@@ -281,9 +281,6 @@ public class MusicPlayer extends AppCompatActivity {
                     if (seekBar.getProgress() == duration) {
                         seekBar.setProgress(100);
                         musicStopped = true;
-                        Intent stopMusic = new Intent();
-                        stopMusic.setAction(MusicService.ACTION_STOP);
-                        sendBroadcast(stopMusic);
                     }
                 }
             }

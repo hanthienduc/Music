@@ -620,8 +620,12 @@ public class MusicService extends Service {
     public void onDestroy() {
         super.onDestroy();
         audioManager.abandonAudioFocus(afChangeListener);
-        mediaSession.release();
-        mediaPlayer.release();
+        if(mediaSession != null) {
+            mediaSession.release();
+        }
+        if(mediaPlayer != null) {
+            mediaPlayer.release();
+        }
     }
 
 }
