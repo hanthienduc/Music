@@ -104,7 +104,7 @@ public class AlbumActivity extends AppCompatActivity {
         try {
             Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
             int vibrantRgb = vibrantSwatch.getRgb();
-            int vibrantTitleText = vibrantSwatch.getTitleTextColor();
+            int vibrantTitleText = vibrantSwatch.getBodyTextColor();
             toolbarBackground.setBackgroundColor(vibrantRgb);
             collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(vibrantRgb));
             collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
