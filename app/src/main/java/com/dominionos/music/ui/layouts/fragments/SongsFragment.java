@@ -87,7 +87,7 @@ public class SongsFragment extends Fragment {
             Collections.sort(songList, new Comparator<SongListItem>() {
                 @Override
                 public int compare(SongListItem songListItem, SongListItem t1) {
-                    return songListItem.getName().compareTo(t1.getName());
+                    return songListItem.getName().compareToIgnoreCase(t1.getName());
                 }
             });
         }
