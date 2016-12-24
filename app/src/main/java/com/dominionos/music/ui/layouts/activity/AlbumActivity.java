@@ -133,7 +133,7 @@ public class AlbumActivity extends AppCompatActivity {
 
         String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
         String whereVal[] = {getIntent().getLongExtra("albumId", 0) + ""};
-        String orderBy = MediaStore.Audio.Media._ID;
+        String orderBy = MediaStore.Audio.Media.TRACK;
 
         musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null, where, whereVal, orderBy);
