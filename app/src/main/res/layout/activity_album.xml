@@ -57,7 +57,7 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
         android:id="@+id/rv_album"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -65,6 +65,10 @@
         android:paddingBottom="8dp"
         android:clipToPadding="false"
         android:background="@color/windowBackground"
+        android:numColumns="auto_fit"
+        app:fastScrollThumbColor="@color/colorAccent"
+        app:fastScrollPopupBgColor="@color/colorAccent"
+        app:fastScrollPopupTextColor="@android:color/primary_text_dark"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton
