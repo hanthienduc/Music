@@ -77,7 +77,7 @@ public class AlbumsFragment extends Fragment {
         Collections.sort(albumList, new Comparator<AlbumListItem>() {
             @Override
             public int compare(AlbumListItem albumListItem, AlbumListItem t1) {
-                return albumListItem.getName().compareTo(t1.getName());
+                return albumListItem.getName().compareToIgnoreCase(t1.getName());
             }
         });
         if (musicCursor != null) {
