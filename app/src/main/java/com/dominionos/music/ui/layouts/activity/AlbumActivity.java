@@ -17,7 +17,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -29,6 +28,7 @@ import com.dominionos.music.R;
 import com.dominionos.music.utils.adapters.AlbumSongAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 import com.dominionos.music.service.MusicService;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -133,7 +133,7 @@ public class AlbumActivity extends AppCompatActivity {
 
         String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
         String whereVal[] = {getIntent().getLongExtra("albumId", 0) + ""};
-        String orderBy = MediaStore.Audio.Media._ID;
+        String orderBy = MediaStore.Audio.Media.TRACK;
 
         musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null, where, whereVal, orderBy);
@@ -170,7 +170,7 @@ public class AlbumActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
-        RecyclerView rv = (RecyclerView) findViewById(R.id.rv_album);
+        FastScrollRecyclerView rv = (FastScrollRecyclerView) findViewById(R.id.rv_album);
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
 

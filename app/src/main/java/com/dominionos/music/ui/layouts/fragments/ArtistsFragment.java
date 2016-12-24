@@ -82,7 +82,7 @@ public class ArtistsFragment extends Fragment {
         Collections.sort(artistList, new Comparator<ArtistListItem>() {
             @Override
             public int compare(ArtistListItem artistListItem, ArtistListItem t1) {
-                return artistListItem.getName().compareTo(t1.getName());
+                return artistListItem.getName().compareToIgnoreCase(t1.getName());
             }
         });
         if (musicCursor != null) {
