@@ -187,14 +187,18 @@ public class MusicPlayer extends AppCompatActivity {
                     new ColorAnimateAlbumView(detailHolder, palette).execute();
                     new ColorAnimateAlbumView(controlHolder, palette).execute();
                     if(mainColor != 0) {
-                        collapsingToolbarLayout.setContentScrimColor(mainColor);
-                        collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
-                        upButton.setTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), android.R.color.white, null)));
-                        seekBar.setProgressBackgroundColor(getAutoStatColor(mainColor));
+                        if (palette.getVibrantSwatch() != null) {
+                            int bodyColor = palette.getVibrantSwatch().getBodyTextColor();
+                            collapsingToolbarLayout.setContentScrimColor(mainColor);
+                            collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
+                            collapsingToolbarLayout.setCollapsedTitleTextColor(bodyColor);
+                            upButton.setTintList(ColorStateList.valueOf(bodyColor));
+                            seekBar.setProgressBackgroundColor(getAutoStatColor(mainColor));
+                        }
                     } else if (mainColorAlt != 0) {
                         if (palette.getDominantSwatch() != null) {
-                            int titleColor = palette.getDominantSwatch().getBodyTextColor();
-                            int bodyColor = palette.getDominantSwatch().getTitleTextColor();
+                            int titleColor = palette.getDominantSwatch().getTitleTextColor();
+                            int bodyColor = palette.getDominantSwatch().getBodyTextColor();
                             collapsingToolbarLayout.setContentScrimColor(mainColorAlt);
                             collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColorAlt));
                             collapsingToolbarLayout.setCollapsedTitleTextColor(bodyColor);
