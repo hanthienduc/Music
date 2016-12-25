@@ -68,6 +68,13 @@ public class ColorGridTask extends AsyncTask<Object, Object, Void> {
                         }
                     });
                     colorAnimation.start();
+                } else {
+                    holder.textHolder.setBackgroundColor(ResourcesCompat.getColor(context.getResources(),
+                            R.color.card_background, null));
+                    holder.albumName.setTextColor(ResourcesCompat.getColor(context.getResources(),
+                            android.R.color.primary_text_dark, null));
+                    holder.albumDesc.setTextColor(ResourcesCompat.getColor(context.getResources(),
+                            android.R.color.secondary_text_dark, null));
                 }
             }
         };
