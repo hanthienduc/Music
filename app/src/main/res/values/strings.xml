@@ -8,12 +8,12 @@
     <string name="menu_playlist_delete">Delete</string>
     <string name="menu_playlist_rename">Rename</string>
     <string name="play">Play</string>
-    <string name="menu_play_next">Play Next</string>
-    <string name="menu_add_playing">Add to Playing Queue</string>
-    <string name="menu_remove_playing">Remove from Playing Queue</string>
-    <string name="menu_add_playlist">Add to Playlist</string>
-    <string name="menu_remove_playlist">Remove from Playlist</string>
-    <string name="menu_delete">Delete from Phone</string>
+    <string name="menu_play_next">Play next</string>
+    <string name="menu_add_playing">Add to playing queue</string>
+    <string name="menu_remove_playing">Remove from playing queue</string>
+    <string name="menu_add_playlist">Add to playlist</string>
+    <string name="menu_remove_playlist">Remove from playlist</string>
+    <string name="menu_delete">Delete from device</string>
     <string name="menu_share">Share</string>
     <string name="about">About</string>
     <string name="repeat">Repeat</string>
@@ -24,12 +24,12 @@
     <string name="artist_fetch_url">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo</string>
     <string name="api">911da172e486f9339ebc82b65ee89993</string>
     <string name="artist_image">Artist Image</string>
-    <string name="play_all">Play All</string>
+    <string name="play_all">Play all</string>
     <string name="search">Search</string>
     <string name="view_library_short">Library</string>
-    <string name="view_library_long">View Library</string>
+    <string name="view_library_long">View library</string>
     <string name="search_library_short">Search</string>
-    <string name="search_library_long">Search Library</string>
+    <string name="search_library_long">Search library</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
     <string name="menu">Menu</string>
