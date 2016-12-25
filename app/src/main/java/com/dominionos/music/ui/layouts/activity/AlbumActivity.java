@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +40,8 @@ public class AlbumActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private final ArrayList<SongListItem> songList = new ArrayList<>();
     private AudioManager audioManager;
+    private int vibrantRgb;
+    private int vibrantTitleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,8 +106,13 @@ public class AlbumActivity extends AppCompatActivity {
         Palette palette = new Palette.Builder(bitmap).generate();
         try {
             Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
-            int vibrantRgb = vibrantSwatch.getRgb();
-            int vibrantTitleText = vibrantSwatch.getBodyTextColor();
+            if (vibrantSwatch != null) {
+                vibrantRgb = vibrantSwatch.getRgb();
+                vibrantTitleText = vibrantSwatch.getBodyTextColor();
+            } else {
+                vibrantRgb = ResourcesCompat.getColor(getResources(), R.color.card_background, null);
+                vibrantTitleText = ResourcesCompat.getColor(getResources(), android.R.color.primary_text_dark, null);
+            }
             toolbarBackground.setBackgroundColor(vibrantRgb);
             collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(vibrantRgb));
             collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
