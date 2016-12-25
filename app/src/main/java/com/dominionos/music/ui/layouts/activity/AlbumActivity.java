@@ -40,8 +40,6 @@ public class AlbumActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private final ArrayList<SongListItem> songList = new ArrayList<>();
     private AudioManager audioManager;
-    private int vibrantRgb;
-    private int vibrantTitleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +104,8 @@ public class AlbumActivity extends AppCompatActivity {
         Palette palette = new Palette.Builder(bitmap).generate();
         try {
             Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+            int vibrantRgb;
+            int vibrantTitleText;
             if (vibrantSwatch != null) {
                 vibrantRgb = vibrantSwatch.getRgb();
                 vibrantTitleText = vibrantSwatch.getBodyTextColor();
