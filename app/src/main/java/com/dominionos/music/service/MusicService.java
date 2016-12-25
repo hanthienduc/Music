@@ -330,13 +330,13 @@ public class MusicService extends Service {
                     File file = new File(song.getPath());
                     boolean deleted = file.delete();
                     if (deleted) {
-                        Toast.makeText(context, "Song Deleted", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, getString(R.string.song_delete_success), Toast.LENGTH_SHORT).show();
                         context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                                 MediaStore.MediaColumns._ID + "='" + song.getId() + "'", null);
                         playList.removeSong(pos);
                         updatePlaylist();
                     } else
-                        Toast.makeText(context, "Song Not Deleted", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, getString(R.string.song_delete_fail), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case ACTION_PLAY_PLAYLIST:
@@ -352,7 +352,7 @@ public class MusicService extends Service {
                     pausedSongSeek = 0;
                     playMusic(0);
                 } else {
-                    Toast.makeText(context, "The service has not yet build a list of your songs", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, getString(R.string.service_generate_list_warning), Toast.LENGTH_LONG).show();
                 }
                 break;
         }
@@ -403,7 +403,7 @@ public class MusicService extends Service {
                 playMusic(playList.getFirstSong());
             }
         } else {
-            Toast.makeText(MusicService.this, "Nothing to play", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MusicService.this, getString(R.string.nothing_to_play), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -460,10 +460,10 @@ public class MusicService extends Service {
                 notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
                         R.drawable.ic_pause);
             } catch (IOException e) {
-                Toast.makeText(MusicService.this, "File not valid", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(MusicService.this, "Cannot gain Audio Focus", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MusicService.this, getString(R.string.unable_gain_focus), Toast.LENGTH_SHORT).show();
         }
     }
 

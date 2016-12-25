@@ -89,20 +89,20 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
                                 Intent share = new Intent(Intent.ACTION_SEND);
                                 share.setType("audio/*");
                                 share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" + data.get(finalPosition).getPath()));
-                                context.startActivity(Intent.createChooser(share, "Share Song"));
+                                context.startActivity(Intent.createChooser(share, context.getString(R.string.share_song)));
                                 return true;
                             case R.id.menu_delete:
                                 File file = new File(data.get(finalPosition).getPath());
                                 boolean deleted = file.delete();
                                 if (deleted) {
-                                    Toast.makeText(context, "Song Deleted", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, R.string.song_delete_success, Toast.LENGTH_SHORT).show();
                                     context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                                             MediaStore.MediaColumns._ID + "='" + data.get(finalPosition).getId() + "'", null);
                                     data.remove(finalPosition);
                                     notifyItemRemoved(finalPosition);
                                     updateListWithInterval();
                                 } else
-                                    Toast.makeText(context, "Song Not Deleted", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, R.string.song_delete_fail, Toast.LENGTH_SHORT).show();
                                 return true;
                         }
                         return false;

@@ -88,7 +88,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
                                         @Override
                                         public void onTick(long l) {
-
                                         }
 
                                         public void onFinish() {
@@ -129,9 +128,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     private void showNewPlaylistPrompt() {
         new MaterialDialog.Builder(context)
-                .title("Create playlist")
+                .title(R.string.add_playlist)
                 .inputType(InputType.TYPE_CLASS_TEXT)
-                .input("e.g. Favourites", null, new MaterialDialog.InputCallback() {
+                .input(context.getString(R.string.playlist_example), null, new MaterialDialog.InputCallback() {
 
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
@@ -141,7 +140,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                                     input.toString()), input.toString()));
                             notifyItemInserted(items.size() - 2);
                         } else {
-                            Toast.makeText(context, "Playlist name cannot be empty", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).show();
@@ -149,9 +148,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     private void showRenamePlaylistPrompt(final int pos) {
         new MaterialDialog.Builder(context)
-                .title("Rename playlist")
+                .title(R.string.rename_playlist)
                 .inputType(InputType.TYPE_CLASS_TEXT)
-                .input("e.g. Favourites", null, new MaterialDialog.InputCallback() {
+                .input(context.getString(R.string.playlist_example), null, new MaterialDialog.InputCallback() {
 
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
@@ -161,7 +160,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                             items.get(pos).setName(input.toString());
                             notifyItemChanged(pos);
                         } else {
-                            Toast.makeText(context, "Playlist name cannot be empty", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).show();

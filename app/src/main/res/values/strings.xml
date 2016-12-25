@@ -33,6 +33,38 @@
     <string name="previous">Previous</string>
     <string name="next">Next</string>
     <string name="menu">Menu</string>
-    <string name="add_playlist">Create Playlist</string>
+    <string name="add_playlist">Create playlist</string>
     <string name="default_duration">00:00</string>
+
+    <!-- Strings imported from Java source files -->
+    <!-- DialogPlaylistAdapter -->
+    <string name="rename_playlist">Rename playlist</string>
+    <string name="playlist_example">e.g. Favourites</string>
+    <string name="playlist_name_empty_warning">Playlist name cannot be empty</string>
+
+    <!-- PlaylistActivityAdapter -->
+    <string name="share_song">Share song</string>
+    <string name="song_delete_success">Song deleted</string>
+    <string name="song_delete_fail">Failed to delete song</string>
+
+    <!-- PlaylistFragment -->
+    <string name="create_new_playlist">Create new…</string>
+
+    <!-- PlaylistActivity -->
+    <string name="add_to_playlist">Add songs to playlist</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- MainActivity -->
+    <string name="about_text">Music player based on an older version of @architjn\'s Auro, before everything got broken.</string>
+
+    <!-- MusicService -->
+    <string name="service_generate_list_warning">The service has not yet built a list of your songs</string>
+    <string name="nothing_to_play">Nothing to play</string>
+    <string name="file_invalid">File invalid</string>
+    <string name="unable_gain_focus">Unable to gain audio focus</string>
+
+    <!-- Utils -->
+    <string name="add_playlist_u">Create playlist…</string>
+    <string name="done">Done</string>
 </resources>
