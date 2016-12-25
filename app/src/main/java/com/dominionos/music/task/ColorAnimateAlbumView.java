@@ -27,8 +27,12 @@ public class ColorAnimateAlbumView extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         Integer colorTo;
         Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+        Palette.Swatch altSwatch = palette.getDominantSwatch();
         if (vibrantSwatch != null) {
             colorTo = vibrantSwatch.getRgb();
+            isVibrantSwatchNull = false;
+        } else if (altSwatch != null) {
+            colorTo = altSwatch.getRgb();
             isVibrantSwatchNull = false;
         } else {
             colorTo = R.color.colorPrimary;
