@@ -3,6 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
+    android:clickable="true"
+    android:drawSelectorOnTop="true"
+    android:focusable="true"
+    android:foreground="@drawable/unbounded_ripple"
     android:orientation="horizontal"
     android:padding="10dp"
     android:weightSum="12">
