@@ -147,7 +147,9 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
                             Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
                         }
                     }
-                }).show();
+                })
+                .positiveText(context.getString(R.string.ok))
+                .negativeText(context.getString(R.string.cancel)).show();
     }
 
     private void showRenamePlaylistPrompt(final int pos) {
@@ -167,7 +169,9 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
                             Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
                         }
                     }
-                }).show();
+                })
+                .positiveText(context.getString(R.string.done))
+                .negativeText(context.getString(R.string.cancel)).show();
     }
 
     @Override

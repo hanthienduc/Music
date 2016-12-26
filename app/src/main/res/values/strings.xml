@@ -42,6 +42,9 @@
     <string name="playlist_example">e.g. Favourites</string>
     <string name="playlist_name_empty_warning">Playlist name cannot be empty</string>
 
+    <!-- PlaylistAdapter -->
+    <string name="ok">OK</string>
+
     <!-- PlaylistActivityAdapter -->
     <string name="share_song">Share song</string>
     <string name="song_delete_success">Song deleted</string>
