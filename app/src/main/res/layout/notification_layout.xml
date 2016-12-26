@@ -42,7 +42,8 @@
             android:maxLines="1"
             android:text=""
             android:textColor="#fff"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:ellipsize="end" />
 
         <TextView
             android:id="@+id/noti_song_artist"
