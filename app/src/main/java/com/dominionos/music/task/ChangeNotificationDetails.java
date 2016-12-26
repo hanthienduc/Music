@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
@@ -48,21 +47,20 @@ public class ChangeNotificationDetails extends AsyncTask<Void, Void, Void> {
         options.inPreferredConfig = Bitmap.Config.RGB_565;
         try {
             final Bitmap albumArt = BitmapFactory.decodeFile(songArt, options);
-            Palette.generateAsync(BitmapFactory.decodeFile(songArt, options),
-                    new Palette.PaletteAsyncListener() {
-                        @Override
-                        public void onGenerated(final Palette palette) {
-                            Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-                            Canvas canvas = new Canvas(bmp);
-                            canvas.drawColor(palette.getDarkVibrantColor(
-                                    ResourcesCompat.getColor(context.getResources(), R.color.noti_background, null)));
-                            notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_color_bg,
-                                    bmp);
-                            notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_album_art, albumArt);
-                            notificationManager.notify(MusicService.NOTIFICATION_ID, notificationCompat);
-                        }
-                    }
-            );
+            Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(Palette palette) {
+                    Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bmp);
+                    canvas.drawColor(palette.getDarkVibrantColor(
+                            ResourcesCompat.getColor(context.getResources(), R.color.noti_background, null)));
+                    notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_color_bg,
+                            bmp);
+                    notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_album_art, albumArt);
+                    notificationManager.notify(MusicService.NOTIFICATION_ID, notificationCompat);
+                }
+            };
+            Palette.from(BitmapFactory.decodeFile(songArt, options)).generate(paletteAsyncListener);
         } catch (IllegalArgumentException e) {
             notificationCompat.bigContentView.setImageViewResource(R.id.noti_album_art, R.drawable.default_artwork_dark);
             Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);

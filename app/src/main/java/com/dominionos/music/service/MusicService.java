@@ -472,8 +472,7 @@ public class MusicService extends Service {
             notificationCompat = createBuilderNotificationRemovable().build();
         else
             notificationCompat = createBuiderNotification().build();
-        RemoteViews notiLayoutBig = new RemoteViews(getPackageName(), R.layout.notification_layout);
-        notificationCompat.bigContentView = notiLayoutBig;
+        notificationCompat.bigContentView = new RemoteViews(getPackageName(), R.layout.notification_layout);
         notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
                 R.drawable.ic_play);
         notificationCompat.priority = Notification.PRIORITY_MAX;

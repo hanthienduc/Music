@@ -21,6 +21,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -136,13 +137,17 @@ public class FetchArtistImg {
                 .getString(R.string.app_name) + "/artist/";
         (new File(filePath)).mkdirs();
         File noMedia = new File(filePath, ".nomedia");
-        if (!noMedia.exists()) try {
-            noMedia.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!noMedia.exists()) {
+            try {
+                noMedia.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         File image = new File(filePath, fileName.toString());
-        if (image.exists()) image.delete();
+        if (image.exists()) {
+            image.delete();
+        }
         try {
             FileOutputStream out = new FileOutputStream(image);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
@@ -156,10 +161,10 @@ public class FetchArtistImg {
     }
 
     private Bitmap downloadBitmap(String url) {
-        // initilize the default HTTP client object
+        // initialize the default HTTP client object
         final DefaultHttpClient client = new DefaultHttpClient();
 
-        //forming a HttoGet request
+        //forming a HttpGet request
         final HttpGet getRequest = new HttpGet(url);
         try {
 
@@ -189,7 +194,7 @@ public class FetchArtistImg {
                     if (inputStream != null) {
                         inputStream.close();
                     }
-                    entity.consumeContent();
+                    EntityUtils.consume(entity);
                 }
             }
         } catch (Exception e) {
@@ -203,7 +208,7 @@ public class FetchArtistImg {
     }
 
     private StringBuilder inputStreamToString(InputStream is) {
-        String rLine = "";
+        String rLine;
         StringBuilder answer = new StringBuilder();
         BufferedReader rd = new BufferedReader(new InputStreamReader(is));
 

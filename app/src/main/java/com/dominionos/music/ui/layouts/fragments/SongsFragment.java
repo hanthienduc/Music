@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dominionos.music.R;
-import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.adapters.SongsAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
