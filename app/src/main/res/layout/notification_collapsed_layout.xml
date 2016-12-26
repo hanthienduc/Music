@@ -52,7 +52,11 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginStart="10dp"
-            android:background="@drawable/unbounded_ripple"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:drawSelectorOnTop="true"
+            android:focusable="true"
+            android:foreground="@drawable/unbounded_ripple"
             android:src="@drawable/ic_skip_previous" />
 
         <ImageView
@@ -60,7 +64,11 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginStart="10dp"
-            android:background="@drawable/unbounded_ripple"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:drawSelectorOnTop="true"
+            android:focusable="true"
+            android:foreground="@drawable/unbounded_ripple"
             android:src="@drawable/ic_play" />
 
         <ImageView
@@ -68,7 +76,11 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginStart="10dp"
-            android:background="@drawable/unbounded_ripple"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:drawSelectorOnTop="true"
+            android:focusable="true"
+            android:foreground="@drawable/unbounded_ripple"
             android:src="@drawable/ic_skip_next" />
     </LinearLayout>
 </LinearLayout>
