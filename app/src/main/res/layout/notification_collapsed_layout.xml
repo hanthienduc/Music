@@ -4,25 +4,29 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:weightSum="12">
 
     <ImageView
         android:id="@+id/noti_album_art"
-        android:layout_width="50dp"
+        android:layout_width="0dp"
         android:layout_height="50dp"
-        android:src="@drawable/default_artwork_dark" />
+        android:src="@drawable/default_artwork_dark"
+        android:layout_weight="4" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="6">
 
         <TextView
             android:id="@+id/noti_song_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@android:color/primary_text_dark"
             android:textSize="17sp" />
 
@@ -32,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@android:color/secondary_text_dark"
             android:textSize="15sp" />
     </LinearLayout>
@@ -39,28 +44,29 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:gravity="center_vertical">
+        android:gravity="end"
+        android:layout_weight="2">
 
         <ImageView
             android:id="@+id/noti_prev_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/unbounded_ripple"
             android:src="@drawable/ic_skip_previous" />
 
         <ImageView
             android:id="@+id/noti_play_button"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/unbounded_ripple"
             android:src="@drawable/ic_play" />
 
         <ImageView
             android:id="@+id/noti_next_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/unbounded_ripple"
             android:src="@drawable/ic_skip_next" />
