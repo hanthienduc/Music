@@ -472,6 +472,7 @@ public class MusicService extends Service {
             notificationCompat = createBuilderNotificationRemovable().build();
         else
             notificationCompat = createBuiderNotification().build();
+        notificationCompat.contentView = new RemoteViews(getPackageName(), R.layout.notification_collapsed_layout);
         notificationCompat.bigContentView = new RemoteViews(getPackageName(), R.layout.notification_layout);
         notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
                 R.drawable.ic_play);
@@ -492,18 +493,23 @@ public class MusicService extends Service {
         notificationCompat.bigContentView.setTextViewText(R.id.noti_song_name, songName);
         notificationCompat.bigContentView.setTextViewText(R.id.noti_song_artist, songDesc);
         notificationCompat.bigContentView.setTextViewText(R.id.noti_song_album, albumName);
+        notificationCompat.contentView.setTextViewText(R.id.noti_song_name, songName);
+        notificationCompat.contentView.setTextViewText(R.id.noti_song_artist, songDesc);
         Intent playClick = new Intent();
         playClick.setAction(MusicService.ACTION_STOP);
         PendingIntent playClickIntent = PendingIntent.getBroadcast(MusicService.this, 21021, playClick, 0);
         notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_play_button, playClickIntent);
+        notificationCompat.contentView.setOnClickPendingIntent(R.id.noti_play_button, playClickIntent);
         Intent prevClick = new Intent();
         prevClick.setAction(MusicService.ACTION_PREV);
         PendingIntent prevClickIntent = PendingIntent.getBroadcast(MusicService.this, 21121, prevClick, 0);
         notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_prev_button, prevClickIntent);
+        notificationCompat.contentView.setOnClickPendingIntent(R.id.noti_prev_button, prevClickIntent);
         Intent nextClick = new Intent();
         nextClick.setAction(MusicService.ACTION_NEXT);
         PendingIntent nextClickIntent = PendingIntent.getBroadcast(MusicService.this, 21221, nextClick, 0);
         notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_next_button, nextClickIntent);
+        notificationCompat.contentView.setOnClickPendingIntent(R.id.noti_next_button, nextClickIntent);
         notificationManager.notify(NOTIFICATION_ID, notificationCompat);
 
         new ChangeNotificationDetails(MusicService.this, albumId, notificationManager, notificationCompat).execute();
