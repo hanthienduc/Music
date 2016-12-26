@@ -1,14 +1,9 @@
 package com.dominionos.music.utils.adapters;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,9 +16,7 @@ import android.widget.Toast;
 
 import com.dominionos.music.R;
 import com.dominionos.music.service.MusicService;
-import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.items.Playlist;
 import com.dominionos.music.utils.items.SongListItem;
 
 import java.io.File;
