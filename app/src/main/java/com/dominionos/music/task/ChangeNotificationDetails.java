@@ -56,17 +56,23 @@ public class ChangeNotificationDetails extends AsyncTask<Void, Void, Void> {
                             ResourcesCompat.getColor(context.getResources(), R.color.noti_background, null)));
                     notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_color_bg,
                             bmp);
+                    notificationCompat.contentView.setImageViewBitmap(R.id.noti_color_bg,
+                            bmp);
                     notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_album_art, albumArt);
+                    notificationCompat.contentView.setImageViewBitmap(R.id.noti_album_art, albumArt);
                     notificationManager.notify(MusicService.NOTIFICATION_ID, notificationCompat);
                 }
             };
             Palette.from(BitmapFactory.decodeFile(songArt, options)).generate(paletteAsyncListener);
         } catch (IllegalArgumentException e) {
             notificationCompat.bigContentView.setImageViewResource(R.id.noti_album_art, R.drawable.default_artwork_dark);
+            notificationCompat.contentView.setImageViewResource(R.id.noti_album_art, R.drawable.default_artwork_dark);
             Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bmp);
             canvas.drawColor(ResourcesCompat.getColor(context.getResources(), R.color.noti_background, null));
             notificationCompat.bigContentView.setImageViewBitmap(R.id.noti_color_bg,
+                    bmp);
+            notificationCompat.contentView.setImageViewBitmap(R.id.noti_color_bg,
                     bmp);
             notificationManager.notify(MusicService.NOTIFICATION_ID, notificationCompat);
             e.printStackTrace();

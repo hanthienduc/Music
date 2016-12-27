@@ -108,9 +108,9 @@ public class PlaylistActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 MaterialDialog dialog = new MaterialDialog.Builder(PlaylistActivity.this)
-                        .title("Add songs to playlist")
-                        .positiveText("Add")
-                        .negativeText("Cancel")
+                        .title(getString(R.string.add_to_playlist))
+                        .positiveText(getString(R.string.add))
+                        .negativeText(getString(R.string.cancel))
                         .adapter(adapter, layoutManager)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override

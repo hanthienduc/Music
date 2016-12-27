@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.dominionos.music.R;
 import com.dominionos.music.utils.adapters.DialogPlaylistAdapter;
 import com.dominionos.music.utils.items.Playlist;
 import com.dominionos.music.utils.items.SongListItem;
@@ -18,10 +19,10 @@ public class Utils {
         layoutManager.scrollToPosition(0);
         MySQLiteHelper sqLiteHelper = new MySQLiteHelper(context);
         List<Playlist> playlist = sqLiteHelper.getAllPlaylist();
-        playlist.add(new Playlist(-1, "Create Playlist"));
+        playlist.add(new Playlist(-1, context.getString(R.string.add_playlist_u)));
         new MaterialDialog.Builder(context)
-                .title("Add to Playlist")
-                .positiveText("Done")
+                .title(context.getString(R.string.add_to_playlist))
+                .positiveText(context.getString(R.string.done))
                 .adapter(new DialogPlaylistAdapter(context, playlist, position), layoutManager)
                 .show();
     }

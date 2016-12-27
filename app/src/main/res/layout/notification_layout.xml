@@ -14,6 +14,11 @@
         android:layout_alignTop="@+id/noti_album_art"
         android:scaleType="fitXY"
         android:src="@color/noti_background"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:drawSelectorOnTop="true"
+        android:focusable="true"
+        android:foreground="@drawable/unbounded_ripple"
         tools:ignore="ContentDescription" />
 
     <ImageView
@@ -42,7 +47,8 @@
             android:maxLines="1"
             android:text=""
             android:textColor="#fff"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:ellipsize="end" />
 
         <TextView
             android:id="@+id/noti_song_artist"

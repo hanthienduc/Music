@@ -131,9 +131,9 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
 
     private void showNewPlaylistPrompt() {
         new MaterialDialog.Builder(context)
-                .title("Create playlist")
+                .title(R.string.add_playlist)
                 .inputType(InputType.TYPE_CLASS_TEXT)
-                .input("e.g. Favourites", null, new MaterialDialog.InputCallback() {
+                .input(context.getString(R.string.playlist_example), null, new MaterialDialog.InputCallback() {
 
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
@@ -143,17 +143,19 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
                                     input.toString()), input.toString()));
                             notifyItemInserted(items.size() - 2);
                         } else {
-                            Toast.makeText(context, "Playlist name cannot be empty", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
                         }
                     }
-                }).show();
+                })
+                .positiveText(context.getString(R.string.ok))
+                .negativeText(context.getString(R.string.cancel)).show();
     }
 
     private void showRenamePlaylistPrompt(final int pos) {
         new MaterialDialog.Builder(context)
-                .title("Rename playlist")
+                .title(R.string.rename_playlist)
                 .inputType(InputType.TYPE_CLASS_TEXT)
-                .input("e.g. Favourites", null, new MaterialDialog.InputCallback() {
+                .input(context.getString(R.string.playlist_example), null, new MaterialDialog.InputCallback() {
 
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
@@ -163,10 +165,12 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
                             items.get(pos).setName(input.toString());
                             notifyItemChanged(pos);
                         } else {
-                            Toast.makeText(context, "Playlist name cannot be empty", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
                         }
                     }
-                }).show();
+                })
+                .positiveText(context.getString(R.string.done))
+                .negativeText(context.getString(R.string.cancel)).show();
     }
 
     @Override

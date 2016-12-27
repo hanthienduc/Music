@@ -17,6 +17,7 @@ public class ColorGridTask extends AsyncTask<Object, Object, Void> {
     private final Context context;
     private final String artPath;
     private final AlbumsAdapter.SimpleItemViewHolder holder;
+    private Palette.Swatch vibrantSwatch;
 
     public ColorGridTask(Context context, String artPath, AlbumsAdapter.SimpleItemViewHolder holder) {
         this.context = context;
@@ -31,7 +32,10 @@ public class ColorGridTask extends AsyncTask<Object, Object, Void> {
             @Override
             public void onGenerated(Palette palette) {
                 if (palette.getVibrantSwatch() != null) {
-                    Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+                    vibrantSwatch = palette.getVibrantSwatch();
+                } else if (palette.getDominantSwatch() != null) {
+                    vibrantSwatch = palette.getDominantSwatch();
+                }
                     int colorFrom = ResourcesCompat.getColor(context.getResources(), R.color.card_background, null);
                     int colorTo = vibrantSwatch.getRgb();
                     ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
@@ -68,7 +72,6 @@ public class ColorGridTask extends AsyncTask<Object, Object, Void> {
                         }
                     });
                     colorAnimation.start();
-                }
             }
         };
         Bitmap image = BitmapFactory.decodeFile(artPath);
