@@ -5,11 +5,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
@@ -50,6 +52,7 @@ public class MusicPlayer extends AppCompatActivity {
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
     private static int mainColor;
+    private static int mainColorAlt;
     private String songName, songArt;
     private TextView currentTimeHolder, totalTimeHolder;
     private long albumId;
@@ -57,7 +60,8 @@ public class MusicPlayer extends AppCompatActivity {
     private LinearLayout detailHolder, controlHolder;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView playButton, rewindButton,
-            nextButton, shuffleButton, header;
+            nextButton, shuffleButton, repeatButton, header;
+    private Drawable upButton;
     private SeekBarCompat seekBar;
     private int duration, currentDuration;
     private boolean musicStopped;
@@ -155,10 +159,12 @@ public class MusicPlayer extends AppCompatActivity {
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.RGB_565;
         Drawable artWork = new BitmapDrawable(this.getResources(), BitmapFactory.decodeFile(songArt, options));
+        upButton = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back, null);
         ((ImageView) findViewById(R.id.header)).setImageDrawable(artWork);
         if(getSupportActionBar() != null) {
             collapsingToolbarLayout.setTitle(songName);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(upButton);
         }
 
         if (songArt != null) {
@@ -166,16 +172,46 @@ public class MusicPlayer extends AppCompatActivity {
                 public void onGenerated(Palette palette) {
                     int defaultColor = 0x000000;
                     mainColor = palette.getVibrantColor(defaultColor);
-                    ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(getResources().getString(R.string.app_name),
-                            BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                            palette.getVibrantColor(defaultColor));
-                    setTaskDescription(taskDescription);
+                    mainColorAlt = palette.getDominantColor(defaultColor);
+                    if (mainColor != 0) {
+                        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(getResources().getString(R.string.app_name),
+                                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
+                                palette.getVibrantColor(defaultColor));
+                        setTaskDescription(taskDescription);
+                    } else if (mainColorAlt != 0) {
+                        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(getResources().getString(R.string.app_name),
+                                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
+                                palette.getDominantColor(defaultColor));
+                        setTaskDescription(taskDescription);
+                    }
                     new ColorAnimateAlbumView(detailHolder, palette).execute();
                     new ColorAnimateAlbumView(controlHolder, palette).execute();
                     if(mainColor != 0) {
-                        collapsingToolbarLayout.setContentScrimColor(mainColor);
-                        collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
-                        seekBar.setProgressBackgroundColor(getAutoStatColor(mainColor));
+                        if (palette.getVibrantSwatch() != null) {
+                            int bodyColor = palette.getVibrantSwatch().getBodyTextColor();
+                            collapsingToolbarLayout.setContentScrimColor(mainColor);
+                            collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColor));
+                            collapsingToolbarLayout.setCollapsedTitleTextColor(bodyColor);
+                            upButton.setTintList(ColorStateList.valueOf(bodyColor));
+                            seekBar.setProgressBackgroundColor(getAutoStatColor(mainColor));
+                        }
+                    } else if (mainColorAlt != 0) {
+                        if (palette.getDominantSwatch() != null) {
+                            int titleColor = palette.getDominantSwatch().getTitleTextColor();
+                            int bodyColor = palette.getDominantSwatch().getBodyTextColor();
+                            collapsingToolbarLayout.setContentScrimColor(mainColorAlt);
+                            collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(mainColorAlt));
+                            collapsingToolbarLayout.setCollapsedTitleTextColor(bodyColor);
+                            upButton.setTintList(ColorStateList.valueOf(bodyColor));
+                            seekBar.setProgressBackgroundColor(titleColor);
+                            playButton.setImageTintList(ColorStateList.valueOf(bodyColor));
+                            nextButton.setImageTintList(ColorStateList.valueOf(bodyColor));
+                            rewindButton.setImageTintList(ColorStateList.valueOf(bodyColor));
+                            shuffleButton.setImageTintList(ColorStateList.valueOf(bodyColor));
+                            repeatButton.setImageTintList(ColorStateList.valueOf(bodyColor));
+                            currentTimeHolder.setTextColor(titleColor);
+                            totalTimeHolder.setTextColor(titleColor);
+                        }
                     } else {
                         mainColor = ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null);
                         collapsingToolbarLayout.setContentScrimColor(mainColor);
@@ -305,6 +341,7 @@ public class MusicPlayer extends AppCompatActivity {
         rewindButton = (ImageView) findViewById(R.id.player_rewind);
         nextButton = (ImageView) findViewById(R.id.player_forward);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
+        repeatButton = (ImageView) findViewById(R.id.player_repeat);
         seekBar = (SeekBarCompat) findViewById(R.id.player_seekbar);
         currentTimeHolder = (TextView) findViewById(R.id.player_current_time);
         totalTimeHolder = (TextView) findViewById(R.id.player_total_time);

@@ -8,12 +8,12 @@
     <string name="menu_playlist_delete">Delete</string>
     <string name="menu_playlist_rename">Rename</string>
     <string name="play">Play</string>
-    <string name="menu_play_next">Play Next</string>
-    <string name="menu_add_playing">Add to Playing Queue</string>
-    <string name="menu_remove_playing">Remove from Playing Queue</string>
-    <string name="menu_add_playlist">Add to Playlist</string>
-    <string name="menu_remove_playlist">Remove from Playlist</string>
-    <string name="menu_delete">Delete from Phone</string>
+    <string name="menu_play_next">Play next</string>
+    <string name="menu_add_playing">Add to playing queue</string>
+    <string name="menu_remove_playing">Remove from playing queue</string>
+    <string name="menu_add_playlist">Add to playlist</string>
+    <string name="menu_remove_playlist">Remove from playlist</string>
+    <string name="menu_delete">Delete from device</string>
     <string name="menu_share">Share</string>
     <string name="about">About</string>
     <string name="repeat">Repeat</string>
@@ -24,15 +24,50 @@
     <string name="artist_fetch_url">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo</string>
     <string name="api">911da172e486f9339ebc82b65ee89993</string>
     <string name="artist_image">Artist Image</string>
-    <string name="play_all">Play All</string>
+    <string name="play_all">Play all</string>
     <string name="search">Search</string>
     <string name="view_library_short">Library</string>
-    <string name="view_library_long">View Library</string>
+    <string name="view_library_long">View library</string>
     <string name="search_library_short">Search</string>
-    <string name="search_library_long">Search Library</string>
+    <string name="search_library_long">Search library</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
     <string name="menu">Menu</string>
-    <string name="add_playlist">Create Playlist</string>
+    <string name="add_playlist">Create playlist</string>
     <string name="default_duration">00:00</string>
+
+    <!-- Strings imported from Java source files -->
+    <!-- DialogPlaylistAdapter -->
+    <string name="rename_playlist">Rename playlist</string>
+    <string name="playlist_example">e.g. Favourites</string>
+    <string name="playlist_name_empty_warning">Playlist name cannot be empty</string>
+
+    <!-- PlaylistAdapter -->
+    <string name="ok">OK</string>
+
+    <!-- PlaylistActivityAdapter -->
+    <string name="share_song">Share song</string>
+    <string name="song_delete_success">Song deleted</string>
+    <string name="song_delete_fail">Failed to delete song</string>
+
+    <!-- PlaylistFragment -->
+    <string name="create_new_playlist">Create new…</string>
+
+    <!-- PlaylistActivity -->
+    <string name="add_to_playlist">Add songs to playlist</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- MainActivity -->
+    <string name="about_text">Music player based on an older version of @architjn\'s Auro, before everything got broken.</string>
+
+    <!-- MusicService -->
+    <string name="service_generate_list_warning">The service has not yet built a list of your songs</string>
+    <string name="nothing_to_play">Nothing to play</string>
+    <string name="file_invalid">File invalid</string>
+    <string name="unable_gain_focus">Unable to gain audio focus</string>
+
+    <!-- Utils -->
+    <string name="add_playlist_u">Create playlist…</string>
+    <string name="done">Done</string>
 </resources>

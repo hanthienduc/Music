@@ -2,11 +2,13 @@ package com.dominionos.music.ui.layouts.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +42,7 @@ public class AlbumActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private final ArrayList<SongListItem> songList = new ArrayList<>();
     private AudioManager audioManager;
+    private Drawable upButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +59,11 @@ public class AlbumActivity extends AppCompatActivity {
         collapsingToolbarLayout.setStatusBarScrimColor(
                 getAutoStatColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor()));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_album);
+        upButton = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back, null);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(upButton);
         }
         final ImageView albumArt = (ImageView) findViewById(R.id.activity_album_art);
 
@@ -103,14 +109,26 @@ public class AlbumActivity extends AppCompatActivity {
         Palette palette = new Palette.Builder(bitmap).generate();
         try {
             Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
-            int vibrantRgb = vibrantSwatch.getRgb();
-            int vibrantTitleText = vibrantSwatch.getBodyTextColor();
+            Palette.Swatch altSwatch = palette.getDominantSwatch();
+            int vibrantRgb;
+            int vibrantTitleText;
+            if (vibrantSwatch != null) {
+                vibrantRgb = vibrantSwatch.getRgb();
+                vibrantTitleText = vibrantSwatch.getBodyTextColor();
+            } else if (altSwatch != null) {
+                vibrantRgb = altSwatch.getRgb();
+                vibrantTitleText = altSwatch.getBodyTextColor();
+            } else {
+                vibrantRgb = ResourcesCompat.getColor(getResources(), R.color.card_background, null);
+                vibrantTitleText = ResourcesCompat.getColor(getResources(), android.R.color.primary_text_dark, null);
+            }
             toolbarBackground.setBackgroundColor(vibrantRgb);
             collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(vibrantRgb));
             collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
             collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
             collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
             collapsingToolbarLayout.setBackgroundColor(vibrantRgb);
+            upButton.setTintList(ColorStateList.valueOf(vibrantTitleText));
         } catch (NullPointerException e) {
             Log.i("AlbumActivity", "Palette.Builder could not generate a vibrant swatch, falling back to default colours");
         }

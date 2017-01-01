@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                                         .withActivityTitle(getString(R.string.about))
                                         .withAboutIconShown(true)
                                         .withAboutVersionShown(true)
-                                        .withAboutDescription("Music player based on an older version of @architjn's Auro, before everything got broken.")
+                                        .withAboutDescription(getString(R.string.about_text))
                                         .start(MainActivity.this);
                                 break;
                         }

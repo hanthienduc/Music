@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -114,8 +115,14 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
             setImageToView(path, holder);
         } else {
             String urlIfAny = imgHandler.getArtistArtWork(items.get(position).getName(), position);
-            if (urlIfAny != null)
+            if (urlIfAny != null) {
                 setImageToView(urlIfAny, holder);
+            } else {
+                BitmapFactory.Options a = new BitmapFactory.Options();
+                a.inSampleSize = 4;
+                Bitmap b = BitmapFactory.decodeResource(context.getResources(), R.drawable.default_artwork_dark, a);
+                holder.artistImg.setImageBitmap(b);
+            }
         }
     }
 
