@@ -21,7 +21,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -194,7 +193,7 @@ public class FetchArtistImg {
                     if (inputStream != null) {
                         inputStream.close();
                     }
-                    EntityUtils.consume(entity);
+                    entity.consumeContent();
                 }
             }
         } catch (Exception e) {
