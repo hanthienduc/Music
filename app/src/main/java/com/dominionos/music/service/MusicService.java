@@ -106,7 +106,7 @@ public class MusicService extends Service {
                 playList.clearPlayingList();
                 pausedSongSeek = 0;
                 playMusic((int) intent.getLongExtra("songId", -1), intent.getStringExtra("songPath"), intent.getStringExtra("songName"),
-                        intent.getStringExtra("songDesc"), intent.getStringExtra("songArt"),
+                        intent.getStringExtra("songDesc"),
                         intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), true);
                 playList.addSong(new SongListItem(intent.getLongExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                         intent.getStringExtra("songPath"), false,
@@ -396,7 +396,7 @@ public class MusicService extends Service {
             try {
                 SongListItem song = playList.getSong(playingPos);
                 playMusic((int) song.getId(), song.getPath(), song.getName(),
-                        song.getDesc(), "", song.getAlbumId(),
+                        song.getDesc(), song.getAlbumId(),
                         song.getAlbumName(), false);
                 currentPlaylistSongId = playingPos;
             } catch (NullPointerException e) {
@@ -408,11 +408,11 @@ public class MusicService extends Service {
     }
 
     private void playMusic(SongListItem song) {
-        playMusic((int) song.getId(), song.getPath(), song.getName(), song.getDesc(), "", song.getAlbumId(), song.getAlbumName(), true);
+        playMusic((int) song.getId(), song.getPath(), song.getName(), song.getDesc(), song.getAlbumId(), song.getAlbumName(), true);
     }
 
     private void playMusic(final int songId, final String songPath, final String songName, final String songDesc,
-                           final String songArt, final long albumId, final String albumName, boolean singlePlay) {
+                           final long albumId, final String albumName, boolean singlePlay) {
 
         int result = audioManager.requestAudioFocus(afChangeListener,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
@@ -441,7 +441,7 @@ public class MusicService extends Service {
                             pausedSongSeek = 0;
                             SongListItem song = playList.getNextSong(currentPlaylistSongId);
                             playMusic((int) song.getId(), song.getPath(), song.getName(),
-                                    song.getDesc(), "", song.getAlbumId(),
+                                    song.getDesc(), song.getAlbumId(),
                                     song.getAlbumName(), false);
                             updateCurrentPlaying();
                         } else {
@@ -471,7 +471,7 @@ public class MusicService extends Service {
         if (stop)
             notificationCompat = createBuilderNotificationRemovable().build();
         else
-            notificationCompat = createBuiderNotification().build();
+            notificationCompat = createBuilderNotification().build();
         notificationCompat.contentView = new RemoteViews(getPackageName(), R.layout.notification_collapsed_layout);
         notificationCompat.bigContentView = new RemoteViews(getPackageName(), R.layout.notification_layout);
         notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
@@ -584,7 +584,7 @@ public class MusicService extends Service {
         return START_STICKY;
     }
 
-    private NotificationCompat.Builder createBuiderNotification() {
+    private NotificationCompat.Builder createBuilderNotification() {
         Intent notificationIntent = new Intent();
         notificationIntent.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
         PendingIntent contentIntent = PendingIntent.getBroadcast(MusicService.this, 0, notificationIntent, 0);
