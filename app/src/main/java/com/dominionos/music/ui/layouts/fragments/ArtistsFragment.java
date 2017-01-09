@@ -95,11 +95,5 @@ public class ArtistsFragment extends Fragment {
         rv.setLayoutManager(linearLayoutManager);
         rv.setHasFixedSize(true);
         rv.setAdapter(new ArtistAdapter(context, artistList));
-        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
     }
 }

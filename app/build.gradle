@@ -23,7 +23,7 @@ android {
 }
 
 dependencies {
-    compile group: 'cz.msebera.android' , name: 'httpclient', version: '4.4.1.1'
+    compile group: 'cz.msebera.android', name: 'httpclient', version: '4.4.1.1'
     repositories {
         mavenCentral()
         maven { url 'https://jitpack.io' }
@@ -48,4 +48,7 @@ dependencies {
     compile 'com.makeramen:roundedimageview:2.2.1'
     compile 'com.simplecityapps:recyclerview-fastscroll:1.0.11'
     compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
+    compile 'com.google.firebase:firebase-crash:10.0.1'
 }
+
+apply plugin: 'com.google.gms.google-services'

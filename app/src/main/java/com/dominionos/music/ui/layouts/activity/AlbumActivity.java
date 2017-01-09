@@ -42,7 +42,6 @@ public class AlbumActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private final ArrayList<SongListItem> songList = new ArrayList<>();
     private AudioManager audioManager;
-    private Drawable upButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +54,13 @@ public class AlbumActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
                 findViewById(R.id.collapsing_toolbar_album);
         collapsingToolbarLayout.setTitle(getIntent().getStringExtra("albumName"));
-        collapsingToolbarLayout.setContentScrimColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor());
+        if ((collapsingToolbarLayout.getContentScrim()) != null) {
+            collapsingToolbarLayout.setContentScrimColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor());
+        }
         collapsingToolbarLayout.setStatusBarScrimColor(
                 getAutoStatColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor()));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_album);
-        upButton = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back, null);
+        Drawable upButton = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back, null);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -128,7 +129,9 @@ public class AlbumActivity extends AppCompatActivity {
             collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
             collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
             collapsingToolbarLayout.setBackgroundColor(vibrantRgb);
-            upButton.setTintList(ColorStateList.valueOf(vibrantTitleText));
+            if (upButton != null) {
+                upButton.setTintList(ColorStateList.valueOf(vibrantTitleText));
+            }
         } catch (NullPointerException e) {
             Log.i("AlbumActivity", "Palette.Builder could not generate a vibrant swatch, falling back to default colours");
         }

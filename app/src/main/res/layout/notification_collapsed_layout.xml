@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
@@ -16,7 +17,8 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:src="@drawable/default_artwork_dark"
-        android:layout_weight="4" />
+        android:layout_weight="4"
+        android:contentDescription="@string/album_art" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -61,7 +63,8 @@
             android:drawSelectorOnTop="true"
             android:focusable="true"
             android:foreground="@drawable/unbounded_ripple"
-            android:src="@drawable/ic_skip_previous" />
+            android:src="@drawable/ic_skip_previous"
+            android:contentDescription="@string/previous" />
 
         <ImageView
             android:id="@+id/noti_play_button"
@@ -73,7 +76,8 @@
             android:drawSelectorOnTop="true"
             android:focusable="true"
             android:foreground="@drawable/unbounded_ripple"
-            android:src="@drawable/ic_play" />
+            android:src="@drawable/ic_play"
+            android:contentDescription="@string/play" />
 
         <ImageView
             android:id="@+id/noti_next_button"
@@ -85,6 +89,7 @@
             android:drawSelectorOnTop="true"
             android:focusable="true"
             android:foreground="@drawable/unbounded_ripple"
-            android:src="@drawable/ic_skip_next" />
+            android:src="@drawable/ic_skip_next"
+            android:contentDescription="@string/next" />
     </LinearLayout>
 </LinearLayout>
