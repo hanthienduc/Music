@@ -104,38 +104,37 @@ public class AlbumActivity extends AppCompatActivity {
             cursor.close();
         }
 
-        Bitmap bitmap = ((BitmapDrawable)albumArt.getDrawable()).getBitmap();
-
-
-        Palette palette = new Palette.Builder(bitmap).generate();
-        try {
-            Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
-            Palette.Swatch altSwatch = palette.getDominantSwatch();
-            int vibrantRgb;
-            int vibrantTitleText;
-            if (vibrantSwatch != null) {
-                vibrantRgb = vibrantSwatch.getRgb();
-                vibrantTitleText = vibrantSwatch.getBodyTextColor();
-            } else if (altSwatch != null) {
-                vibrantRgb = altSwatch.getRgb();
-                vibrantTitleText = altSwatch.getBodyTextColor();
-            } else {
-                vibrantRgb = ResourcesCompat.getColor(getResources(), R.color.card_background, null);
-                vibrantTitleText = ResourcesCompat.getColor(getResources(), android.R.color.primary_text_dark, null);
+        if(albumArt != null) {
+            Bitmap bitmap = ((BitmapDrawable)albumArt.getDrawable()).getBitmap();
+            Palette palette = new Palette.Builder(bitmap).generate();
+            try {
+                Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+                Palette.Swatch altSwatch = palette.getDominantSwatch();
+                int vibrantRgb;
+                int vibrantTitleText;
+                if (vibrantSwatch != null) {
+                    vibrantRgb = vibrantSwatch.getRgb();
+                    vibrantTitleText = vibrantSwatch.getBodyTextColor();
+                } else if (altSwatch != null) {
+                    vibrantRgb = altSwatch.getRgb();
+                    vibrantTitleText = altSwatch.getBodyTextColor();
+                } else {
+                    vibrantRgb = ResourcesCompat.getColor(getResources(), R.color.card_background, null);
+                    vibrantTitleText = ResourcesCompat.getColor(getResources(), android.R.color.primary_text_dark, null);
+                }
+                toolbarBackground.setBackgroundColor(vibrantRgb);
+                collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(vibrantRgb));
+                collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
+                collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
+                collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
+                collapsingToolbarLayout.setBackgroundColor(vibrantRgb);
+                if (upButton != null) {
+                    upButton.setTintList(ColorStateList.valueOf(vibrantTitleText));
+                }
+            } catch (NullPointerException e) {
+                Log.i("AlbumActivity", "Palette.Builder could not generate a vibrant swatch, falling back to default colours");
             }
-            toolbarBackground.setBackgroundColor(vibrantRgb);
-            collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(vibrantRgb));
-            collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
-            collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
-            collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
-            collapsingToolbarLayout.setBackgroundColor(vibrantRgb);
-            if (upButton != null) {
-                upButton.setTintList(ColorStateList.valueOf(vibrantTitleText));
-            }
-        } catch (NullPointerException e) {
-            Log.i("AlbumActivity", "Palette.Builder could not generate a vibrant swatch, falling back to default colours");
         }
-
 
         Handler mainHandler = new Handler(getMainLooper());
 
