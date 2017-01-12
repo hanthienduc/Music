@@ -52,17 +52,19 @@ public class MusicService extends Service {
     private AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
                 public void onAudioFocusChange(int focusChange) {
-                    if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-                        if(mediaPlayer.isPlaying()) {
-                            mediaPlayer.pause();
+                    if(mediaPlayer != null) {
+                        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                            if(mediaPlayer.isPlaying()) {
+                                mediaPlayer.pause();
+                            }
+                        } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                            if(!mediaPlayer.isPlaying()) {
+                                mediaPlayer.start();
+                            }
+                        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                            audioManager.abandonAudioFocus(afChangeListener);
+                            stopMusic();
                         }
-                    } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                        if(!mediaPlayer.isPlaying()) {
-                            mediaPlayer.start();
-                        }
-                    } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                        audioManager.abandonAudioFocus(afChangeListener);
-                        stopMusic();
                     }
                 }
             };
