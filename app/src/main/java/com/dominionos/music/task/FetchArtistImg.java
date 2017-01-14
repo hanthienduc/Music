@@ -153,7 +153,7 @@ public class FetchArtistImg {
             out.flush();
             out.close();
             return image.getPath();
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
         return null;
