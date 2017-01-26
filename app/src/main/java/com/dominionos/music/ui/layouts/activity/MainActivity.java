@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     private void setDrawer() {
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.header)
+                .withHeaderBackground(R.color.colorPrimary)
                 .build();
 
         PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(GoogleMaterial.Icon.gmd_audiotrack);

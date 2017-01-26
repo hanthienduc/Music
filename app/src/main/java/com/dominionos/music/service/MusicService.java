@@ -15,10 +15,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.graphics.Palette;
@@ -48,7 +46,6 @@ public class MusicService extends Service {
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSessionCompat mediaSession;
-    private MediaControllerCompat mediaController;
     private ArrayList<SongListItem> songList;
     private NotificationManagerCompat notificationManager;
 
@@ -118,16 +115,6 @@ public class MusicService extends Service {
                         intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                 currentPlaylistSongId = 0;
                 pausedSongSeek = 0;
-                Notification notification = createNotification();
-                if (notification != null) {
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction(ACTION_NEXT);
-                    filter.addAction(ACTION_PLAY);
-                    filter.addAction(ACTION_PREV);
-                    this.registerReceiver(musicPlayer, filter);
-
-                    this.startForeground(NOTIFICATION_ID, notification);
-                }
                 break;
             case ACTION_PLAY_ALBUM:
                 pausedSongSeek = 0;
@@ -192,7 +179,7 @@ public class MusicService extends Service {
                 updateCurrentPlaying();
                 break;
             case ACTION_PREV:
-                if (mediaPlayer.getCurrentPosition() >= 5000) {
+                if (mediaPlayer != null && mediaPlayer.getCurrentPosition() >= 5000) {
                     mediaPlayer.seekTo(0);
                 } else {
                     pausedSongSeek = 0;
@@ -397,6 +384,7 @@ public class MusicService extends Service {
     private void stopMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
+            if(mediaSession != null) startForeground(NOTIFICATION_ID, createNotification());
             mediaPlayer.release();
             mediaPlayer = null;
         }
@@ -439,9 +427,8 @@ public class MusicService extends Service {
             }
             try {
                 stopMusic();
-                mediaPlayer = new MediaPlayer();
                 mediaSession = new MediaSessionCompat(this, "MusicService");
-                mediaController = new MediaControllerCompat(this, mediaSession.getSessionToken());
+                mediaPlayer = new MediaPlayer();
                 notificationManager = NotificationManagerCompat.from(this);
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(songPath);
@@ -471,21 +458,9 @@ public class MusicService extends Service {
                 this.songName = songName;
                 this.songDesc = songDesc;
                 this.songPath = songPath;
-                notificationManager.cancelAll();
-                Notification notification = createNotification();
-                if (notification != null) {
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction(ACTION_NEXT);
-                    filter.addAction(ACTION_PLAY);
-                    filter.addAction(ACTION_PREV);
-                    this.registerReceiver(musicPlayer, filter);
-
-                    this.startForeground(NOTIFICATION_ID, notification);
-                }
+                startForeground(NOTIFICATION_ID, createNotification());
             } catch (IOException e) {
                 Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT).show();
-            } catch (RemoteException ignored) {
-
             }
         } else {
             Toast.makeText(MusicService.this, getString(R.string.unable_gain_focus), Toast.LENGTH_SHORT).show();
@@ -575,9 +550,7 @@ public class MusicService extends Service {
                 }
             };
             Palette.from(albumArt).generate(paletteAsyncListener);
-        } catch (IllegalArgumentException ignored) {
-
-        }
+        } catch (IllegalArgumentException ignored) {}
         PendingIntent playIntent = PendingIntent.getBroadcast(this, 100,
                 new Intent(ACTION_STOP).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
         PendingIntent prevIntent = PendingIntent.getBroadcast(this, 100,
@@ -608,11 +581,6 @@ public class MusicService extends Service {
         return notificationBuilder.build();
     }
 
-    private void stopNotification() {
-        notificationManager.cancel(NOTIFICATION_ID);
-        stopForeground(true);
-    }
-
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -628,6 +596,7 @@ public class MusicService extends Service {
         if(mediaPlayer != null) {
             mediaPlayer.release();
         }
+        notificationManager.cancelAll();
     }
 
 }
