@@ -8,8 +8,8 @@ android {
         applicationId "com.dominionos.music"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 8
-        versionName "1.7 beta"
+        versionCode 10
+        versionName "2.0"
     }
     buildTypes {
         release {
