@@ -2,7 +2,6 @@ package com.dominionos.music.service;
 
 import android.app.ActivityManager;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -10,19 +9,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.dominionos.music.R;
-import com.dominionos.music.task.ChangeNotificationDetails;
 import com.dominionos.music.ui.layouts.activity.MusicPlayer;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
@@ -37,8 +37,6 @@ public class MusicService extends Service {
 
     private MediaPlayer mediaPlayer;
 
-    private Notification notificationCompat;
-    private NotificationManager notificationManager;
     private String songName, songDesc, songPath, albumName;
     private long albumId;
     private boolean singleSong;
@@ -46,8 +44,9 @@ public class MusicService extends Service {
     private SongListItem pausedSong;
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
-    private MediaSession mediaSession;
+    private MediaSessionCompat mediaSession;
     private ArrayList<SongListItem> songList;
+    private NotificationManagerCompat notificationManager;
 
     private AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -69,11 +68,12 @@ public class MusicService extends Service {
                 }
             };
 
-    public static final int NOTIFICATION_ID = 104;
+    public static final int NOTIFICATION_ID = 596;
     public static final String ACTION_PLAY = "play";
     public static final String ACTION_PREV = "prev";
     public static final String ACTION_NEXT = "next";
     public static final String ACTION_STOP = "stop";
+    public static final String ACTION_CANCEL_NOTIFICATION = "cancel_notification";
     public static final String ACTION_PLAY_ALBUM = "player_play_album";
     public static final String ACTION_PLAY_ALL_SONGS = "play_all_songs";
     public static final String ACTION_MENU_FROM_PLAYLIST = "player_menu_from_playlist";
@@ -115,6 +115,9 @@ public class MusicService extends Service {
                         intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                 currentPlaylistSongId = 0;
                 pausedSongSeek = 0;
+                break;
+            case ACTION_CANCEL_NOTIFICATION:
+                stopNotification();
                 break;
             case ACTION_PLAY_ALBUM:
                 pausedSongSeek = 0;
@@ -171,7 +174,7 @@ public class MusicService extends Service {
                         }
                     }
                 }
-                    unregisterReceiver(musicPlayer);
+                unregisterReceiver(musicPlayer);
                 break;
             case ACTION_NEXT:
                 pausedSongSeek = 0;
@@ -179,7 +182,7 @@ public class MusicService extends Service {
                 updateCurrentPlaying();
                 break;
             case ACTION_PREV:
-                if (mediaPlayer.getCurrentPosition() >= 5000) {
+                if (mediaPlayer != null && mediaPlayer.getCurrentPosition() >= 5000) {
                     mediaPlayer.seekTo(0);
                 } else {
                     pausedSongSeek = 0;
@@ -238,9 +241,6 @@ public class MusicService extends Service {
                     }
                     pausedSongSeek = mediaPlayer.getCurrentPosition();
                     stopMusic();
-                    stopForeground(true);
-                    changeNotificationDetails(pausedSong.getPath(), pausedSong.getName(),
-                            pausedSong.getDesc(), pausedSong.getAlbumId(), pausedSong.getAlbumName());
                 } else {
                     if (!singleSong) {
                         playMusic(pausedSongPlaylistId);
@@ -387,9 +387,9 @@ public class MusicService extends Service {
     private void stopMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
+            if(mediaSession != null) startForeground(NOTIFICATION_ID, createNotification());
             mediaPlayer.release();
             mediaPlayer = null;
-            setNotificationPlayer(true);
         }
     }
 
@@ -430,8 +430,9 @@ public class MusicService extends Service {
             }
             try {
                 stopMusic();
+                mediaSession = new MediaSessionCompat(this, "MusicService");
                 mediaPlayer = new MediaPlayer();
-                mediaSession = new MediaSession(this, "MusicService");
+                notificationManager = NotificationManagerCompat.from(this);
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(songPath);
                 mediaPlayer.prepare();
@@ -457,10 +458,11 @@ public class MusicService extends Service {
                 });
                 mediaPlayer.start();
                 mediaPlayer.seekTo(pausedSongSeek);
-                setNotificationPlayer(false);
-                changeNotificationDetails(songPath, songName, songDesc, albumId, albumName);
-                notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-                        R.drawable.ic_pause);
+                this.songName = songName;
+                this.songDesc = songDesc;
+                this.songPath = songPath;
+                this.albumId = albumId;
+                startForeground(NOTIFICATION_ID, createNotification());
             } catch (IOException e) {
                 Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT).show();
             }
@@ -469,60 +471,13 @@ public class MusicService extends Service {
         }
     }
 
-    private void setNotificationPlayer(boolean stop) {
-        if (stop)
-            notificationCompat = createBuilderNotificationRemovable().build();
-        else
-            notificationCompat = createBuilderNotification().build();
-        notificationCompat.contentView = new RemoteViews(getPackageName(), R.layout.notification_collapsed_layout);
-        notificationCompat.bigContentView = new RemoteViews(getPackageName(), R.layout.notification_layout);
-        notificationCompat.bigContentView.setImageViewResource(R.id.noti_play_button,
-                R.drawable.ic_play);
-        notificationCompat.priority = Notification.PRIORITY_MAX;
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        startForeground(NOTIFICATION_ID, notificationCompat);
-        notificationManager.notify(NOTIFICATION_ID, notificationCompat);
-    }
-
-    private void changeNotificationDetails(String songPathArg, String songNameArg, String songDescArg,
-                                           long albumIdArg, String albumNameArg) {
-        this.songName = songNameArg;
-        this.albumName = albumNameArg;
-        this.songDesc = songDescArg;
-        this.songPath = songPathArg;
-        this.albumId = albumIdArg;
-
-        notificationCompat.bigContentView.setTextViewText(R.id.noti_song_name, songName);
-        notificationCompat.bigContentView.setTextViewText(R.id.noti_song_artist, songDesc);
-        notificationCompat.bigContentView.setTextViewText(R.id.noti_song_album, albumName);
-        notificationCompat.contentView.setTextViewText(R.id.noti_song_name, songName);
-        notificationCompat.contentView.setTextViewText(R.id.noti_song_artist, songDesc);
-        Intent playClick = new Intent();
-        playClick.setAction(MusicService.ACTION_STOP);
-        PendingIntent playClickIntent = PendingIntent.getBroadcast(MusicService.this, 21021, playClick, 0);
-        notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_play_button, playClickIntent);
-        notificationCompat.contentView.setOnClickPendingIntent(R.id.noti_play_button, playClickIntent);
-        Intent prevClick = new Intent();
-        prevClick.setAction(MusicService.ACTION_PREV);
-        PendingIntent prevClickIntent = PendingIntent.getBroadcast(MusicService.this, 21121, prevClick, 0);
-        notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_prev_button, prevClickIntent);
-        notificationCompat.contentView.setOnClickPendingIntent(R.id.noti_prev_button, prevClickIntent);
-        Intent nextClick = new Intent();
-        nextClick.setAction(MusicService.ACTION_NEXT);
-        PendingIntent nextClickIntent = PendingIntent.getBroadcast(MusicService.this, 21221, nextClick, 0);
-        notificationCompat.bigContentView.setOnClickPendingIntent(R.id.noti_next_button, nextClickIntent);
-        notificationCompat.contentView.setOnClickPendingIntent(R.id.noti_next_button, nextClickIntent);
-        notificationManager.notify(NOTIFICATION_ID, notificationCompat);
-
-        new ChangeNotificationDetails(MusicService.this, albumId, notificationManager, notificationCompat).execute();
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         playList = new MusicPlayerDBHelper(this);
         IntentFilter commandFilter = new IntentFilter();
         commandFilter.addAction(ACTION_PLAY);
         commandFilter.addAction(ACTION_STOP);
+        commandFilter.addAction(ACTION_CANCEL_NOTIFICATION);
         commandFilter.addAction(ACTION_PLAY_SINGLE);
         commandFilter.addAction(ACTION_PLAY_ALL_SONGS);
         commandFilter.addAction(ACTION_ADD_SONG);
@@ -586,32 +541,68 @@ public class MusicService extends Service {
         return START_STICKY;
     }
 
-    private NotificationCompat.Builder createBuilderNotification() {
-        Intent notificationIntent = new Intent();
-        notificationIntent.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
-        PendingIntent contentIntent = PendingIntent.getBroadcast(MusicService.this, 0, notificationIntent, 0);
-        Intent deleteIntent = new Intent();
-        deleteIntent.setAction(MusicService.ACTION_REMOVE_SERVICE);
-        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(MusicService.this, 0, deleteIntent, 0);
-        return new NotificationCompat.Builder(this)
-                .setOngoing(true)
+    private Notification createNotification() {
+        PendingIntent playIntent = PendingIntent.getBroadcast(this, 100,
+                new Intent(ACTION_STOP).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent prevIntent = PendingIntent.getBroadcast(this, 100,
+                new Intent(ACTION_PREV).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent nextIntent = PendingIntent.getBroadcast(this, 100,
+                new Intent(ACTION_NEXT).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent cancelIntent = PendingIntent.getBroadcast(this, 100,
+                new Intent(ACTION_CANCEL_NOTIFICATION).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
+
+        int color = 0x000000;
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap albumArt;
+        Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[]{String.valueOf(albumId)},
+                null);
+        String songArt = "";
+        if (cursor != null && cursor.moveToFirst()) {
+            songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+        }
+        try {
+            albumArt = BitmapFactory.decodeFile(songArt, options);
+        } catch (IllegalArgumentException e) {
+            albumArt = BitmapFactory.decodeResource(getResources(), R.drawable.default_artwork_dark, options);
+        }
+
+        notificationBuilder
+                .setStyle(new NotificationCompat.MediaStyle()
+                        .setMediaSession(mediaSession.getSessionToken())
+                        .setShowActionsInCompactView(1))
+                .setColor(color)
                 .setSmallIcon(R.drawable.ic_audiotrack)
-                .setContentIntent(contentIntent)
-                .setDeleteIntent(deletePendingIntent);
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentTitle(songName)
+                .setContentText(songDesc)
+                .setLargeIcon(albumArt);
+        if(mediaPlayer.isPlaying()) {
+            notificationBuilder.addAction(R.drawable.ic_skip_previous, getString(R.string.previous), prevIntent)
+                    .addAction(R.drawable.ic_pause, getString(R.string.play), playIntent)
+                    .addAction(R.drawable.ic_skip_next, getString(R.string.next), nextIntent)
+                    .addAction(R.drawable.ic_remove, "Remove", cancelIntent);
+        } else {
+            notificationBuilder.addAction(R.drawable.ic_skip_previous, getString(R.string.previous), prevIntent)
+                    .addAction(R.drawable.ic_play, getString(R.string.play), playIntent)
+                    .addAction(R.drawable.ic_skip_next, getString(R.string.next), nextIntent)
+                    .addAction(R.drawable.ic_remove, "Remove", cancelIntent);
+        }
+
+        if (cursor != null) cursor.close();
+        return notificationBuilder.build();
     }
 
-    private NotificationCompat.Builder createBuilderNotificationRemovable() {
-        Intent notificationIntent = new Intent();
-        notificationIntent.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
-        PendingIntent contentIntent = PendingIntent.getActivity(MusicService.this, 0, notificationIntent, 0);
-        Intent deleteIntent = new Intent();
-        deleteIntent.setAction(MusicService.ACTION_REMOVE_SERVICE);
-        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(MusicService.this, 0, deleteIntent, 0);
-        return new NotificationCompat.Builder(this)
-                .setOngoing(false)
-                .setSmallIcon(R.drawable.ic_audiotrack)
-                .setContentIntent(contentIntent)
-                .setDeleteIntent(deletePendingIntent);
+    private void stopNotification() {
+        stopMusic();
+        notificationManager.cancelAll();
+        stopForeground(true);
     }
 
     @Override
@@ -629,6 +620,8 @@ public class MusicService extends Service {
         if(mediaPlayer != null) {
             mediaPlayer.release();
         }
+        notificationManager.cancelAll();
+        stopForeground(true);
     }
 
 }

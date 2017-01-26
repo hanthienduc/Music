@@ -104,7 +104,7 @@ public class AlbumActivity extends AppCompatActivity {
             cursor.close();
         }
 
-        if(albumArt != null) {
+        if(albumArt.getDrawable() != null) {
             Bitmap bitmap = ((BitmapDrawable)albumArt.getDrawable()).getBitmap();
             Palette palette = new Palette.Builder(bitmap).generate();
             try {
