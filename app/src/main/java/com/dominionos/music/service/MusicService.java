@@ -477,6 +477,7 @@ public class MusicService extends Service {
         IntentFilter commandFilter = new IntentFilter();
         commandFilter.addAction(ACTION_PLAY);
         commandFilter.addAction(ACTION_STOP);
+        commandFilter.addAction(ACTION_CANCEL_NOTIFICATION);
         commandFilter.addAction(ACTION_PLAY_SINGLE);
         commandFilter.addAction(ACTION_PLAY_ALL_SONGS);
         commandFilter.addAction(ACTION_ADD_SONG);
@@ -547,6 +548,8 @@ public class MusicService extends Service {
                 new Intent(ACTION_PREV).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
         PendingIntent nextIntent = PendingIntent.getBroadcast(this, 100,
                 new Intent(ACTION_NEXT).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent cancelIntent = PendingIntent.getBroadcast(this, 100,
+                new Intent(ACTION_CANCEL_NOTIFICATION).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
 
         int color = 0x000000;
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
@@ -581,13 +584,15 @@ public class MusicService extends Service {
                 .setContentText(songDesc)
                 .setLargeIcon(albumArt);
         if(mediaPlayer.isPlaying()) {
-            notificationBuilder.addAction(R.drawable.ic_skip_previous, "Previous", prevIntent)
-                    .addAction(R.drawable.ic_pause, "Play", playIntent)
-                    .addAction(R.drawable.ic_skip_next, "Next", nextIntent);
+            notificationBuilder.addAction(R.drawable.ic_skip_previous, getString(R.string.previous), prevIntent)
+                    .addAction(R.drawable.ic_pause, getString(R.string.play), playIntent)
+                    .addAction(R.drawable.ic_skip_next, getString(R.string.next), nextIntent)
+                    .addAction(R.drawable.ic_remove, "Remove", cancelIntent);
         } else {
-            notificationBuilder.addAction(R.drawable.ic_skip_previous, "Previous", prevIntent)
-                    .addAction(R.drawable.ic_play, "Play", playIntent)
-                    .addAction(R.drawable.ic_skip_next, "Next", nextIntent);
+            notificationBuilder.addAction(R.drawable.ic_skip_previous, getString(R.string.previous), prevIntent)
+                    .addAction(R.drawable.ic_play, getString(R.string.play), playIntent)
+                    .addAction(R.drawable.ic_skip_next, getString(R.string.next), nextIntent)
+                    .addAction(R.drawable.ic_remove, "Remove", cancelIntent);
         }
 
         if (cursor != null) cursor.close();
@@ -595,6 +600,7 @@ public class MusicService extends Service {
     }
 
     private void stopNotification() {
+        stopMusic();
         notificationManager.cancelAll();
         stopForeground(true);
     }
