@@ -463,6 +463,9 @@ public class MusicService extends Service {
                 this.songPath = songPath;
                 this.albumId = albumId;
                 startForeground(NOTIFICATION_ID, createNotification());
+                Intent requestSongDetails = new Intent();
+                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                sendBroadcast(requestSongDetails);
             } catch (IOException e) {
                 Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT).show();
             }
