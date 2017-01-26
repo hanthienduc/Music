@@ -19,7 +19,6 @@ import android.provider.MediaStore;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
-import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -74,6 +73,7 @@ public class MusicService extends Service {
     public static final String ACTION_PREV = "prev";
     public static final String ACTION_NEXT = "next";
     public static final String ACTION_STOP = "stop";
+    public static final String ACTION_CANCEL_NOTIFICATION = "cancel_notification";
     public static final String ACTION_PLAY_ALBUM = "player_play_album";
     public static final String ACTION_PLAY_ALL_SONGS = "play_all_songs";
     public static final String ACTION_MENU_FROM_PLAYLIST = "player_menu_from_playlist";
@@ -115,6 +115,9 @@ public class MusicService extends Service {
                         intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                 currentPlaylistSongId = 0;
                 pausedSongSeek = 0;
+                break;
+            case ACTION_CANCEL_NOTIFICATION:
+                stopNotification();
                 break;
             case ACTION_PLAY_ALBUM:
                 pausedSongSeek = 0;
@@ -458,6 +461,7 @@ public class MusicService extends Service {
                 this.songName = songName;
                 this.songDesc = songDesc;
                 this.songPath = songPath;
+                this.albumId = albumId;
                 startForeground(NOTIFICATION_ID, createNotification());
             } catch (IOException e) {
                 Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT).show();
@@ -537,33 +541,40 @@ public class MusicService extends Service {
     }
 
     private Notification createNotification() {
-        final int[] color = {0xffffff};
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = false;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap albumArt = BitmapFactory.decodeResource(getResources(), R.drawable.default_artwork_dark, options);
-        try {
-            Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
-                @Override
-                public void onGenerated(Palette palette) {
-                    if(palette.getDominantSwatch() != null) color[0] = palette.getDominantSwatch().getRgb();
-                }
-            };
-            Palette.from(albumArt).generate(paletteAsyncListener);
-        } catch (IllegalArgumentException ignored) {}
         PendingIntent playIntent = PendingIntent.getBroadcast(this, 100,
                 new Intent(ACTION_STOP).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
         PendingIntent prevIntent = PendingIntent.getBroadcast(this, 100,
                 new Intent(ACTION_PREV).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
         PendingIntent nextIntent = PendingIntent.getBroadcast(this, 100,
                 new Intent(ACTION_NEXT).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
+
+        int color = 0x000000;
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap albumArt;
+        Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[]{String.valueOf(albumId)},
+                null);
+        String songArt = "";
+        if (cursor != null && cursor.moveToFirst()) {
+            songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+        }
+        try {
+            albumArt = BitmapFactory.decodeFile(songArt, options);
+        } catch (IllegalArgumentException e) {
+            albumArt = BitmapFactory.decodeResource(getResources(), R.drawable.default_artwork_dark, options);
+        }
+
         notificationBuilder
                 .setStyle(new NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSession.getSessionToken())
-                        .setShowActionsInCompactView(1)
-                        .setShowCancelButton(true))
-                .setColor(color[0])
+                        .setShowActionsInCompactView(1))
+                .setColor(color)
                 .setSmallIcon(R.drawable.ic_audiotrack)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(songName)
@@ -578,7 +589,14 @@ public class MusicService extends Service {
                     .addAction(R.drawable.ic_play, "Play", playIntent)
                     .addAction(R.drawable.ic_skip_next, "Next", nextIntent);
         }
+
+        if (cursor != null) cursor.close();
         return notificationBuilder.build();
+    }
+
+    private void stopNotification() {
+        notificationManager.cancelAll();
+        stopForeground(true);
     }
 
     @Override
@@ -597,6 +615,7 @@ public class MusicService extends Service {
             mediaPlayer.release();
         }
         notificationManager.cancelAll();
+        stopForeground(true);
     }
 
 }
