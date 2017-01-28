@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:gravity="bottom"
+    app:umanoDragView="@+id/drag_view"
     app:umanoPanelHeight="?attr/actionBarSize">
     <!-- Main content -->
     <android.support.design.widget.CoordinatorLayout
@@ -52,9 +53,84 @@
     </android.support.design.widget.CoordinatorLayout>
 
     <!-- Sliding Panel -->
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/panel_holder">
-    </FrameLayout>
+        android:clickable="true"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:id="@+id/drag_view"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                app:srcCompat="@drawable/ic_expand_up"/>
+
+            <ImageView
+                android:id="@+id/player_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/unbounded_ripple"
+                android:drawSelectorOnTop="true"
+                android:layout_centerVertical="true"
+                android:padding="16dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_play"
+                android:contentDescription="@string/play" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:id="@+id/album_art"
+                android:src="@drawable/default_artwork_dark"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:layout_below="@id/album_art">
+                <ImageView
+                    android:id="@+id/player_rewind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/unbounded_ripple"
+                    android:drawSelectorOnTop="true"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_skip_previous"
+                    android:contentDescription="@string/rewind" />
+
+                <ImageView
+                    android:id="@+id/player_forward"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/unbounded_ripple"
+                    android:drawSelectorOnTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_skip_next"
+                    android:contentDescription="@string/fast_forward" />
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_toStartOf="@id/player_forward"
+                    android:layout_toEndOf="@id/player_rewind"
+                    android:layout_height="wrap_content"
+                    android:progressTint="#FFFFFF"
+                    android:thumbTint="#FFFFFF" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

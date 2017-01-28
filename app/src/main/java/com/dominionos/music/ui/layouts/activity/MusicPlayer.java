@@ -39,6 +39,9 @@ import com.dominionos.music.service.MusicService;
 import com.dominionos.music.task.ChangeSeekDetailUpdater;
 import com.dominionos.music.task.ColorAnimateAlbumView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -236,17 +239,7 @@ public class MusicPlayer extends AppCompatActivity {
     private void updateSeeker() {
         seekBar.setMax(duration);
         seekBar.setProgress(currentDuration);
-        String totalDurationSeconds = String.valueOf((duration / 1000) % 60);
-        String totalDurationMinutes = String.valueOf((duration / 1000) / 60);
-        if(totalDurationMinutes.length() == 1 &&  totalDurationSeconds.length() == 1) {
-            totalTimeHolder.setText("0" + totalDurationMinutes + ":" + "0" + totalDurationSeconds);
-        } else if(totalDurationSeconds.length() == 1) {
-            totalTimeHolder.setText(totalDurationMinutes + ":" + "0" + totalDurationSeconds);
-        } else if(totalDurationMinutes.length() == 1) {
-            totalTimeHolder.setText("0" + totalDurationMinutes + ":" + totalDurationSeconds);
-        } else {
-            totalTimeHolder.setText(totalDurationMinutes + ":" + totalDurationSeconds);
-        }
+        totalTimeHolder.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(duration)));
         musicStopped = false;
         if (timer != null)
             timer.cancel();
