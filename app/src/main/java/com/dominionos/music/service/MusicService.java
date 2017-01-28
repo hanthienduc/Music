@@ -115,6 +115,9 @@ public class MusicService extends Service {
                         intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                 currentPlaylistSongId = 0;
                 pausedSongSeek = 0;
+                Intent requestSongDetails = new Intent();
+                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                sendBroadcast(requestSongDetails);
                 break;
             case ACTION_CANCEL_NOTIFICATION:
                 stopNotification();
@@ -160,6 +163,9 @@ public class MusicService extends Service {
                     musicCursor.close();
                 }
                 playMusic(0);
+                requestSongDetails = new Intent();
+                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                sendBroadcast(requestSongDetails);
                 break;
             case ACTION_REMOVE_SERVICE:
                 MusicService.this.stopSelf();
@@ -309,6 +315,9 @@ public class MusicService extends Service {
                 pausedSongSeek = 0;
                 playMusic(Integer.parseInt(intent.getStringExtra("playListId")));
                 updateCurrentPlaying();
+                requestSongDetails = new Intent();
+                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                sendBroadcast(requestSongDetails);
                 break;
             case ACTION_MENU_FROM_PLAYLIST:
                 String action = intent.getStringExtra("action");
@@ -346,6 +355,9 @@ public class MusicService extends Service {
                 playList.clearPlayingList();
                 playList.addSongs(helper.getPlayListSongs(intent.getIntExtra("playlistId", -1)));
                 playMusic(playList.getFirstSong());
+                requestSongDetails = new Intent();
+                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                sendBroadcast(requestSongDetails);
                 break;
             case ACTION_PLAY_ALL_SONGS:
                 if(songList != null) {
@@ -353,6 +365,9 @@ public class MusicService extends Service {
                     playList.addSongs(songList);
                     pausedSongSeek = 0;
                     playMusic(0);
+                    requestSongDetails = new Intent();
+                    requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                    sendBroadcast(requestSongDetails);
                 } else {
                     Toast.makeText(context, getString(R.string.service_generate_list_warning), Toast.LENGTH_LONG).show();
                 }
@@ -463,9 +478,6 @@ public class MusicService extends Service {
                 this.songPath = songPath;
                 this.albumId = albumId;
                 startForeground(NOTIFICATION_ID, createNotification());
-                Intent requestSongDetails = new Intent();
-                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
-                sendBroadcast(requestSongDetails);
             } catch (IOException e) {
                 Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT).show();
             }

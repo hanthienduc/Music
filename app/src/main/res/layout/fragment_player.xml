@@ -1,0 +1,93 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.dominionos.music.ui.layouts.fragments.PlayerFragment">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/player_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@android:style/ThemeOverlay.Material.Light"
+            android:weightSum="1">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    app:srcCompat="@drawable/ic_expand_up"/>
+
+                <ImageView
+                    android:id="@+id/player_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/unbounded_ripple"
+                    android:drawSelectorOnTop="true"
+                    android:layout_centerVertical="true"
+                    android:padding="16dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_play"
+                    android:contentDescription="@string/play" />
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:id="@+id/album_art"
+            android:src="@drawable/default_artwork_dark"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:layout_below="@id/album_art">
+            <ImageView
+                android:id="@+id/player_rewind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/unbounded_ripple"
+                android:drawSelectorOnTop="true"
+                android:padding="16dp"
+                android:src="@drawable/ic_skip_previous"
+                android:contentDescription="@string/rewind" />
+
+            <ImageView
+                android:id="@+id/player_forward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/unbounded_ripple"
+                android:drawSelectorOnTop="true"
+                android:layout_alignParentEnd="true"
+                android:padding="16dp"
+                android:src="@drawable/ic_skip_next"
+                android:contentDescription="@string/fast_forward" />
+
+            <app.minimize.com.seek_bar_compat.SeekBarCompat
+                android:layout_width="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toStartOf="@id/player_forward"
+                android:layout_toEndOf="@id/player_rewind"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>
