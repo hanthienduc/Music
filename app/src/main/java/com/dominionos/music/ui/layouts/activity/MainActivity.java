@@ -20,6 +20,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dominionos.music.R;
@@ -47,11 +48,13 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 public class MainActivity extends AppCompatActivity {
 
     public static final String ACTION_GET_PLAY_STATE = "get_play_state";
-    public static final String ACTION_GET_SEEK_VALUE = "gte_seek_value";
+    public static final String ACTION_GET_SEEK_VALUE = "get_seek_value";
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
 
     private TextView songName, songDesc;
+    private ImageView playToolbar, play, forward, rewind;
+
     private SlidingUpPanelLayout slidingPanel;
     private Toolbar toolbar;
     private ViewPager viewPager;
@@ -61,6 +64,13 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             switch(intent.getAction()) {
                 case ACTION_GET_PLAY_STATE:
+                    if(intent.getBooleanExtra("isPlaying", false)) {
+                        playToolbar.setImageResource(R.drawable.ic_pause);
+                        play.setImageResource(R.drawable.ic_pause);
+                    } else {
+                        playToolbar.setImageResource(R.drawable.ic_play);
+                        play.setImageResource(R.drawable.ic_play);
+                    }
                     break;
                 case ACTION_GET_SEEK_VALUE:
                     break;
@@ -240,6 +250,38 @@ public class MainActivity extends AppCompatActivity {
         songName = (TextView) findViewById(R.id.song_name_toolbar);
         songDesc = (TextView) findViewById(R.id.song_desc_toolbar);
         slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        playToolbar = (ImageView) findViewById(R.id.player_play_toolbar);
+        rewind = (ImageView) findViewById(R.id.player_rewind);
+        forward = (ImageView) findViewById(R.id.player_forward);
+        play = (ImageView) findViewById(R.id.player_play);
+        forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_NEXT);
+                sendBroadcast(intent);
+            }
+        });
+        rewind.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_PREV);
+                sendBroadcast(intent);
+            }
+        });
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_STOP);
+                sendBroadcast(intent);
+            }
+        });
+        playToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_STOP);
+                sendBroadcast(intent);
+            }
+        });
         Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
         sendBroadcast(intent);
     }

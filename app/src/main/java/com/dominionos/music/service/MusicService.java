@@ -23,6 +23,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.dominionos.music.R;
+import com.dominionos.music.ui.layouts.activity.MainActivity;
 import com.dominionos.music.ui.layouts.activity.MusicPlayer;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
@@ -260,9 +261,8 @@ public class MusicService extends Service {
                         playMusic(pausedSong);
                     }
                 }
-                Intent i = new Intent(MusicPlayer.ACTION_GET_PLAY_STATE);
-                if (mediaPlayer != null && mediaPlayer.isPlaying())
-                    i.putExtra("isPlaying", true);
+                Intent i = new Intent(MainActivity.ACTION_GET_PLAY_STATE);
+                i.putExtra("isPlaying", mediaPlayer != null && mediaPlayer.isPlaying());
                 sendBroadcast(i);
                 break;
             case ACTION_SEEK_TO:
@@ -411,6 +411,9 @@ public class MusicService extends Service {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        Intent intent = new Intent(MainActivity.ACTION_GET_PLAY_STATE);
+        intent.putExtra("isPlaying", mediaPlayer != null && mediaPlayer.isPlaying());
+        sendBroadcast(intent);
     }
 
     private void playMusic(int playingPos) {
@@ -489,6 +492,10 @@ public class MusicService extends Service {
         } else {
             Toast.makeText(MusicService.this, getString(R.string.unable_gain_focus), Toast.LENGTH_SHORT).show();
         }
+
+        Intent intent = new Intent(MainActivity.ACTION_GET_PLAY_STATE);
+        intent.putExtra("isPlaying", mediaPlayer != null && mediaPlayer.isPlaying());
+        sendBroadcast(intent);
     }
 
     @Override
