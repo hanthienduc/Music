@@ -1,25 +1,31 @@
 package com.dominionos.music.ui.layouts.activity;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
+import com.dominionos.music.utils.MusicPlayerDBHelper;
+import com.dominionos.music.utils.adapters.PlayingSongAdapter;
 import com.dominionos.music.utils.adapters.ViewPagerAdapter;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
@@ -36,13 +42,45 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FloatingActionButton fab;
+    public static final String ACTION_GET_PLAY_STATE = "get_play_state";
+    public static final String ACTION_GET_SEEK_VALUE = "gte_seek_value";
+    public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
+    public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
+
+    private TextView songName, songDesc;
+    private SlidingUpPanelLayout slidingPanel;
     private Toolbar toolbar;
     private ViewPager viewPager;
     private AudioManager audioManager;
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch(intent.getAction()) {
+                case ACTION_GET_PLAY_STATE:
+                    break;
+                case ACTION_GET_SEEK_VALUE:
+                    break;
+                case ACTION_GET_PLAYING_DETAIL:
+                    changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"));
+                    break;
+                case ACTION_GET_PLAYING_LIST:
+                    RecyclerView rv = (RecyclerView) findViewById(R.id.playing_list);
+                    MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
+                    PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList());
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(context,
+                            LinearLayoutManager.VERTICAL, false);
+                    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                    rv.setLayoutManager(layoutManager);
+                    rv.setHasFixedSize(true);
+                    rv.setAdapter(adapter);
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +92,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        fab = (FloatingActionButton) findViewById(R.id.fab_main);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent requestSongDetails = new Intent();
-                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
-                sendBroadcast(requestSongDetails);
-            }
-        });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 init();
@@ -100,8 +129,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+
         Intent i = new Intent(MainActivity.this, MusicService.class);
         startService(i);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_GET_SEEK_VALUE);
+        filter.addAction(ACTION_GET_PLAY_STATE);
+        filter.addAction(ACTION_GET_PLAYING_LIST);
+        filter.addAction(ACTION_GET_PLAYING_DETAIL);
+        registerReceiver(broadcastReceiver, filter);
 
         setupViewPager(viewPager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
@@ -109,6 +146,8 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         setDrawer();
+
+        setupPlayer();
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -198,18 +237,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupPlayer() {
-
+        songName = (TextView) findViewById(R.id.song_name_toolbar);
+        songDesc = (TextView) findViewById(R.id.song_desc_toolbar);
+        slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+        sendBroadcast(intent);
     }
 
-    private void changePlayerDetails() {
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (fab.getVisibility() != View.VISIBLE)
-            fab.setVisibility(View.VISIBLE);
+    private void changePlayerDetails(String songNameString, String songDetailsString) {
+        if(songNameString != null) {
+            slidingPanel.setEnabled(true);
+            songName.setText(songNameString);
+            songDesc.setText(songDetailsString);
+        } else {
+            slidingPanel.setEnabled(false);
+        }
     }
 
     @Override
@@ -222,6 +264,12 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
