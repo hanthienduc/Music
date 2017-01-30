@@ -222,8 +222,11 @@ public class MusicService extends Service {
                         }
                         sendBroadcast(sendDetails);
                         updatePlaylist();
-                    } else
-                        Toast.makeText(MusicService.this, "Nothing to Play", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Intent sendDetails = new Intent(ACTION_GET_PLAYING_DETAIL);
+                        sendDetails.putExtra("songName", "");
+                        sendBroadcast(sendDetails);
+                    }
                 } else {
                     Intent sendDetails = new Intent(ACTION_GET_PLAYING_DETAIL);
                     sendDetails.putExtra("songPath", songPath);
@@ -269,16 +272,6 @@ public class MusicService extends Service {
                     playMusic(pausedSong);
                     pausedSongSeek = 0;
                 }
-                break;
-            case ACTION_SEEK_GET:
-                Intent i1 = new Intent();
-                i1.setAction(MainActivity.ACTION_GET_SEEK_VALUE);
-                if (mediaPlayer != null && mediaPlayer.isPlaying())
-                    i1.putExtra("isPlaying", true);
-                if (mediaPlayer != null)
-                    i1.putExtra("songSeekVal", mediaPlayer.getCurrentPosition());
-                sendBroadcast(i1);
-                updatePlaylist();
                 break;
             case ACTION_SHUFFLE_PLAYLIST:
                 String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();

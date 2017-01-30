@@ -9,16 +9,16 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -62,14 +62,13 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     public static final String ACTION_GET_PLAY_STATE = "get_play_state";
-    public static final String ACTION_GET_SEEK_VALUE = "get_seek_value";
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
 
     private boolean musicStopped = true, missingDuration = true;
     private Timer timer;
     private TextView songName, songDesc, currentTime, totalTime;
-    private ImageView playToolbar, play, forward, rewind;
+    private ImageView playToolbar, play, forward, rewind, shuffle;
     private SeekBar seekBar;
     private SlidingUpPanelLayout slidingPanel;
     private Toolbar toolbar;
@@ -90,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
                         play.setImageResource(R.drawable.ic_play);
                         musicStopped = true;
                     }
-                    break;
-                case ACTION_GET_SEEK_VALUE:
                     break;
                 case ACTION_GET_PLAYING_DETAIL:
                     changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
@@ -165,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
         startService(i);
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_GET_SEEK_VALUE);
         filter.addAction(ACTION_GET_PLAY_STATE);
         filter.addAction(ACTION_GET_PLAYING_LIST);
         filter.addAction(ACTION_GET_PLAYING_DETAIL);
@@ -179,6 +175,14 @@ public class MainActivity extends AppCompatActivity {
         setDrawer();
 
         setupPlayer();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                sendBroadcast(intent);
+            }
+        }, 1000);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -274,11 +278,20 @@ public class MainActivity extends AppCompatActivity {
         songName = (TextView) findViewById(R.id.song_name_toolbar);
         songDesc = (TextView) findViewById(R.id.song_desc_toolbar);
         slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         playToolbar = (ImageView) findViewById(R.id.player_play_toolbar);
         rewind = (ImageView) findViewById(R.id.player_rewind);
         forward = (ImageView) findViewById(R.id.player_forward);
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
+        shuffle = (ImageView) findViewById(R.id.player_shuffle);
+        shuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_SHUFFLE_PLAYLIST);
+                sendBroadcast(intent);
+            }
+        });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -352,8 +365,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
-        sendBroadcast(intent);
     }
 
     private void changePlayerDetails(String songNameString, String songDetailsString,
@@ -371,8 +382,16 @@ public class MainActivity extends AppCompatActivity {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = false;
                 options.inPreferredConfig = Bitmap.Config.RGB_565;
-                Drawable artWork = new BitmapDrawable(this.getResources(), BitmapFactory.decodeFile(songArt, options));
-                ((ImageView) findViewById(R.id.album_art)).setImageDrawable(artWork);
+                Bitmap albumArt = BitmapFactory.decodeFile(songArt, options);
+                ((ImageView) findViewById(R.id.album_art)).setImageBitmap(albumArt);
+                Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        if(palette.getVibrantSwatch() != null)
+                            findViewById(R.id.control_holder).setBackgroundColor(palette.getVibrantSwatch().getRgb());
+                    }
+                };
+                Palette.from(albumArt).generate(paletteAsyncListener);
             }
             songName.setText(songNameString);
             songDesc.setText(songDetailsString);
@@ -394,9 +413,9 @@ public class MainActivity extends AppCompatActivity {
                                     int seekProgress = seekBar.getProgress();
                                     if (seekProgress < totalTime) {
                                         seekBar.setProgress(seekProgress + 100);
-                                    } else {
-                                        seekBar.setProgress(100);
                                     }
+                                } else {
+                                    seekBar.setProgress(100);
                                     MainActivity.this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault())
                                             .format(new Date(seekBar.getProgress())));
                                 }
@@ -407,6 +426,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 missingDuration = true;
             }
+            if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else {
             slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         }

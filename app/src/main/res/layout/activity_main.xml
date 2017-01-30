@@ -141,6 +141,32 @@
                     android:src="@drawable/ic_skip_next"
                     android:contentDescription="@string/fast_forward" />
 
+                <ImageView
+                    android:id="@+id/player_shuffle"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/unbounded_ripple"
+                    android:layout_toEndOf="@id/player_forward"
+                    android:drawSelectorOnTop="true"
+                    android:layout_margin="16dp"
+                    android:padding="2dp"
+                    android:layout_below="@id/player_seekbar"
+                    android:src="@drawable/ic_shuffle"
+                    android:contentDescription="@string/shuffle" />
+
+                <ImageView
+                    android:id="@+id/player_repeat"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/unbounded_ripple"
+                    android:layout_toStartOf="@id/player_rewind"
+                    android:drawSelectorOnTop="true"
+                    android:layout_margin="16dp"
+                    android:padding="2dp"
+                    android:layout_below="@id/player_seekbar"
+                    android:src="@drawable/ic_repeat"
+                    android:contentDescription="@string/repeat" />
+
             </RelativeLayout>
 
             <android.support.v7.widget.RecyclerView
