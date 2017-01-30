@@ -300,6 +300,7 @@ public class MusicService extends Service {
                     playList.addSong(new SongListItem(intent.getLongExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                             intent.getStringExtra("songPath"), false,
                             intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
+                    updatePlaylist();
                 } else {
                     intent.setAction(ACTION_PLAY_SINGLE);
                     sendBroadcast(intent);

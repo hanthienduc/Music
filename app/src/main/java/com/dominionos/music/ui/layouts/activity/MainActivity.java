@@ -1,6 +1,8 @@
 package com.dominionos.music.ui.layouts.activity;
 
 import android.Manifest;
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +12,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -70,13 +74,13 @@ public class MainActivity extends AppCompatActivity {
     private boolean musicStopped = true, missingDuration = true;
     private Timer timer;
     private TextView songName, songDesc, currentTime, totalTime;
-    private ImageView playToolbar, play, forward, rewind, shuffle, albumArt, miniAlbumArt;
+    private ImageView playToolbar, play, albumArt, miniAlbumArt;
     private SeekBar seekBar;
     private SlidingUpPanelLayout slidingPanel, secondPanel;
     private Toolbar toolbar;
     private ViewPager viewPager;
     private AudioManager audioManager;
-    private RelativeLayout miniController;
+    private RelativeLayout miniController, controlHolder;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -283,11 +287,12 @@ public class MainActivity extends AppCompatActivity {
         secondPanel = (SlidingUpPanelLayout) findViewById(R.id.playing_list_panel);
         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         playToolbar = (ImageView) findViewById(R.id.player_play_toolbar);
-        rewind = (ImageView) findViewById(R.id.player_rewind);
-        forward = (ImageView) findViewById(R.id.player_forward);
+        ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
+        ImageView forward = (ImageView) findViewById(R.id.player_forward);
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
-        shuffle = (ImageView) findViewById(R.id.player_shuffle);
+        controlHolder = (RelativeLayout) findViewById(R.id.control_holder);
+        ImageView shuffle = (ImageView) findViewById(R.id.player_shuffle);
         albumArt = (ImageView) findViewById(R.id.album_art);
         miniAlbumArt = (ImageView) findViewById(R.id.mini_album_art);
         secondPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -408,8 +413,22 @@ public class MainActivity extends AppCompatActivity {
                 Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(Palette palette) {
-                        if(palette.getVibrantSwatch() != null)
-                            findViewById(R.id.control_holder).setBackgroundColor(palette.getVibrantSwatch().getRgb());
+                        if(palette.getVibrantSwatch() != null) {
+                            Drawable background = controlHolder.getBackground();
+                            int colorFrom = ((ColorDrawable) background).getColor();
+                            int colorTo = palette.getVibrantSwatch().getRgb();
+                            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                            colorAnimation.setDuration(500); // milliseconds
+                            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator animator) {
+                                    controlHolder.setBackgroundColor(((int) animator.getAnimatedValue()));
+                                }
+
+                            });
+                            colorAnimation.start();
+                        }
                     }
                 };
                 Palette.from(albumArt).generate(paletteAsyncListener);
