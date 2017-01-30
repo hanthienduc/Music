@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:gravity="bottom"
     android:id="@+id/sliding_layout"
-    app:umanoScrollableView="@+id/playing_list"
+    app:umanoScrollableView="@+id/scroll_view"
+    app:umanoDragView="@+id/album_art_holder"
     app:umanoParallaxOffset="100dp"
     app:umanoPanelHeight="?attr/actionBarSize">
     <!-- Main content -->
@@ -42,23 +43,86 @@
     </android.support.design.widget.CoordinatorLayout>
 
     <!-- Sliding Panel -->
-    <FrameLayout
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:orientation="vertical">
-
-        <LinearLayout
+        android:gravity="bottom"
+        android:id="@+id/playing_list_panel"
+        app:umanoScrollableView="@+id/playing_list"
+        app:umanoParallaxOffset="100dp"
+        app:umanoOverlay="true"
+        app:umanoPanelHeight="275dp">
+        <FrameLayout
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
             android:orientation="vertical"
-            android:layout_height="match_parent">
+            android:id="@+id/album_art_holder">
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:id="@+id/album_art"
-                android:src="@drawable/default_artwork_dark"/>
+                android:src="@drawable/default_artwork_dark"
+                android:contentDescription="@string/album_art" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorPrimary"
+                android:id="@+id/mini_controller"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:adjustViewBounds="true"
+                    android:id="@+id/mini_album_art"
+                    app:srcCompat="@drawable/default_artwork_dark"
+                    android:contentDescription="@string/album_art" />
+
+                <ImageView
+                    android:id="@+id/player_play_toolbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/unbounded_ripple"
+                    android:drawSelectorOnTop="true"
+                    android:layout_centerVertical="true"
+                    android:padding="16dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_play"
+                    android:contentDescription="@string/play" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/player_play_toolbar"
+                    android:layout_centerVertical="true"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="0dp"
+                    android:orientation="vertical"
+                    android:layout_toEndOf="@id/mini_album_art">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:id="@+id/song_name_toolbar"
+                        android:textColor="@android:color/primary_text_dark" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:id="@+id/song_desc_toolbar"
+                        android:textColor="@android:color/secondary_text_dark" />
+                </LinearLayout>
+            </RelativeLayout>
+        </FrameLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:id="@+id/scroll_view">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -172,59 +236,9 @@
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:layout_below="@id/control_holder"
                 android:id="@+id/playing_list"/>
-
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            android:id="@+id/mini_controller"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"
-                android:id="@+id/expand_toolbar"
-                app:srcCompat="@drawable/ic_expand_up"/>
-
-            <ImageView
-                android:id="@+id/player_play_toolbar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/unbounded_ripple"
-                android:drawSelectorOnTop="true"
-                android:layout_centerVertical="true"
-                android:padding="16dp"
-                android:layout_alignParentEnd="true"
-                android:src="@drawable/ic_play"
-                android:contentDescription="@string/play" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/player_play_toolbar"
-                android:layout_centerVertical="true"
-                android:orientation="vertical"
-                android:layout_toEndOf="@id/expand_toolbar">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:id="@+id/song_name_toolbar"
-                    android:textColor="@android:color/primary_text_dark"
-                    android:text="Song name" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:id="@+id/song_desc_toolbar"
-                    android:textColor="@android:color/secondary_text_dark"
-                    android:text="Song artist" />
-            </LinearLayout>
         </RelativeLayout>
-    </FrameLayout>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

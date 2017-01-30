@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -68,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean musicStopped = true, missingDuration = true;
     private Timer timer;
     private TextView songName, songDesc, currentTime, totalTime;
-    private ImageView playToolbar, play, forward, rewind, shuffle;
+    private ImageView playToolbar, play, forward, rewind, shuffle, albumArt, miniAlbumArt;
     private SeekBar seekBar;
-    private SlidingUpPanelLayout slidingPanel;
+    private SlidingUpPanelLayout slidingPanel, secondPanel;
     private Toolbar toolbar;
     private ViewPager viewPager;
     private AudioManager audioManager;
@@ -278,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
         songName = (TextView) findViewById(R.id.song_name_toolbar);
         songDesc = (TextView) findViewById(R.id.song_desc_toolbar);
         slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        secondPanel = (SlidingUpPanelLayout) findViewById(R.id.playing_list_panel);
         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         playToolbar = (ImageView) findViewById(R.id.player_play_toolbar);
         rewind = (ImageView) findViewById(R.id.player_rewind);
@@ -285,6 +288,23 @@ public class MainActivity extends AppCompatActivity {
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
         shuffle = (ImageView) findViewById(R.id.player_shuffle);
+        albumArt = (ImageView) findViewById(R.id.album_art);
+        miniAlbumArt = (ImageView) findViewById(R.id.mini_album_art);
+        secondPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if(newState.equals(SlidingUpPanelLayout.PanelState.EXPANDED)) {
+                    slidingPanel.setEnabled(false);
+                } else if(newState.equals(SlidingUpPanelLayout.PanelState.COLLAPSED)) {
+                    slidingPanel.setEnabled(true);
+                }
+            }
+        });
         shuffle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -383,7 +403,8 @@ public class MainActivity extends AppCompatActivity {
                 options.inJustDecodeBounds = false;
                 options.inPreferredConfig = Bitmap.Config.RGB_565;
                 Bitmap albumArt = BitmapFactory.decodeFile(songArt, options);
-                ((ImageView) findViewById(R.id.album_art)).setImageBitmap(albumArt);
+                this.albumArt.setImageBitmap(albumArt);
+                miniAlbumArt.setImageBitmap(albumArt);
                 Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(Palette palette) {
@@ -393,6 +414,12 @@ public class MainActivity extends AppCompatActivity {
                 };
                 Palette.from(albumArt).generate(paletteAsyncListener);
             }
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int height = size.y;
+            int albumArtHeight = albumArt.getHeight();
+            secondPanel.setPanelHeight(height - albumArtHeight);
             songName.setText(songNameString);
             songDesc.setText(songDetailsString);
             if(currentTime != 0 && totalTime != 0) {
@@ -413,9 +440,9 @@ public class MainActivity extends AppCompatActivity {
                                     int seekProgress = seekBar.getProgress();
                                     if (seekProgress < totalTime) {
                                         seekBar.setProgress(seekProgress + 100);
+                                    } else {
+                                        seekBar.setProgress(100);
                                     }
-                                } else {
-                                    seekBar.setProgress(100);
                                     MainActivity.this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault())
                                             .format(new Date(seekBar.getProgress())));
                                 }
