@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.activity.MainActivity;
-import com.dominionos.music.ui.layouts.activity.MusicPlayer;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.items.SongListItem;
@@ -119,7 +118,7 @@ public class MusicService extends Service {
                 currentPlaylistSongId = 0;
                 pausedSongSeek = 0;
                 Intent requestSongDetails = new Intent();
-                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                requestSongDetails.setAction(ACTION_REQUEST_SONG_DETAILS);
                 sendBroadcast(requestSongDetails);
                 break;
             case ACTION_CANCEL_NOTIFICATION:
@@ -167,7 +166,7 @@ public class MusicService extends Service {
                 }
                 playMusic(0);
                 requestSongDetails = new Intent();
-                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                requestSongDetails.setAction(ACTION_REQUEST_SONG_DETAILS);
                 sendBroadcast(requestSongDetails);
                 break;
             case ACTION_REMOVE_SERVICE:
@@ -221,8 +220,6 @@ public class MusicService extends Service {
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
-                        //sendDetails.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        //startActivity(sendDetails);
                         sendBroadcast(sendDetails);
                         updatePlaylist();
                     } else
@@ -240,8 +237,6 @@ public class MusicService extends Service {
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
-                    //sendDetails.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    //startActivity(sendDetails);
                     sendBroadcast(sendDetails);
                     updatePlaylist();
                 }
@@ -277,7 +272,7 @@ public class MusicService extends Service {
                 break;
             case ACTION_SEEK_GET:
                 Intent i1 = new Intent();
-                i1.setAction(MusicPlayer.ACTION_GET_SEEK_VALUE);
+                i1.setAction(MainActivity.ACTION_GET_SEEK_VALUE);
                 if (mediaPlayer != null && mediaPlayer.isPlaying())
                     i1.putExtra("isPlaying", true);
                 if (mediaPlayer != null)
@@ -382,7 +377,7 @@ public class MusicService extends Service {
     }
 
     private void updateCurrentPlaying() {
-        Intent sendDetails = new Intent();
+        Intent sendDetails = new Intent(MainActivity.ACTION_GET_PLAYING_DETAIL);
         sendDetails.putExtra("songPath", songPath);
         sendDetails.putExtra("songName", songName);
         sendDetails.putExtra("songDesc", songDesc);
@@ -390,7 +385,6 @@ public class MusicService extends Service {
         sendDetails.putExtra("songAlbumName", albumName);
         sendDetails.putExtra("songDuration", mediaPlayer.getDuration());
         sendDetails.putExtra("songCurrTime", mediaPlayer.getCurrentPosition());
-        sendDetails.setAction(MusicPlayer.ACTION_GET_PLAYING_DETAIL);
         sendBroadcast(sendDetails);
     }
 

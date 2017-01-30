@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.dominionos.music.R;
@@ -45,6 +46,13 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final String ACTION_GET_PLAY_STATE = "get_play_state";
@@ -52,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
 
-    private TextView songName, songDesc;
+    private TextView songName, songDesc, currentTime, totalTime;
     private ImageView playToolbar, play, forward, rewind;
-
+    private SeekBar seekBar;
     private SlidingUpPanelLayout slidingPanel;
     private Toolbar toolbar;
     private ViewPager viewPager;
@@ -75,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
                 case ACTION_GET_SEEK_VALUE:
                     break;
                 case ACTION_GET_PLAYING_DETAIL:
-                    changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"));
+                    changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
+                            intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0));
                     break;
                 case ACTION_GET_PLAYING_LIST:
                     RecyclerView rv = (RecyclerView) findViewById(R.id.playing_list);
@@ -247,6 +256,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupPlayer() {
+        currentTime = (TextView) findViewById(R.id.player_current_time);
+        totalTime = (TextView) findViewById(R.id.player_total_time);
+        seekBar = (SeekBar) findViewById(R.id.player_seekbar);
         songName = (TextView) findViewById(R.id.song_name_toolbar);
         songDesc = (TextView) findViewById(R.id.song_desc_toolbar);
         slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
@@ -286,13 +298,20 @@ public class MainActivity extends AppCompatActivity {
         sendBroadcast(intent);
     }
 
-    private void changePlayerDetails(String songNameString, String songDetailsString) {
-        if(songNameString != null) {
-            slidingPanel.setEnabled(true);
+    private void changePlayerDetails(String songNameString, String songDetailsString,
+                                     int currentTime, int totalTime) {
+        if(!songNameString.equals("")) {
+            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             songName.setText(songNameString);
             songDesc.setText(songDetailsString);
+            if(currentTime != 0 && totalTime != 0) {
+                this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(currentTime)));
+                this.totalTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(totalTime)));
+                seekBar.setMax(totalTime);
+                seekBar.setProgress(currentTime);
+            }
         } else {
-            slidingPanel.setEnabled(false);
+            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         }
     }
 

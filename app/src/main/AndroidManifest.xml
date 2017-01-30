@@ -41,9 +41,6 @@
             android:name=".ui.layouts.activity.AlbumActivity"
             android:theme="@style/AppTheme.Main" />
         <activity
-            android:name=".ui.layouts.activity.MusicPlayer"
-            android:theme="@style/AppTheme.Main" />
-        <activity
             android:name=".ui.layouts.activity.PlaylistActivity"
             android:theme="@style/AppTheme.Main" />
         <activity
