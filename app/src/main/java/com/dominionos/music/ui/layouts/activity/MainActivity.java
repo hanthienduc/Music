@@ -6,9 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -89,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case ACTION_GET_PLAYING_DETAIL:
                     changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
-                            intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0));
+                            intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0),
+                            intent.getLongExtra("songAlbumId", 0));
                     break;
                 case ACTION_GET_PLAYING_LIST:
                     RecyclerView rv = (RecyclerView) findViewById(R.id.playing_list);
@@ -350,9 +357,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changePlayerDetails(String songNameString, String songDetailsString,
-                                     int currentTime, final int totalTime) {
+                                     int currentTime, final int totalTime, long albumId) {
         if(!songNameString.equals("")) {
-            //slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                    MediaStore.Audio.Albums._ID + "=?",
+                    new String[]{String.valueOf(albumId)},
+                    null);
+            String songArt = null;
+            if(cursor != null && cursor.moveToFirst()) songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+            if(cursor != null) cursor.close();
+            if(songArt != null) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = false;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                Drawable artWork = new BitmapDrawable(this.getResources(), BitmapFactory.decodeFile(songArt, options));
+                ((ImageView) findViewById(R.id.album_art)).setImageDrawable(artWork);
+            }
             songName.setText(songNameString);
             songDesc.setText(songDetailsString);
             if(currentTime != 0 && totalTime != 0) {
