@@ -18,7 +18,7 @@
         android:shortcutId="searchLibrary"
         android:enabled="true"
         android:icon="@drawable/ic_search_color"
-        android:shortcutShortLabel="@string/search_library_short"
+        android:shortcutShortLabel="@string/search"
         android:shortcutLongLabel="@string/search_library_long"
         tools:ignore="UnusedAttribute">
         <intent

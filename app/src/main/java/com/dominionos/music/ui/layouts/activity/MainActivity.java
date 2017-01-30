@@ -1,25 +1,46 @@
 package com.dominionos.music.ui.layouts.activity;
 
 import android.Manifest;
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
+import com.dominionos.music.utils.MusicPlayerDBHelper;
+import com.dominionos.music.utils.adapters.PlayingSongAdapter;
 import com.dominionos.music.utils.adapters.ViewPagerAdapter;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
@@ -36,13 +57,64 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FloatingActionButton fab;
+    public static final String ACTION_GET_PLAY_STATE = "get_play_state";
+    public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
+    public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
+
+    private boolean musicStopped = true, missingDuration = true;
+    private Timer timer;
+    private TextView songName, songDesc, currentTime, totalTime;
+    private ImageView playToolbar, play, albumArt, miniAlbumArt;
+    private SeekBar seekBar;
+    private SlidingUpPanelLayout slidingPanel, secondPanel;
     private Toolbar toolbar;
     private ViewPager viewPager;
     private AudioManager audioManager;
+    private RelativeLayout miniController, controlHolder;
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch(intent.getAction()) {
+                case ACTION_GET_PLAY_STATE:
+                    if(intent.getBooleanExtra("isPlaying", false)) {
+                        playToolbar.setImageResource(R.drawable.ic_pause);
+                        play.setImageResource(R.drawable.ic_pause);
+                        musicStopped = false;
+                    } else {
+                        playToolbar.setImageResource(R.drawable.ic_play);
+                        play.setImageResource(R.drawable.ic_play);
+                        musicStopped = true;
+                    }
+                    break;
+                case ACTION_GET_PLAYING_DETAIL:
+                    changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
+                            intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0),
+                            intent.getLongExtra("songAlbumId", 0));
+                    break;
+                case ACTION_GET_PLAYING_LIST:
+                    RecyclerView rv = (RecyclerView) findViewById(R.id.playing_list);
+                    MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
+                    PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList());
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(context,
+                            LinearLayoutManager.VERTICAL, false);
+                    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                    rv.setLayoutManager(layoutManager);
+                    rv.setHasFixedSize(true);
+                    rv.setAdapter(adapter);
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +126,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        fab = (FloatingActionButton) findViewById(R.id.fab_main);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent requestSongDetails = new Intent();
-                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
-                sendBroadcast(requestSongDetails);
-            }
-        });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 init();
@@ -100,8 +163,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+
         Intent i = new Intent(MainActivity.this, MusicService.class);
         startService(i);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_GET_PLAY_STATE);
+        filter.addAction(ACTION_GET_PLAYING_LIST);
+        filter.addAction(ACTION_GET_PLAYING_DETAIL);
+        registerReceiver(broadcastReceiver, filter);
 
         setupViewPager(viewPager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
@@ -109,6 +179,16 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         setDrawer();
+
+        setupPlayer();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                sendBroadcast(intent);
+            }
+        }, 1000);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -197,11 +277,205 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (fab.getVisibility() != View.VISIBLE)
-            fab.setVisibility(View.VISIBLE);
+    private void setupPlayer() {
+        currentTime = (TextView) findViewById(R.id.player_current_time);
+        totalTime = (TextView) findViewById(R.id.player_total_time);
+        seekBar = (SeekBar) findViewById(R.id.player_seekbar);
+        songName = (TextView) findViewById(R.id.song_name_toolbar);
+        songDesc = (TextView) findViewById(R.id.song_desc_toolbar);
+        slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        secondPanel = (SlidingUpPanelLayout) findViewById(R.id.playing_list_panel);
+        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        playToolbar = (ImageView) findViewById(R.id.player_play_toolbar);
+        ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
+        ImageView forward = (ImageView) findViewById(R.id.player_forward);
+        play = (ImageView) findViewById(R.id.player_play);
+        miniController = (RelativeLayout) findViewById(R.id.mini_controller);
+        controlHolder = (RelativeLayout) findViewById(R.id.control_holder);
+        ImageView shuffle = (ImageView) findViewById(R.id.player_shuffle);
+        albumArt = (ImageView) findViewById(R.id.album_art);
+        miniAlbumArt = (ImageView) findViewById(R.id.mini_album_art);
+        secondPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if(newState.equals(SlidingUpPanelLayout.PanelState.EXPANDED)) {
+                    slidingPanel.setEnabled(false);
+                } else if(newState.equals(SlidingUpPanelLayout.PanelState.COLLAPSED)) {
+                    slidingPanel.setEnabled(true);
+                }
+            }
+        });
+        shuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_SHUFFLE_PLAYLIST);
+                sendBroadcast(intent);
+            }
+        });
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser) {
+                    Intent changeCurrentTime = new Intent(MusicService.ACTION_SEEK_TO);
+                    changeCurrentTime.putExtra("changeSeek", progress);
+                    sendBroadcast(changeCurrentTime);
+                    musicStopped = false;
+                } else {
+                    if(seekBar.getProgress() == seekBar.getMax()) {
+                        musicStopped = true;
+                    }
+
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_NEXT);
+                sendBroadcast(intent);
+            }
+        });
+        rewind.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_PREV);
+                sendBroadcast(intent);
+            }
+        });
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_STOP);
+                sendBroadcast(intent);
+                if(missingDuration) {
+                    Intent intent1 = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                    sendBroadcast(intent1);
+                }
+            }
+        });
+        playToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_STOP);
+                sendBroadcast(intent);
+            }
+        });
+        slidingPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                miniController.setAlpha(1 - slideOffset);
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    miniController.setVisibility(View.GONE);
+                } else {
+                    miniController.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private void changePlayerDetails(String songNameString, String songDetailsString,
+                                     int currentTime, final int totalTime, long albumId) {
+        if(!songNameString.equals("")) {
+            Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                    MediaStore.Audio.Albums._ID + "=?",
+                    new String[]{String.valueOf(albumId)},
+                    null);
+            String songArt = null;
+            if(cursor != null && cursor.moveToFirst()) songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+            if(cursor != null) cursor.close();
+            if(songArt != null) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = false;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                Bitmap albumArt = BitmapFactory.decodeFile(songArt, options);
+                this.albumArt.setImageBitmap(albumArt);
+                miniAlbumArt.setImageBitmap(albumArt);
+                Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        if(palette.getVibrantSwatch() != null) {
+                            Drawable background = controlHolder.getBackground();
+                            int colorFrom = ((ColorDrawable) background).getColor();
+                            int colorTo = palette.getVibrantSwatch().getRgb();
+                            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                            colorAnimation.setDuration(500); // milliseconds
+                            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator animator) {
+                                    controlHolder.setBackgroundColor(((int) animator.getAnimatedValue()));
+                                }
+
+                            });
+                            colorAnimation.start();
+                        }
+                    }
+                };
+                Palette.from(albumArt).generate(paletteAsyncListener);
+            }
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int height = size.y;
+            int albumArtHeight = albumArt.getHeight();
+            secondPanel.setPanelHeight(height - albumArtHeight);
+            songName.setText(songNameString);
+            songDesc.setText(songDetailsString);
+            if(currentTime != 0 && totalTime != 0) {
+                if (timer != null) timer.cancel();
+                missingDuration = false;
+                this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(currentTime)));
+                this.totalTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(totalTime)));
+                seekBar.setMax(totalTime);
+                seekBar.setProgress(currentTime);
+                timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(!musicStopped) {
+                                    int seekProgress = seekBar.getProgress();
+                                    if (seekProgress < totalTime) {
+                                        seekBar.setProgress(seekProgress + 100);
+                                    } else {
+                                        seekBar.setProgress(100);
+                                    }
+                                    MainActivity.this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault())
+                                            .format(new Date(seekBar.getProgress())));
+                                }
+                            }
+                        });
+                    }
+                }, 0, 100);
+            } else {
+                missingDuration = true;
+            }
+            if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else {
+            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }
     }
 
     @Override
@@ -214,6 +488,12 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override

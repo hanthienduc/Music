@@ -19,7 +19,7 @@ public class Utils {
         layoutManager.scrollToPosition(0);
         MySQLiteHelper sqLiteHelper = new MySQLiteHelper(context);
         List<Playlist> playlist = sqLiteHelper.getAllPlaylist();
-        playlist.add(new Playlist(-1, context.getString(R.string.add_playlist_u)));
+        playlist.add(new Playlist(-1, context.getString(R.string.create_new_playlist)));
         new MaterialDialog.Builder(context)
                 .title(context.getString(R.string.add_to_playlist))
                 .positiveText(context.getString(R.string.done))
