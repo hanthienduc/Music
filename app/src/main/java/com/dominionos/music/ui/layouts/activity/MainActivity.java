@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -46,12 +47,11 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
 
+    private boolean musicStopped = true, missingDuration = true;
+    private Timer timer;
     private TextView songName, songDesc, currentTime, totalTime;
     private ImageView playToolbar, play, forward, rewind;
     private SeekBar seekBar;
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ViewPager viewPager;
     private AudioManager audioManager;
+    private RelativeLayout miniController;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -75,9 +78,11 @@ public class MainActivity extends AppCompatActivity {
                     if(intent.getBooleanExtra("isPlaying", false)) {
                         playToolbar.setImageResource(R.drawable.ic_pause);
                         play.setImageResource(R.drawable.ic_pause);
+                        musicStopped = false;
                     } else {
                         playToolbar.setImageResource(R.drawable.ic_play);
                         play.setImageResource(R.drawable.ic_play);
+                        musicStopped = true;
                     }
                     break;
                 case ACTION_GET_SEEK_VALUE:
@@ -266,6 +271,33 @@ public class MainActivity extends AppCompatActivity {
         rewind = (ImageView) findViewById(R.id.player_rewind);
         forward = (ImageView) findViewById(R.id.player_forward);
         play = (ImageView) findViewById(R.id.player_play);
+        miniController = (RelativeLayout) findViewById(R.id.mini_controller);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser) {
+                    Intent changeCurrentTime = new Intent(MusicService.ACTION_SEEK_TO);
+                    changeCurrentTime.putExtra("changeSeek", progress);
+                    sendBroadcast(changeCurrentTime);
+                    musicStopped = false;
+                } else {
+                    if(seekBar.getProgress() == seekBar.getMax()) {
+                        musicStopped = true;
+                    }
+
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -285,6 +317,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MusicService.ACTION_STOP);
                 sendBroadcast(intent);
+                if(missingDuration) {
+                    Intent intent1 = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                    sendBroadcast(intent1);
+                }
             }
         });
         playToolbar.setOnClickListener(new View.OnClickListener() {
@@ -294,21 +330,61 @@ public class MainActivity extends AppCompatActivity {
                 sendBroadcast(intent);
             }
         });
+        slidingPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                miniController.setAlpha(1 - slideOffset);
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    miniController.setVisibility(View.GONE);
+                } else {
+                    miniController.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
         sendBroadcast(intent);
     }
 
     private void changePlayerDetails(String songNameString, String songDetailsString,
-                                     int currentTime, int totalTime) {
+                                     int currentTime, final int totalTime) {
         if(!songNameString.equals("")) {
-            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            //slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
             songName.setText(songNameString);
             songDesc.setText(songDetailsString);
             if(currentTime != 0 && totalTime != 0) {
+                if (timer != null) timer.cancel();
+                missingDuration = false;
                 this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(currentTime)));
                 this.totalTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(totalTime)));
                 seekBar.setMax(totalTime);
                 seekBar.setProgress(currentTime);
+                timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(!musicStopped) {
+                                    int seekProgress = seekBar.getProgress();
+                                    if (seekProgress < totalTime) {
+                                        seekBar.setProgress(seekProgress + 100);
+                                    } else {
+                                        seekBar.setProgress(100);
+                                    }
+                                    MainActivity.this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault())
+                                            .format(new Date(seekBar.getProgress())));
+                                }
+                            }
+                        });
+                    }
+                }, 0, 100);
+            } else {
+                missingDuration = true;
             }
         } else {
             slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
