@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -47,6 +48,7 @@ public class PlaylistFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
+        rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation()));
         rv.setHasFixedSize(true);
         rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList));
     }

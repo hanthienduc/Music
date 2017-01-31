@@ -24,6 +24,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -72,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
 
     private boolean musicStopped = true, missingDuration = true;
+    private RecyclerView rv;
+    private Handler handler;
     private Timer timer;
     private TextView songName, songDesc, currentTime, totalTime;
     private ImageView playToolbar, play, albumArt, miniAlbumArt;
@@ -102,15 +105,20 @@ public class MainActivity extends AppCompatActivity {
                             intent.getLongExtra("songAlbumId", 0));
                     break;
                 case ACTION_GET_PLAYING_LIST:
-                    RecyclerView rv = (RecyclerView) findViewById(R.id.playing_list);
                     MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
                     PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList());
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(context,
-                            LinearLayoutManager.VERTICAL, false);
-                    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                    rv.setLayoutManager(layoutManager);
-                    rv.setHasFixedSize(true);
-                    rv.setAdapter(adapter);
+                    if(rv.getAdapter() == null) {
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(context,
+                                LinearLayoutManager.VERTICAL, false);
+                        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                        rv.setLayoutManager(layoutManager);
+                        rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation()));
+                        rv.setHasFixedSize(true);
+                        rv.setAdapter(adapter);
+                    } else {
+                        rv.getAdapter().notifyDataSetChanged();
+                        rv.swapAdapter(adapter, false);
+                    }
                     break;
             }
         }
@@ -173,6 +181,8 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(ACTION_GET_PLAYING_DETAIL);
         registerReceiver(broadcastReceiver, filter);
 
+        handler = new Handler();
+
         setupViewPager(viewPager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -181,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
         setDrawer();
 
         setupPlayer();
-        Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -289,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
         playToolbar = (ImageView) findViewById(R.id.player_play_toolbar);
         ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
         ImageView forward = (ImageView) findViewById(R.id.player_forward);
+        rv = (RecyclerView) findViewById(R.id.playing_list);
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
         controlHolder = (RelativeLayout) findViewById(R.id.control_holder);
@@ -471,6 +481,13 @@ public class MainActivity extends AppCompatActivity {
                 }, 0, 100);
             } else {
                 missingDuration = true;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                        sendBroadcast(intent);
+                    }
+                }, 500);
             }
             if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else {
