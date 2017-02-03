@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler;
     private Timer timer;
     private TextView songName, songDesc, currentTime, totalTime;
-    private ImageView playToolbar, play, albumArt, miniAlbumArt;
+    private ImageView playToolbar, play, albumArt, miniAlbumArt, repeatButton, shuffleButton;
     private SeekBar seekBar;
     private SlidingUpPanelLayout slidingPanel, secondPanel;
     private Toolbar toolbar;
@@ -102,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
                 case ACTION_GET_PLAYING_DETAIL:
                     changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                             intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0),
-                            intent.getLongExtra("songAlbumId", 0));
+                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("repeat"),
+                            intent.getBooleanExtra("shuffle", false));
                     break;
                 case ACTION_GET_PLAYING_LIST:
                     MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
@@ -298,11 +300,12 @@ public class MainActivity extends AppCompatActivity {
         playToolbar = (ImageView) findViewById(R.id.player_play_toolbar);
         ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
         ImageView forward = (ImageView) findViewById(R.id.player_forward);
+        repeatButton = (ImageView) findViewById(R.id.player_repeat);
         rv = (RecyclerView) findViewById(R.id.playing_list);
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
         controlHolder = (RelativeLayout) findViewById(R.id.control_holder);
-        ImageView shuffle = (ImageView) findViewById(R.id.player_shuffle);
+        shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
         albumArt = (ImageView) findViewById(R.id.album_art);
         miniAlbumArt = (ImageView) findViewById(R.id.mini_album_art);
         secondPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -315,12 +318,14 @@ public class MainActivity extends AppCompatActivity {
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
                 if(newState.equals(SlidingUpPanelLayout.PanelState.EXPANDED)) {
                     slidingPanel.setEnabled(false);
+                    slidingPanel.setClickable(false);
                 } else if(newState.equals(SlidingUpPanelLayout.PanelState.COLLAPSED)) {
                     slidingPanel.setEnabled(true);
+                    slidingPanel.setClickable(true);
                 }
             }
         });
-        shuffle.setOnClickListener(new View.OnClickListener() {
+        shuffleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MusicService.ACTION_SHUFFLE_PLAYLIST);
@@ -400,11 +405,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        repeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicService.ACTION_REPEAT);
+                sendBroadcast(intent);
+            }
+        });
     }
 
     private void changePlayerDetails(String songNameString, String songDetailsString,
-                                     int currentTime, final int totalTime, long albumId) {
-        if(!songNameString.equals("")) {
+                                     int currentTime, final int totalTime, long albumId, String repeat,
+                                     boolean shuffle) {
+        if(songNameString != null && !songNameString.equals("")) {
             Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                     new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
                     MediaStore.Audio.Albums._ID + "=?",
@@ -488,6 +501,29 @@ public class MainActivity extends AppCompatActivity {
                         sendBroadcast(intent);
                     }
                 }, 500);
+            }
+            if(shuffle) {
+                shuffleButton.getDrawable().setAlpha(255);
+            } else {
+                shuffleButton.getDrawable().setAlpha(140);
+            }
+            switch (repeat) {
+                case "all":
+                    repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
+                    repeatButton.getDrawable().setAlpha(255);
+                    break;
+                case "one":
+                    repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_one));
+                    repeatButton.getDrawable().setAlpha(255);
+                    break;
+                case "none":
+                    repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
+                    repeatButton.getDrawable().setAlpha(140);
+                    break;
+                default:
+                    repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
+                    repeatButton.getDrawable().setAlpha(140);
+                    break;
             }
             if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else {

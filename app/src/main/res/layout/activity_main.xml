@@ -228,7 +228,7 @@
                     android:layout_margin="16dp"
                     android:padding="2dp"
                     android:layout_below="@id/player_seekbar"
-                    android:src="@drawable/ic_repeat"
+                    android:src="@drawable/ic_repeat_all"
                     android:contentDescription="@string/repeat" />
 
             </RelativeLayout>
