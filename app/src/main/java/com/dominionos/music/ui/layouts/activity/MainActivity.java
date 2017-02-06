@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTION_GET_PLAY_STATE = "get_play_state";
     public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
+    public static final String ACTION_UPDATE_REPEAT = "update_repeat";
+    public static final String ACTION_UPDATE_SHUFFLE = "update_shuffle";
 
     private boolean musicStopped = true, missingDuration = true;
     private RecyclerView rv;
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 case ACTION_GET_PLAYING_DETAIL:
                     changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                             intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0),
-                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("repeat"),
+                            intent.getLongExtra("songAlbumId", 0),
                             intent.getBooleanExtra("shuffle", false));
                     break;
                 case ACTION_GET_PLAYING_LIST:
@@ -115,12 +117,17 @@ public class MainActivity extends AppCompatActivity {
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         rv.setLayoutManager(layoutManager);
                         rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation()));
-                        rv.setHasFixedSize(true);
                         rv.setAdapter(adapter);
                     } else {
                         rv.getAdapter().notifyDataSetChanged();
                         rv.swapAdapter(adapter, false);
                     }
+                    break;
+                case ACTION_UPDATE_REPEAT:
+                    updateRepeat(intent.getStringExtra("repeat"));
+                    break;
+                case ACTION_UPDATE_SHUFFLE:
+                    updateShuffle(intent.getBooleanExtra("shuffle", false));
                     break;
             }
         }
@@ -181,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(ACTION_GET_PLAY_STATE);
         filter.addAction(ACTION_GET_PLAYING_LIST);
         filter.addAction(ACTION_GET_PLAYING_DETAIL);
+        filter.addAction(ACTION_UPDATE_REPEAT);
+        filter.addAction(ACTION_UPDATE_SHUFFLE);
         registerReceiver(broadcastReceiver, filter);
 
         handler = new Handler();
@@ -415,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changePlayerDetails(String songNameString, String songDetailsString,
-                                     int currentTime, final int totalTime, long albumId, String repeat,
+                                     int currentTime, final int totalTime, long albumId,
                                      boolean shuffle) {
         if(songNameString != null && !songNameString.equals("")) {
             Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
@@ -502,32 +511,38 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }, 500);
             }
-            if(shuffle) {
-                shuffleButton.getDrawable().setAlpha(255);
-            } else {
-                shuffleButton.getDrawable().setAlpha(140);
-            }
-            switch (repeat) {
-                case "all":
-                    repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
-                    repeatButton.getDrawable().setAlpha(255);
-                    break;
-                case "one":
-                    repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_one));
-                    repeatButton.getDrawable().setAlpha(255);
-                    break;
-                case "none":
-                    repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
-                    repeatButton.getDrawable().setAlpha(140);
-                    break;
-                default:
-                    repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
-                    repeatButton.getDrawable().setAlpha(140);
-                    break;
-            }
             if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else {
             slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }
+    }
+
+    private void updateShuffle(boolean shuffle) {
+        if(shuffle) {
+            shuffleButton.getDrawable().setAlpha(255);
+        } else {
+            shuffleButton.getDrawable().setAlpha(140);
+        }
+    }
+
+    private void updateRepeat(String repeatMode) {
+        switch (repeatMode) {
+            case "all":
+                repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
+                repeatButton.getDrawable().setAlpha(255);
+                break;
+            case "one":
+                repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_one));
+                repeatButton.getDrawable().setAlpha(255);
+                break;
+            case "none":
+                repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
+                repeatButton.getDrawable().setAlpha(140);
+                break;
+            default:
+                repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
+                repeatButton.getDrawable().setAlpha(140);
+                break;
         }
     }
 

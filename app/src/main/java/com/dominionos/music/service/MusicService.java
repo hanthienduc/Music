@@ -278,14 +278,18 @@ public class MusicService extends Service {
                         }
                         shuffle = false;
                     }
-                    updateCurrentPlaying();
+                    updateShuffle();
                 }
                 break;
             case ACTION_PLAY_NEXT:
                 if (currentPlaylistSongId == playList.getLastSong().getId() && currentPlaylistSongId != -1) {
-                    playList.addSong(new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
-                            intent.getStringExtra("songPath"), false,
-                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
+                    ArrayList<SongListItem> currentPlaying = playList.getCurrentPlayingList();
+                    currentPlaying.add(currentPlaylistSongId + 1,
+                            new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
+                                    intent.getStringExtra("songPath"), false,
+                                    intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
+                    playList.clearPlayingList();
+                    playList.addSongs(currentPlaying);
                 } else {
                     intent.setAction(ACTION_PLAY_SINGLE);
                     sendBroadcast(intent);
@@ -374,9 +378,28 @@ public class MusicService extends Service {
                     repeatAll = false;
                     repeatOne = false;
                 }
-                updateCurrentPlaying();
+                updateRepeat();
                 break;
         }
+    }
+
+    private void updateRepeat() {
+        Intent intent = new Intent(MainActivity.ACTION_UPDATE_REPEAT);
+        if(repeatAll) {
+            intent.putExtra("repeat", "all");
+        } else if (repeatOne) {
+            intent.putExtra("repeat", "one");
+        } else {
+            intent.putExtra("repeat", "none");
+        }
+        sendBroadcast(intent);
+    }
+
+    private void updateShuffle() {
+        Intent intent = new Intent(MainActivity.ACTION_UPDATE_SHUFFLE);
+        intent.putExtra("shuffle", shuffle);
+        sendBroadcast(intent);
+        updatePlaylist();
     }
 
     private void updateCurrentPlaying() {
@@ -391,14 +414,6 @@ public class MusicService extends Service {
             sendDetails.putExtra("songCurrTime", mediaPlayer.getCurrentPosition());
         } catch (NullPointerException e) {
             e.printStackTrace();
-        }
-        sendDetails.putExtra("shuffle", shuffle);
-        if(repeatAll) {
-            sendDetails.putExtra("repeat", "all");
-        } else if (repeatOne) {
-            sendDetails.putExtra("repeat", "one");
-        } else {
-            sendDetails.putExtra("repeat", "none");
         }
         sendBroadcast(sendDetails);
         Intent intent = new Intent(MainActivity.ACTION_GET_PLAY_STATE);
