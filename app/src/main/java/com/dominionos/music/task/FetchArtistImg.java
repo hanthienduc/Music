@@ -48,8 +48,6 @@ public class FetchArtistImg {
     public FetchArtistImg(Context context, String name, int random, ArtistImgHandler handler) {
         this.context = context;
         this.name = name;
-        this.context = context;
-        this.name = name;
         this.random = random;
         this.handler = handler;
         if (name != null) {

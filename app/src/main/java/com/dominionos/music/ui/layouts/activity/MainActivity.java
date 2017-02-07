@@ -105,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
                 case ACTION_GET_PLAYING_DETAIL:
                     changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                             intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0),
-                            intent.getLongExtra("songAlbumId", 0),
-                            intent.getBooleanExtra("shuffle", false));
+                            intent.getLongExtra("songAlbumId", 0)
+                    );
                     break;
                 case ACTION_GET_PLAYING_LIST:
                     MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(GoogleMaterial.Icon.gmd_audiotrack);
-        PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.album).withIcon(GoogleMaterial.Icon.gmd_library_music);
+        PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.albums).withIcon(GoogleMaterial.Icon.gmd_library_music);
         PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(GoogleMaterial.Icon.gmd_account_circle);
         PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(GoogleMaterial.Icon.gmd_queue_music);
         SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
@@ -310,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
         ImageView forward = (ImageView) findViewById(R.id.player_forward);
         repeatButton = (ImageView) findViewById(R.id.player_repeat);
+        repeatButton.getDrawable().setAlpha(140);
         rv = (RecyclerView) findViewById(R.id.playing_list);
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
@@ -371,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MusicService.ACTION_NEXT);
+                seekBar.setProgress(0);
                 sendBroadcast(intent);
             }
         });
@@ -378,6 +380,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MusicService.ACTION_PREV);
+                seekBar.setProgress(0);
                 sendBroadcast(intent);
             }
         });
@@ -424,9 +427,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changePlayerDetails(String songNameString, String songDetailsString,
-                                     int currentTime, final int totalTime, long albumId,
-                                     boolean shuffle) {
-        if(songNameString != null && !songNameString.equals("")) {
+                                     int currentTime, final int totalTime, long albumId) {
+        if(songNameString != null) {
             Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                     new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
                     MediaStore.Audio.Albums._ID + "=?",

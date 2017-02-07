@@ -75,13 +75,13 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         getArtistImg(holder, position);
 
         if(albumCount == 1 && songCount == 1) {
-            artistItemsCount = (albumCount + " Album • " + songCount + " Song");
-        } else if (albumCount == 1 && songCount != 1) {
-            artistItemsCount = (albumCount + " Album • " + songCount + " Songs");
-        } else if (albumCount != 1 && songCount == 1) {
-            artistItemsCount = (albumCount + " Albums • " + songCount + " Song");
+            artistItemsCount = (albumCount + " " + context.getString(R.string.album) + " • " + songCount + " " + context.getString(R.string.song));
+        } else if (albumCount == 1) {
+            artistItemsCount = (albumCount + " " + context.getString(R.string.album) + " • " + songCount + " " + context.getString(R.string.songs));
+        } else if (songCount == 1) {
+            artistItemsCount = (albumCount + " " + context.getString(R.string.albums) + " • " + songCount + " " + context.getString(R.string.song));
         } else {
-            artistItemsCount = (albumCount + " Albums • " + songCount + " Songs");
+            artistItemsCount = (albumCount + " " + context.getString(R.string.albums) + " • " + songCount + " " + context.getString(R.string.songs));
         }
         holder.artistDesc.setText(artistItemsCount);
 

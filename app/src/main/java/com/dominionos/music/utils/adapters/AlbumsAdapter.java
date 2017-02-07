@@ -41,12 +41,12 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         return items.get(position).getName().substring(0,1);
     }
 
-    public final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        public final TextView albumName;
-        public final TextView albumDesc;
+    final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
+        final TextView albumName;
+        final TextView albumDesc;
         final ImageView albumArt;
         final View realBackground;
-        public final View textHolder;
+        final View textHolder;
 
         SimpleItemViewHolder(View view) {
             super(view);
@@ -77,7 +77,13 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
         position = holder.getAdapterPosition();
         holder.albumName.setText(items.get(position).getName());
-        holder.albumDesc.setText(items.get(position).getDesc());
+        String albumDesc;
+        if(items.get(position).getSongCount() != 1) {
+            albumDesc = items.get(position).getDesc() + " • " + items.get(position).getSongCount() + " " + context.getString(R.string.songs);
+        } else {
+            albumDesc = items.get(position).getDesc() + " • " + items.get(position).getSongCount() + " " + context.getString(R.string.song);
+        }
+        holder.albumDesc.setText(albumDesc);
         int backCardColor = ResourcesCompat.getColor(context.getResources(), R.color.card_background, null);
         final int finalPosition = position;
         if (((ColorDrawable) holder.textHolder.getBackground()).getColor() != backCardColor)

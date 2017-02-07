@@ -69,7 +69,8 @@ public class AlbumsFragment extends Fragment {
                 albumList.add(new AlbumListItem(musicCursor.getLong(idColumn),
                         musicCursor.getString(titleColumn),
                         musicCursor.getString(artistColumn),
-                        musicCursor.getString(albumArtColumn)
+                        musicCursor.getString(albumArtColumn),
+                        musicCursor.getInt(numOfSongsColumn)
                 ));
             }
             while (musicCursor.moveToNext());

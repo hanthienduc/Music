@@ -114,10 +114,10 @@ public class AlbumActivity extends AppCompatActivity {
                 int vibrantTitleText;
                 if (vibrantSwatch != null) {
                     vibrantRgb = vibrantSwatch.getRgb();
-                    vibrantTitleText = vibrantSwatch.getBodyTextColor();
+                    vibrantTitleText = vibrantSwatch.getTitleTextColor();
                 } else if (altSwatch != null) {
                     vibrantRgb = altSwatch.getRgb();
-                    vibrantTitleText = altSwatch.getBodyTextColor();
+                    vibrantTitleText = altSwatch.getTitleTextColor();
                 } else {
                     vibrantRgb = ResourcesCompat.getColor(getResources(), R.color.card_background, null);
                     vibrantTitleText = ResourcesCompat.getColor(getResources(), android.R.color.primary_text_dark, null);
