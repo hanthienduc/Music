@@ -39,13 +39,13 @@ public class MusicService extends Service {
 
     private String songName, songDesc, songPath, albumName;
     private long albumId;
-    private boolean singleSong;
+    private boolean singleSong, repeatOne = false, repeatAll = false, shuffle = false;
     private int currentPlaylistSongId = -1, pausedSongPlaylistId = -1, pausedSongSeek;
     private SongListItem pausedSong;
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSessionCompat mediaSession;
-    private ArrayList<SongListItem> songList;
+    private ArrayList<SongListItem> songList, preShuffle;
     private NotificationManagerCompat notificationManager;
 
     private AudioManager.OnAudioFocusChangeListener afChangeListener =
@@ -89,7 +89,7 @@ public class MusicService extends Service {
     public static final String ACTION_SEEK_GET = "player_seek_get_song";
     public static final String ACTION_SHUFFLE_PLAYLIST = "player_shuffle_playlist";
     public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
-    public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
+    public static final String ACTION_REPEAT = "repeat";
 
     public static final String ACTION_MENU_PLAY_NEXT = "menu_play_next";
     public static final String ACTION_MENU_REMOVE_FROM_QUEUE = "menu_from_queue";
@@ -248,22 +248,48 @@ public class MusicService extends Service {
                 }
                 break;
             case ACTION_SHUFFLE_PLAYLIST:
-                String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
-                playList.shuffleRows();
-                updatePlaylist();
-                ArrayList<SongListItem> songsList = playList.getCurrentPlayingList();
-                for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
-                    if (currentPlayingId.matches(songsList.get(num).getName())) {
-                        currentPlaylistSongId = (int) songsList.get(num).getId();
-                        break;
+                if(playList.getPlaybackTableSize() > 1) {
+                    if(!shuffle) {
+                        String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
+                        preShuffle = playList.getCurrentPlayingList();
+                        playList.shuffleRows();
+                        updatePlaylist();
+                        ArrayList<SongListItem> songsList = playList.getCurrentPlayingList();
+                        for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
+                            if (currentPlayingId.matches(songsList.get(num).getName())) {
+                                currentPlaylistSongId = (int) songsList.get(num).getId();
+                                break;
+                            }
+                        }
+                        shuffle = true;
+                    } else {
+                        if(preShuffle != null) {
+                            String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
+                            playList.clearPlayingList();
+                            playList.addSongs(preShuffle);
+                            updatePlaylist();
+                            ArrayList<SongListItem> songsList = playList.getCurrentPlayingList();
+                            for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
+                                if (currentPlayingId.matches(songsList.get(num).getName())) {
+                                    currentPlaylistSongId = (int) songsList.get(num).getId();
+                                    break;
+                                }
+                            }
+                        }
+                        shuffle = false;
                     }
+                    updateShuffle();
                 }
                 break;
             case ACTION_PLAY_NEXT:
                 if (currentPlaylistSongId == playList.getLastSong().getId() && currentPlaylistSongId != -1) {
-                    playList.addSong(new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
-                            intent.getStringExtra("songPath"), false,
-                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
+                    ArrayList<SongListItem> currentPlaying = playList.getCurrentPlayingList();
+                    currentPlaying.add(currentPlaylistSongId + 1,
+                            new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
+                                    intent.getStringExtra("songPath"), false,
+                                    intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
+                    playList.clearPlayingList();
+                    playList.addSongs(currentPlaying);
                 } else {
                     intent.setAction(ACTION_PLAY_SINGLE);
                     sendBroadcast(intent);
@@ -341,7 +367,39 @@ public class MusicService extends Service {
                     Toast.makeText(context, getString(R.string.service_generate_list_warning), Toast.LENGTH_LONG).show();
                 }
                 break;
+            case ACTION_REPEAT:
+                if(!repeatAll && !repeatOne) {
+                    repeatAll = true;
+                    repeatOne = false;
+                } else if(repeatAll) {
+                    repeatAll = false;
+                    repeatOne = true;
+                } else {
+                    repeatAll = false;
+                    repeatOne = false;
+                }
+                updateRepeat();
+                break;
         }
+    }
+
+    private void updateRepeat() {
+        Intent intent = new Intent(MainActivity.ACTION_UPDATE_REPEAT);
+        if(repeatAll) {
+            intent.putExtra("repeat", "all");
+        } else if (repeatOne) {
+            intent.putExtra("repeat", "one");
+        } else {
+            intent.putExtra("repeat", "none");
+        }
+        sendBroadcast(intent);
+    }
+
+    private void updateShuffle() {
+        Intent intent = new Intent(MainActivity.ACTION_UPDATE_SHUFFLE);
+        intent.putExtra("shuffle", shuffle);
+        sendBroadcast(intent);
+        updatePlaylist();
     }
 
     private void updateCurrentPlaying() {
@@ -364,7 +422,7 @@ public class MusicService extends Service {
     }
 
     private void updatePlaylist() {
-        Intent playlistIntent = new Intent(ACTION_GET_PLAYING_LIST);
+        Intent playlistIntent = new Intent(MainActivity.ACTION_GET_PLAYING_LIST);
         sendBroadcast(playlistIntent);
     }
 
@@ -430,19 +488,41 @@ public class MusicService extends Service {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        if(playList.getPlaybackTableSize() == 1) {
-                            currentPlaylistSongId = -1;
-                            pausedSongPlaylistId = -1;
-                            pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
-                            pausedSongSeek = 0;
-                            stopMusic();
+                        if(!repeatOne && !repeatAll) {
+                            if(playList.getPlaybackTableSize() == 1) {
+                                currentPlaylistSongId = -1;
+                                pausedSongPlaylistId = -1;
+                                pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
+                                pausedSongSeek = 0;
+                                stopMusic();
+                            } else {
+                                pausedSongSeek = 0;
+                                SongListItem song = playList.getNextSong(currentPlaylistSongId);
+                                playMusic((int) song.getId(), song.getPath(), song.getName(),
+                                        song.getDesc(), song.getAlbumId(),
+                                        song.getAlbumName(), false);
+                                updateCurrentPlaying();
+                            }
+                        } else if(repeatOne) {
+                            playMusic(songId, songPath, songName, songDesc, albumId, albumName, false);
                         } else {
-                            pausedSongSeek = 0;
-                            SongListItem song = playList.getNextSong(currentPlaylistSongId);
-                            playMusic((int) song.getId(), song.getPath(), song.getName(),
-                                    song.getDesc(), song.getAlbumId(),
-                                    song.getAlbumName(), false);
-                            updateCurrentPlaying();
+                            if(playList.getPlaybackTableSize() == 1) {
+                                currentPlaylistSongId = -1;
+                                pausedSongPlaylistId = -1;
+                                pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
+                                pausedSongSeek = 0;
+                                stopMusic();
+                            } else if(playList.getPlaybackTableSize() != 1) {
+                                pausedSongSeek = 0;
+                                SongListItem song = playList.getNextSong(currentPlaylistSongId);
+                                playMusic((int) song.getId(), song.getPath(), song.getName(),
+                                        song.getDesc(), song.getAlbumId(),
+                                        song.getAlbumName(), false);
+                                updateCurrentPlaying();
+                            } else if(playList.getLastSong() == new SongListItem(songId, songName, songDesc,
+                                    songPath, false, albumId, albumName, 0)) {
+                                playMusic(playList.getFirstSong());
+                            }
                         }
                     }
                 });
@@ -488,6 +568,7 @@ public class MusicService extends Service {
         commandFilter.addAction(ACTION_ADD_SONG_MULTI);
         commandFilter.addAction(ACTION_PLAY_ALBUM);
         commandFilter.addAction(ACTION_SHUFFLE_PLAYLIST);
+        commandFilter.addAction(ACTION_REPEAT);
         registerReceiver(musicPlayer, commandFilter);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);

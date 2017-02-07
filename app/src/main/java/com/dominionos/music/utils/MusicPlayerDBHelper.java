@@ -11,6 +11,7 @@ import com.dominionos.music.utils.items.SongListItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class MusicPlayerDBHelper extends SQLiteOpenHelper {
 

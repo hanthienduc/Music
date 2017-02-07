@@ -3,12 +3,15 @@ package com.dominionos.music.utils.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +21,6 @@ import android.widget.TextView;
 
 import com.dominionos.music.R;
 import com.dominionos.music.utils.items.AlbumListItem;
-import com.dominionos.music.task.ColorGridTask;
 import com.dominionos.music.ui.layouts.activity.AlbumActivity;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import com.squareup.picasso.Callback;
@@ -86,7 +88,28 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
                     .into(holder.albumArt, new Callback() {
                         @Override
                         public void onSuccess() {
-                            new ColorGridTask(context, items.get(finalPosition).getArtString(), holder).execute();
+                            Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(Palette palette) {
+                                    Palette.Swatch swatch;
+                                    if(palette.getVibrantSwatch() != null) {
+                                        swatch = palette.getVibrantSwatch();
+                                        holder.textHolder.setBackgroundColor(swatch.getRgb());
+                                        holder.albumName.setTextColor(swatch.getTitleTextColor());
+                                        holder.albumDesc.setTextColor(swatch.getBodyTextColor());
+                                    } else if(palette.getDominantSwatch() != null) {
+                                        swatch = palette.getDominantSwatch();
+                                        holder.textHolder.setBackgroundColor(swatch.getRgb());
+                                        holder.albumName.setTextColor(swatch.getTitleTextColor());
+                                        holder.albumDesc.setTextColor(swatch.getBodyTextColor());
+                                    } else {
+                                        holder.textHolder.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+                                        holder.albumName.setTextColor(ContextCompat.getColor(context, android.R.color.primary_text_light));
+                                        holder.albumDesc.setTextColor(ContextCompat.getColor(context, android.R.color.secondary_text_light));
+                                    }
+                                }
+                            };
+                            Palette.from(((BitmapDrawable)holder.albumArt.getDrawable()).getBitmap()).generate(paletteAsyncListener);
                         }
 
                         @Override
