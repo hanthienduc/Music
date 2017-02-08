@@ -188,15 +188,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                     (MediaStore.Audio.Media.ALBUM_ID);
             int albumColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
-            do {
-                String temp = musicCursor.getString(titleColumn);
-                return new SongListItem(musicCursor.getLong(idColumn),
-                        temp,
-                        musicCursor.getString(artistColumn),
-                        musicCursor.getString(pathColumn), false,
-                        musicCursor.getLong(albumIdColumn),
-                        musicCursor.getString(albumColumn), 0);
-            } while (musicCursor.moveToNext());
+            String temp = musicCursor.getString(titleColumn);
+            return new SongListItem(musicCursor.getLong(idColumn),
+                    temp,
+                    musicCursor.getString(artistColumn),
+                    musicCursor.getString(pathColumn), false,
+                    musicCursor.getLong(albumIdColumn),
+                    musicCursor.getString(albumColumn), 0);
         }
         if (musicCursor != null) {
             musicCursor.close();

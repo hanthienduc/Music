@@ -87,18 +87,18 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private AudioManager audioManager;
     private RelativeLayout miniController, controlHolder;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch(intent.getAction()) {
                 case ACTION_GET_PLAY_STATE:
                     if(intent.getBooleanExtra("isPlaying", false)) {
                         playToolbar.setImageResource(R.drawable.ic_pause);
-                        play.setImageResource(R.drawable.ic_pause);
+                        play.setImageResource(R.drawable.ic_pause_circle);
                         musicStopped = false;
                     } else {
                         playToolbar.setImageResource(R.drawable.ic_play);
-                        play.setImageResource(R.drawable.ic_play);
+                        play.setImageResource(R.drawable.ic_play_circle);
                         musicStopped = true;
                     }
                     break;
@@ -316,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
         controlHolder = (RelativeLayout) findViewById(R.id.control_holder);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
+        shuffleButton.getDrawable().setAlpha(140);
         albumArt = (ImageView) findViewById(R.id.album_art);
         miniAlbumArt = (ImageView) findViewById(R.id.mini_album_art);
         secondPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {

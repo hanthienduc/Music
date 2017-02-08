@@ -42,8 +42,8 @@ public class FetchArtistImg {
     private final int random;
     private final ArtistImgHandler handler;
     private String url;
-    private Context context;
-    private String name;
+    private final Context context;
+    private final String name;
 
     public FetchArtistImg(Context context, String name, int random, ArtistImgHandler handler) {
         this.context = context;

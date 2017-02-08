@@ -48,7 +48,7 @@ public class MusicService extends Service {
     private ArrayList<SongListItem> songList, preShuffle;
     private NotificationManagerCompat notificationManager;
 
-    private AudioManager.OnAudioFocusChangeListener afChangeListener =
+    private final AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
                 public void onAudioFocusChange(int focusChange) {
                     if(mediaPlayer != null) {
@@ -68,27 +68,27 @@ public class MusicService extends Service {
                 }
             };
 
-    public static final int NOTIFICATION_ID = 596;
-    public static final String ACTION_PLAY = "play";
+    private static final int NOTIFICATION_ID = 596;
+    private static final String ACTION_PLAY = "play";
     public static final String ACTION_PREV = "prev";
     public static final String ACTION_NEXT = "next";
     public static final String ACTION_STOP = "stop";
-    public static final String ACTION_CANCEL_NOTIFICATION = "cancel_notification";
+    private static final String ACTION_CANCEL_NOTIFICATION = "cancel_notification";
     public static final String ACTION_PLAY_ALBUM = "player_play_album";
     public static final String ACTION_PLAY_ALL_SONGS = "play_all_songs";
     public static final String ACTION_MENU_FROM_PLAYLIST = "player_menu_from_playlist";
     public static final String ACTION_PLAY_FROM_PLAYLIST = "player_play_from_playlist";
     public static final String ACTION_PLAY_PLAYLIST = "player_play_playlist";
     public static final String ACTION_PLAY_NEXT = "player_play_next";
-    public static final String ACTION_REMOVE_SERVICE = "player_remove_service";
+    private static final String ACTION_REMOVE_SERVICE = "player_remove_service";
     public static final String ACTION_PLAY_SINGLE = "play_single_song";
     public static final String ACTION_ADD_SONG = "add_song_to_playlist";
-    public static final String ACTION_ADD_SONG_MULTI = "add_song_to_playlist_multi";
+    private static final String ACTION_ADD_SONG_MULTI = "add_song_to_playlist_multi";
     public static final String ACTION_REQUEST_SONG_DETAILS = "player_request_song_details";
     public static final String ACTION_SEEK_TO = "player_seek_to_song";
-    public static final String ACTION_SEEK_GET = "player_seek_get_song";
+    private static final String ACTION_SEEK_GET = "player_seek_get_song";
     public static final String ACTION_SHUFFLE_PLAYLIST = "player_shuffle_playlist";
-    public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
+    private static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
     public static final String ACTION_REPEAT = "repeat";
 
     public static final String ACTION_MENU_PLAY_NEXT = "menu_play_next";
@@ -282,17 +282,15 @@ public class MusicService extends Service {
                 }
                 break;
             case ACTION_PLAY_NEXT:
-                if (currentPlaylistSongId == playList.getLastSong().getId() && currentPlaylistSongId != -1) {
-                    ArrayList<SongListItem> currentPlaying = playList.getCurrentPlayingList();
-                    currentPlaying.add(currentPlaylistSongId + 1,
+                ArrayList<SongListItem> currentPlaying = playList.getCurrentPlayingList();
+                if(currentPlaying != null) {
+                    currentPlaying.add(currentPlaylistSongId++,
                             new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                                     intent.getStringExtra("songPath"), false,
                                     intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
                     playList.clearPlayingList();
                     playList.addSongs(currentPlaying);
-                } else {
-                    intent.setAction(ACTION_PLAY_SINGLE);
-                    sendBroadcast(intent);
+                    updatePlaylist();
                 }
                 break;
             case ACTION_ADD_SONG:
@@ -409,11 +407,9 @@ public class MusicService extends Service {
         sendDetails.putExtra("songDesc", songDesc);
         sendDetails.putExtra("songAlbumId", albumId);
         sendDetails.putExtra("songAlbumName", albumName);
-        try {
+        if(mediaPlayer != null) {
             sendDetails.putExtra("songDuration", mediaPlayer.getDuration());
             sendDetails.putExtra("songCurrTime", mediaPlayer.getCurrentPosition());
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         }
         sendBroadcast(sendDetails);
         Intent intent = new Intent(MainActivity.ACTION_GET_PLAY_STATE);
@@ -651,7 +647,7 @@ public class MusicService extends Service {
         notificationBuilder
                 .setStyle(new NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSession.getSessionToken())
-                        .setShowActionsInCompactView(1))
+                        .setShowActionsInCompactView(1, 2))
                 .setColor(color)
                 .setSmallIcon(R.drawable.ic_audiotrack)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

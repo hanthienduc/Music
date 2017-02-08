@@ -66,7 +66,7 @@ public class AlbumActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(upButton);
         }
-        final ImageView albumArt = (ImageView) findViewById(R.id.activity_album_art);
+        ImageView albumArt = (ImageView) findViewById(R.id.album_art);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 

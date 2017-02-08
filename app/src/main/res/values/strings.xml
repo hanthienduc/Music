@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">Music</string>
     <string name="album_art">Album Art</string>
-    <string name="artist_fetch_url">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo</string>
-    <string name="api">911da172e486f9339ebc82b65ee89993</string>
+    <string name="artist_fetch_url" translatable="false">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo</string>
+    <string name="api" translatable="false">911da172e486f9339ebc82b65ee89993</string>
     <string name="artist_image">Artist Image</string>
     <string name="default_duration">00:00</string>
 

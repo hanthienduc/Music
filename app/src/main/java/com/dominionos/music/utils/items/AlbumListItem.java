@@ -5,8 +5,8 @@ public class AlbumListItem {
     private final long id;
     private final String name;
     private final String desc;
-    private String artString;
-    private int songCount;
+    private final String artString;
+    private final int songCount;
 
     public AlbumListItem(long id, String name, String desc, String artString, int songCount) {
         this.desc = desc;

@@ -11,7 +11,6 @@ import com.dominionos.music.utils.items.SongListItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class MusicPlayerDBHelper extends SQLiteOpenHelper {
 
@@ -94,9 +93,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
-            do {
-                return getSongFromCursor(cursor);
-            } while (cursor.moveToNext());
+            return getSongFromCursor(cursor);
         }
         return null;
     }
@@ -148,9 +145,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
-            do {
-                return getSongFromCursor(cursor);
-            } while (cursor.moveToNext());
+            return getSongFromCursor(cursor);
         }
         return null;
     }
@@ -213,9 +208,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
-            do {
-                return getSongFromCursor(cursor);
-            } while (cursor.moveToNext());
+            return getSongFromCursor(cursor);
         }
         return null;
     }

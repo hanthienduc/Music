@@ -64,7 +64,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     }
 
     @Override
-    public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
+    public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
         position = holder.getAdapterPosition();
         holder.title.setText(items.get(position).getName());
         holder.desc.setText(items.get(position).getDesc());
@@ -80,12 +80,12 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                             case R.id.menu_play_next:
                                 Intent i = new Intent();
                                 i.setAction(MusicService.ACTION_PLAY_NEXT);
-                                i.putExtra("songId", items.get(finalPosition).getId());
-                                i.putExtra("songPath", items.get(finalPosition).getPath());
-                                i.putExtra("songName", items.get(finalPosition).getName());
-                                i.putExtra("songDesc", items.get(finalPosition).getDesc());
-                                i.putExtra("songAlbumId", items.get(finalPosition).getAlbumId());
-                                i.putExtra("songAlbumName", items.get(finalPosition).getAlbumName());
+                                i.putExtra("songId", items.get(holder.getAdapterPosition()).getId());
+                                i.putExtra("songPath", items.get(holder.getAdapterPosition()).getPath());
+                                i.putExtra("songName", items.get(holder.getAdapterPosition()).getName());
+                                i.putExtra("songDesc", items.get(holder.getAdapterPosition()).getDesc());
+                                i.putExtra("songAlbumId", items.get(holder.getAdapterPosition()).getAlbumId());
+                                i.putExtra("songAlbumName", items.get(holder.getAdapterPosition()).getAlbumName());
                                 context.sendBroadcast(i);
                                 return true;
                             case R.id.menu_add_playing:

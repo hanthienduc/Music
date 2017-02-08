@@ -134,10 +134,9 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
                 intent.putExtra("albumName", items.get(finalPosition).getName());
                 intent.putExtra("albumId", items.get(finalPosition).getId());
                 String transitionName = "albumArt";
+                Pair albumArt = new Pair<View, String>(holder.albumArt, transitionName);
                 ActivityOptionsCompat options =
-                        ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,
-                                new Pair<View, String>(holder.albumArt, transitionName)
-                        );
+                        ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, albumArt);
                 ActivityCompat.startActivity(context, intent, options.toBundle());
             }
         });
