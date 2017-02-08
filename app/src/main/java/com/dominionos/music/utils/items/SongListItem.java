@@ -24,32 +24,32 @@ public class SongListItem {
     }
 
     public long getId() {
-        return this.id;
+        return id;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public String getPath() {
-        return this.path;
+        return path;
     }
 
     public String getAlbumName() {
-        return this.albumName;
+        return albumName;
     }
 
     public String getDesc() {
-        return this.desc;
+        return desc;
     }
 
     public long getAlbumId() {
-        return this.albumId;
+        return albumId;
     }
 
 
     public Boolean getFav() {
-        return this.fav;
+        return fav;
     }
 
     public int getCount() {

@@ -19,7 +19,9 @@ import com.dominionos.music.R;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.items.SongListItem;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.List;
@@ -41,6 +43,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         final TextView desc;
         public final View view;
         public final ImageView menu;
+        final RoundedImageView albumArt;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
@@ -48,6 +51,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
             menu = (ImageView) itemView.findViewById(R.id.song_item_menu);
+            albumArt = (RoundedImageView) itemView.findViewById(R.id.song_item_art);
         }
     }
 
@@ -59,7 +63,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     @Override
     public SongsAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.song_list_item, parent, false);
+                inflate(R.layout.song_list_item_art, parent, false);
         return new SimpleItemViewHolder(itemView);
     }
 
@@ -141,6 +145,12 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                     context.sendBroadcast(a);
             }
         });
+        String albumArtPath = Utils.getAlbumArt(context, items.get(holder.getAdapterPosition()).getAlbumId());
+        if(albumArtPath != null) {
+            int px = Utils.dpToPx(context, 40);
+            Picasso.with(context).load(new File(albumArtPath)).centerCrop()
+                    .resize(px, px).into(holder.albumArt);
+        }
     }
 
     private void addToPlaylist(int position) {

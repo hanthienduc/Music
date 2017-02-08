@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.activity.ArtistActivity;
 import com.dominionos.music.utils.ArtistImgHandler;
+import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.items.ArtistListItem;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
@@ -104,7 +105,8 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                     ((Activity) context).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Picasso.with(context).load(new File(url)).into(holder.artistImg);
+                            int px = Utils.dpToPx(context, 40);
+                            Picasso.with(context).load(new File(url)).centerCrop().resize(px, px).into(holder.artistImg);
                             setImageToView(url, holder);
                         }
                     });
