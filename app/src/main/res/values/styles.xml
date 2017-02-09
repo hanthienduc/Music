@@ -2,18 +2,18 @@
 <resources>
 
     <style name="AppTheme.Main" parent="MaterialDrawerTheme.Light">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:windowBackground">@color/window_background</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="colorControlNormal">@android:color/primary_text_dark</item>
-        <item name="material_drawer_selected_text">@color/colorAccent</item>
+        <item name="material_drawer_selected_text">@color/color_accent</item>
     </style>
 
     <style name="AppTheme.Search" parent="AppTheme.Main">

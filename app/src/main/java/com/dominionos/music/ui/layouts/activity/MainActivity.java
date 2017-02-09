@@ -147,7 +147,10 @@ public class MainActivity extends AppCompatActivity {
             if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 init();
             } else {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.MEDIA_CONTENT_CONTROL,
+                        Manifest.permission.INTERNET}, 1);
             }
         } else {
             init();
@@ -224,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
     private void setDrawer() {
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.color.colorPrimary)
+                .withHeaderBackground(R.color.color_primary)
                 .build();
 
         PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(GoogleMaterial.Icon.gmd_audiotrack);
@@ -429,7 +432,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void changePlayerDetails(String songNameString, String songDetailsString,
                                      int currentTime, final int totalTime, long albumId) {
-        if(songNameString != null) {
+        songName.setText(songNameString);
+        if(!songName.getText().equals("")) {
             Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                     new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
                     MediaStore.Audio.Albums._ID + "=?",
@@ -474,7 +478,6 @@ public class MainActivity extends AppCompatActivity {
             int height = size.y;
             int albumArtHeight = albumArt.getHeight();
             secondPanel.setPanelHeight(height - albumArtHeight);
-            songName.setText(songNameString);
             songDesc.setText(songDetailsString);
             if(currentTime != 0 && totalTime != 0) {
                 if (timer != null) timer.cancel();

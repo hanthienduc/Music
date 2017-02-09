@@ -46,7 +46,6 @@ public class ArtistActivity extends AppCompatActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
-        rv.setHasFixedSize(true);
 
         final ArrayList<SongListItem> songList = new ArrayList<>();
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";

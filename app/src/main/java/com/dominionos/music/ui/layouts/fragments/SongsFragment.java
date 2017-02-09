@@ -52,7 +52,6 @@ public class SongsFragment extends Fragment {
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
         rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation()));
-        rv.setHasFixedSize(true);
     }
 
     private void setSongList() {

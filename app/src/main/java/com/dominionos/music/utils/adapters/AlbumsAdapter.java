@@ -108,10 +108,6 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
                                         holder.textHolder.setBackgroundColor(swatch.getRgb());
                                         holder.albumName.setTextColor(swatch.getTitleTextColor());
                                         holder.albumDesc.setTextColor(swatch.getBodyTextColor());
-                                    } else {
-                                        holder.textHolder.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
-                                        holder.albumName.setTextColor(ContextCompat.getColor(context, android.R.color.primary_text_light));
-                                        holder.albumDesc.setTextColor(ContextCompat.getColor(context, android.R.color.secondary_text_light));
                                     }
                                 }
                             };

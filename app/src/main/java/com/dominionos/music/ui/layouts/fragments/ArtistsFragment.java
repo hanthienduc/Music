@@ -94,7 +94,6 @@ public class ArtistsFragment extends Fragment {
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
         rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation()));
-        rv.setHasFixedSize(true);
         rv.setAdapter(new ArtistAdapter(context, artistList));
     }
 }

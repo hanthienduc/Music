@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.afollestad.async.Action;
 import com.dominionos.music.R;
@@ -26,16 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-
-import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.NameValuePair;
-import cz.msebera.android.httpclient.client.HttpClient;
-import cz.msebera.android.httpclient.client.entity.UrlEncodedFormEntity;
-import cz.msebera.android.httpclient.client.methods.HttpPost;
-import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 
 public class FetchArtistImg {
 
@@ -87,34 +80,28 @@ public class FetchArtistImg {
     }
 
     private void backgroundTask() {
-        List<NameValuePair> params = new ArrayList<>();
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost(url);
-        try {
-            httppost.setEntity(new UrlEncodedFormEntity(params));
-            HttpResponse response = httpclient.execute(httppost);
-            String jsonResult = inputStreamToString(response.getEntity().getContent())
-                    .toString();
             try {
-                JSONObject jsonResponse = new JSONObject(jsonResult);
-                JSONArray imageArray = jsonResponse.getJSONObject("artist").getJSONArray("image");
-                for (int i = 0; i < imageArray.length(); i++) {
-                    JSONObject image = imageArray.getJSONObject(i);
-                    if (image.optString("size").matches("large") &&
-                            !image.optString("#text").matches("")) {
-                        Bitmap downloadedImg = downloadBitmap(image.optString("#text"));
-                        String newUrl = saveImageToStorage(downloadedImg);
-                        handler.updateArtistArtWorkInDB(name, newUrl);
-                        handler.onDownloadComplete(newUrl);
+                URL url = new URL(this.url);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                String jsonResult = inputStreamToString(new BufferedInputStream(connection.getInputStream()))
+                        .toString();
+                try {
+                    JSONObject jsonResponse = new JSONObject(jsonResult);
+                    JSONArray imageArray = jsonResponse.getJSONObject("artist").getJSONArray("image");
+                    for (int i = 0; i < imageArray.length(); i++) {
+                        JSONObject image = imageArray.getJSONObject(i);
+                        if (image.optString("size").matches("large") &&
+                                !image.optString("#text").matches("")) {
+                            Bitmap downloadedImg = downloadBitmap(image.optString("#text"));
+                            String newUrl = saveImageToStorage(downloadedImg);
+                            handler.updateArtistArtWorkInDB(name, newUrl);
+                            handler.onDownloadComplete(newUrl);
+                        }
                     }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+                } catch (JSONException ignored) {}
+            } catch (IOException ignored) {}
         }
-    }
 
     private String saveImageToStorage(Bitmap bitmap) {
         StringBuilder fileName = new StringBuilder();
@@ -123,9 +110,6 @@ public class FetchArtistImg {
         fileName.append(c.get(Calendar.DATE)).append("-");
         fileName.append(c.get(Calendar.MONTH)).append("-");
         fileName.append(c.get(Calendar.YEAR)).append("-");
-        fileName.append(c.get(Calendar.HOUR)).append("-");
-        fileName.append(c.get(Calendar.MINUTE)).append("-");
-        fileName.append(c.get(Calendar.SECOND)).append("-");
         fileName.append(random).append("-");
         fileName.append((random / 3) * 5);
         fileName.append(".png");
@@ -143,7 +127,10 @@ public class FetchArtistImg {
         }
         File image = new File(filePath, fileName.toString());
         if (image.exists()) {
-            image.delete();
+            boolean deleted = image.delete();
+            if(!deleted) {
+                Toast.makeText(context, "Failed to delete unused resources", Toast.LENGTH_SHORT).show();
+            }
         }
         try {
             FileOutputStream out = new FileOutputStream(image);

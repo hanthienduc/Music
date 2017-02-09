@@ -37,7 +37,7 @@
             android:id="@+id/main_viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/windowBackground"
+            android:background="@color/window_background"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     </android.support.design.widget.CoordinatorLayout>
@@ -69,7 +69,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/colorPrimary"
+                android:background="@color/color_primary"
                 android:id="@+id/mini_controller"
                 android:orientation="horizontal">
                 <ImageView
@@ -126,7 +126,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorAccent"
+                android:background="@color/color_accent"
                 android:id="@+id/control_holder">
 
                 <TextView
@@ -218,10 +218,7 @@
                     android:background="@drawable/unbounded_ripple"
                     android:layout_alignParentEnd="true"
                     android:drawSelectorOnTop="true"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="24dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_margin="24dp"
                     android:padding="2dp"
                     android:layout_below="@id/player_seekbar"
                     android:src="@drawable/ic_shuffle"
@@ -234,10 +231,7 @@
                     android:background="@drawable/unbounded_ripple"
                     android:layout_alignParentStart="true"
                     android:drawSelectorOnTop="true"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="24dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_margin="24dp"
                     android:padding="2dp"
                     android:layout_below="@id/player_seekbar"
                     android:src="@drawable/ic_repeat_all"
@@ -251,7 +245,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:clipToPadding="false"
-                android:background="@color/windowBackground"
+                android:background="@color/window_background"
                 android:layout_below="@id/control_holder"
                 android:id="@+id/playing_list"/>
         </RelativeLayout>

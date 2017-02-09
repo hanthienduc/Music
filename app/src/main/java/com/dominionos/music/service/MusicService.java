@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -622,7 +623,6 @@ public class MusicService extends Service {
         PendingIntent cancelIntent = PendingIntent.getBroadcast(this, 100,
                 new Intent(ACTION_CANCEL_NOTIFICATION).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
 
-        int color = 0x000000;
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -648,7 +648,7 @@ public class MusicService extends Service {
                 .setStyle(new NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSession.getSessionToken())
                         .setShowActionsInCompactView(1, 2))
-                .setColor(color)
+                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.color_accent))
                 .setSmallIcon(R.drawable.ic_audiotrack)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(songName)
