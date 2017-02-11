@@ -94,6 +94,10 @@ public class SongsFragment extends Fragment {
         if (musicCursor != null) {
             musicCursor.close();
         }
-        rv.setAdapter(new SongsAdapter(mainView.getContext(), songList));
+        if(songList.size() != 0) {
+            rv.setAdapter(new SongsAdapter(mainView.getContext(), songList));
+        } else {
+            getActivity().findViewById(R.id.no_songs).setVisibility(View.VISIBLE);
+        }
     }
 }

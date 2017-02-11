@@ -8,18 +8,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -29,6 +34,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -38,10 +44,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
+import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.adapters.PlayingSongAdapter;
 import com.dominionos.music.utils.adapters.ViewPagerAdapter;
 import com.dominionos.music.service.MusicService;
@@ -62,6 +71,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
@@ -86,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ViewPager viewPager;
     private AudioManager audioManager;
+    private FloatingActionButton fab;
     private RelativeLayout miniController, controlHolder;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -119,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
                         rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation()));
                         rv.setAdapter(adapter);
                     } else {
-                        rv.getAdapter().notifyDataSetChanged();
                         rv.swapAdapter(adapter, false);
                     }
                     break;
@@ -204,6 +214,8 @@ public class MainActivity extends AppCompatActivity {
 
         setDrawer();
 
+        setDynamicShortcuts();
+
         setupPlayer();
         handler.postDelayed(new Runnable() {
             @Override
@@ -214,7 +226,19 @@ public class MainActivity extends AppCompatActivity {
         }, 1000);
     }
 
-    private void setupViewPager(ViewPager viewPager) {
+    private void setDynamicShortcuts() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+            ShortcutInfo searchShortcut = new ShortcutInfo.Builder(this, "search")
+                    .setShortLabel(getString(R.string.search))
+                    .setIcon(Icon.createWithResource(MainActivity.this, R.drawable.ic_shortcut_search))
+                    .setIntent(new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, SearchActivity.class))
+                    .build();
+            shortcutManager.setDynamicShortcuts(Collections.singletonList(searchShortcut));
+        }
+    }
+
+    private void setupViewPager(final ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new SongsFragment(), getResources().getString(R.string.songs));
         adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.album));
@@ -222,12 +246,35 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFrag(new PlaylistFragment(), getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(MainActivity.this)
+                        .title(R.string.add_playlist)
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .input(getString(R.string.playlist_example), null, new MaterialDialog.InputCallback() {
+
+                            @Override
+                            public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                if(!input.toString().equals("")) {
+                                    MySQLiteHelper helper = new MySQLiteHelper(MainActivity.this);
+                                    helper.createNewPlayList(input.toString());
+                                } else {
+                                    Toast.makeText(MainActivity.this, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .positiveText(getString(R.string.ok))
+                        .negativeText(getString(R.string.cancel)).show();
+            }
+        });
     }
 
     private void setDrawer() {
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.color.color_primary)
+                .withHeaderBackground(R.color.colorPrimary)
                 .build();
 
         PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(GoogleMaterial.Icon.gmd_audiotrack);
@@ -285,7 +332,23 @@ public class MainActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                switch (position) {
+                    case 0:
+                        fab.hide();
+                        break;
+                    case 1:
+                        fab.hide();
+                        break;
+                    case 2:
+                        fab.hide();
+                        break;
+                    case 3:
+                        fab.show();
+                        break;
+                    default:
+                        fab.hide();
+                        break;
+                }
             }
 
             @Override
@@ -568,6 +631,17 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(secondPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            secondPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

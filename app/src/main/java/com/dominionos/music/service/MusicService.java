@@ -648,7 +648,7 @@ public class MusicService extends Service {
                 .setStyle(new NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSession.getSessionToken())
                         .setShowActionsInCompactView(1, 2))
-                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.color_accent))
+                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent))
                 .setSmallIcon(R.drawable.ic_audiotrack)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(songName)

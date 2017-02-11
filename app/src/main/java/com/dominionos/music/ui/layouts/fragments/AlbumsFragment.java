@@ -64,7 +64,6 @@ public class AlbumsFragment extends Fragment {
                     (android.provider.MediaStore.Audio.Albums.NUMBER_OF_SONGS);
             int albumArtColumn = musicCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Albums.ALBUM_ART);
-            //add albums to list
             do {
                 albumList.add(new AlbumListItem(musicCursor.getLong(idColumn),
                         musicCursor.getString(titleColumn),
@@ -90,7 +89,11 @@ public class AlbumsFragment extends Fragment {
         gv.setLayoutManager(gridLayoutManager);
         gv.addItemDecoration(new SpacesItemDecoration(8, 2));
         gv.setHasFixedSize(true);
-        gv.setAdapter(new AlbumsAdapter(mainView.getContext(), albumList));
+        if(albumList.size() != 0) {
+            gv.setAdapter(new AlbumsAdapter(mainView.getContext(), albumList));
+        } else {
+            getActivity().findViewById(R.id.no_albums).setVisibility(View.VISIBLE);
+        }
 
     }
 }

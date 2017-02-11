@@ -40,6 +40,16 @@
             android:background="@color/window_background"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fab"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_add"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_anchor="@id/main_viewpager"
+            app:layout_anchorGravity="bottom|end"/>
+
     </android.support.design.widget.CoordinatorLayout>
 
     <!-- Sliding Panel -->
@@ -69,7 +79,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/color_primary"
+                android:background="@color/colorPrimary"
                 android:id="@+id/mini_controller"
                 android:orientation="horizontal">
                 <ImageView
@@ -126,7 +136,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/color_accent"
+                android:background="@color/colorAccent"
                 android:id="@+id/control_holder">
 
                 <TextView

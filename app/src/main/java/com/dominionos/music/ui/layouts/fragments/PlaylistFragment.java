@@ -43,7 +43,6 @@ public class PlaylistFragment extends Fragment {
     private void getPlaylistList() {
         MySQLiteHelper helper = new MySQLiteHelper(mainView.getContext());
         List<Playlist> playlistList = helper.getAllPlaylist();
-        playlistList.add(new Playlist(-1, getString(R.string.create_new_playlist)));
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);

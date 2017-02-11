@@ -94,6 +94,10 @@ public class ArtistsFragment extends Fragment {
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
         rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation()));
-        rv.setAdapter(new ArtistAdapter(context, artistList));
+        if(artistList.size() != 0) {
+            rv.setAdapter(new ArtistAdapter(context, artistList));
+        } else {
+            getActivity().findViewById(R.id.no_artists).setVisibility(View.VISIBLE);
+        }
     }
 }
