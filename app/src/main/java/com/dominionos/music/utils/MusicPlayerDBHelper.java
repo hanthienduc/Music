@@ -36,6 +36,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
                 "song_mood TEXT," +
                 "song_playing INTEGER)";
         db.execSQL(CREATE_PLAYBACK_TABLE);
+        db.close();
     }
 
     @Override
@@ -93,8 +94,10 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
+            db.close();
             return getSongFromCursor(cursor);
         }
+        db.close();
         return null;
     }
 
@@ -116,6 +119,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
                 }
             } while (cursor.moveToNext());
         }
+        db.close();
         return firstSong;
     }
 
@@ -131,12 +135,14 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
                 if (isFirst) {
                     isFirst = false;
                 } else if (cursor.getString(1).matches(String.valueOf(currentId))) {
+                    db.close();
                     return songs.get(counter - 1);
                 }
                 songs.add(getSongFromCursor(cursor));
                 counter++;
             } while (cursor.moveToNext());
         }
+        db.close();
         return songs.get(songs.size() - 1);
     }
 
@@ -145,8 +151,10 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
+            db.close();
             return getSongFromCursor(cursor);
         }
+        db.close();
         return null;
     }
 
@@ -162,7 +170,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
                 songs.add(song);
             } while (cursor.moveToNext());
         }
-
+        db.close();
         return songs;
     }
 
@@ -172,12 +180,14 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         int count = cursor.getCount();
         cursor.close();
+        db.close();
         return count;
     }
 
     public void clearPlayingList() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_PLAYBACK);
+        db.close();
     }
 
 
@@ -208,8 +218,10 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
+            db.close();
             return getSongFromCursor(cursor);
         }
+        db.close();
         return null;
     }
 
