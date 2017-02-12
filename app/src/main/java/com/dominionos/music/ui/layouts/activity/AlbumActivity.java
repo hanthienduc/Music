@@ -171,16 +171,13 @@ public class AlbumActivity extends AppCompatActivity {
                     (MediaStore.Audio.Media.ALBUM_ID);
             int albumNameColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
-            int count = 0;
             do {
-                count++;
                 songList.add(new SongListItem(musicCursor.getLong(idColumn),
                         musicCursor.getString(titleColumn),
                         musicCursor.getString(artistColumn),
                         musicCursor.getString(pathColumn), false,
                         musicCursor.getLong(albumIdColumn),
-                        musicCursor.getString(albumNameColumn),
-                        count));
+                        musicCursor.getString(albumNameColumn)));
             }
             while (musicCursor.moveToNext());
         }

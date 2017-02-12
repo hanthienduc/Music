@@ -65,7 +65,6 @@ public class ArtistActivity extends AppCompatActivity {
                     (MediaStore.Audio.Media.ALBUM_ID);
             int albumColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
-            int i = 1;
             do {
                 if(artistName.equals(musicCursor.getString(artistColumn))) {
                     songList.add(new SongListItem(musicCursor.getLong(idColumn),
@@ -73,9 +72,8 @@ public class ArtistActivity extends AppCompatActivity {
                             musicCursor.getString(artistColumn),
                             musicCursor.getString(pathColumn), false,
                             musicCursor.getLong(albumIdColumn),
-                            musicCursor.getString(albumColumn), i));
+                            musicCursor.getString(albumColumn)));
                 }
-                i++;
             }
             while (musicCursor.moveToNext());
             Collections.sort(songList, new Comparator<SongListItem>() {

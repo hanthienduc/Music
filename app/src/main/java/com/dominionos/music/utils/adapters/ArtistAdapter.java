@@ -105,7 +105,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                     ((Activity) context).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int px = Utils.dpToPx(context, 40);
+                            int px = Utils.dpToPx(context, 48);
                             Picasso.with(context).load(new File(url)).centerCrop().resize(px, px).into(holder.artistImg);
                             setImageToView(url, holder);
                         }

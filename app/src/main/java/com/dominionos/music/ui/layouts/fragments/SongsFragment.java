@@ -73,15 +73,13 @@ public class SongsFragment extends Fragment {
                     (MediaStore.Audio.Media.ALBUM_ID);
             int albumColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
-            int i = 1;
             do {
                 songList.add(new SongListItem(musicCursor.getLong(idColumn),
                         musicCursor.getString(titleColumn),
                         musicCursor.getString(artistColumn),
                         musicCursor.getString(pathColumn), false,
                         musicCursor.getLong(albumIdColumn),
-                        musicCursor.getString(albumColumn), i));
-                i++;
+                        musicCursor.getString(albumColumn)));
             }
             while (musicCursor.moveToNext());
             Collections.sort(songList, new Comparator<SongListItem>() {

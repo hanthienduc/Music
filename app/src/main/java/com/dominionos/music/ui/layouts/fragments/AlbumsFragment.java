@@ -47,7 +47,6 @@ public class AlbumsFragment extends Fragment {
 
     private void getAlbumList() {
         final ArrayList<AlbumListItem> albumList = new ArrayList<>();
-        System.gc();
         final String orderBy = MediaStore.Audio.Albums.ALBUM;
         Cursor musicCursor = mainView.getContext().getContentResolver().
                 query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, orderBy);

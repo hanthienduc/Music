@@ -135,7 +135,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(SONG_KEY_FAV, song.getFav());
         values.put(SONG_KEY_PATH, song.getPath());
         values.put(SONG_KEY_NAME, song.getName());
-        values.put(SONG_KEY_COUNT, song.getCount());
         values.put(SONG_KEY_ALBUM_NAME, song.getAlbumName());
 
         db.insert(TABLE_SONG_FOR_PLAYLIST, null, values);
@@ -194,7 +193,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                     musicCursor.getString(artistColumn),
                     musicCursor.getString(pathColumn), false,
                     musicCursor.getLong(albumIdColumn),
-                    musicCursor.getString(albumColumn), 0);
+                    musicCursor.getString(albumColumn));
         }
         if (musicCursor != null) {
             musicCursor.close();
@@ -216,7 +215,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 song = new SongListItem(Long.valueOf(cursor.getString(1)),
                         cursor.getString(7), cursor.getString(4),
                         cursor.getString(6), fav, Long.parseLong(cursor.getString(3)),
-                        cursor.getString(9), Integer.parseInt(cursor.getString(8)));
+                        cursor.getString(9));
                 songs.add(song);
             } while (cursor.moveToNext());
         }

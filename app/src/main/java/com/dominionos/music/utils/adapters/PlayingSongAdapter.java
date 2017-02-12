@@ -15,10 +15,7 @@ import com.dominionos.music.R;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.items.SongListItem;
-import com.makeramen.roundedimageview.RoundedImageView;
-import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.List;
 
 public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.SimpleItemViewHolder> {
@@ -31,13 +28,11 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         final TextView desc;
         public final View view;
         public final ImageView menu;
-        RoundedImageView art;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
-            art = (RoundedImageView) itemView.findViewById(R.id.song_item_art);
             view = itemView;
             menu = (ImageView) itemView.findViewById(R.id.song_item_menu);
         }
@@ -51,7 +46,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     @Override
     public PlayingSongAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.song_list_item_art, parent, false);
+                inflate(R.layout.song_list_item, parent, false);
         return new SimpleItemViewHolder(itemView);
     }
 
@@ -117,12 +112,6 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                 popupMenu.show();
             }
         });
-        String albumArtPath = Utils.getAlbumArt(context, songs.get(holder.getAdapterPosition()).getAlbumId());
-        if(albumArtPath != null) {
-            int px = Utils.dpToPx(context, 40);
-            Picasso.with(context).load(new File(albumArtPath)).centerCrop()
-                    .resize(px, px).into(holder.art);
-        }
     }
 
     private void addToPlaylist(int position) {

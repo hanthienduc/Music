@@ -9,17 +9,15 @@ public class SongListItem {
     private final String path;
     private final String albumName;
     private final Boolean fav;
-    private final int count;
 
     public SongListItem(long id, String name, String desc, String path,
-                        Boolean fav, long albumId, String albumName, int count) {
+                        Boolean fav, long albumId, String albumName) {
         this.desc = desc;
         this.fav = fav;
         this.path = path;
         this.id = id;
         this.name = name;
         this.albumId = albumId;
-        this.count = count;
         this.albumName = albumName;
     }
 
@@ -50,10 +48,6 @@ public class SongListItem {
 
     public Boolean getFav() {
         return fav;
-    }
-
-    public int getCount() {
-        return this.count;
     }
 
 }

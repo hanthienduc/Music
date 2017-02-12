@@ -30,20 +30,6 @@ public class Utils {
                 .show();
     }
 
-    public static String getAlbumArt(Context context, long albumId) {
-        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                MediaStore.Audio.Albums._ID + "=?",
-                new String[]{String.valueOf(albumId)},
-                null);
-        String imagePath = "";
-        if (cursor != null && cursor.moveToFirst()) {
-            imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-            cursor.close();
-        }
-        return imagePath;
-    }
-
     public static int dpToPx(Context context, int dp) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));

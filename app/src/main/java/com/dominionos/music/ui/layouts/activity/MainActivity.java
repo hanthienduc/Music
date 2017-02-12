@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -28,6 +29,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.DividerItemDecoration;
@@ -39,6 +41,7 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -77,6 +80,8 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final String ACTION_GET_PLAY_STATE = "get_play_state";
@@ -98,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
     private AudioManager audioManager;
     private FloatingActionButton fab;
     private RelativeLayout miniController, controlHolder;
+    private SharedPreferences preferences;
+    private int seekProgress;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -171,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-
         return true;
     }
 
@@ -207,9 +213,11 @@ public class MainActivity extends AppCompatActivity {
 
         handler = new Handler();
 
+        preferences = getSharedPreferences("com.dominionos.music", MODE_PRIVATE);
+
         setupViewPager(viewPager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
-        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
 
         setDrawer();
@@ -224,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
                 sendBroadcast(intent);
             }
         }, 1000);
+
     }
 
     private void setDynamicShortcuts() {
@@ -246,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFrag(new PlaylistFragment(), getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
+        viewPager.setOffscreenPageLimit(4);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -344,6 +354,25 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 3:
                         fab.show();
+                        if(!preferences.getBoolean("hasSeenCreatePlaylist", false)) {
+                            new MaterialTapTargetPrompt.Builder(MainActivity.this)
+                                    .setTarget(fab)
+                                    .setPrimaryText("Create a Playlist")
+                                    .setSecondaryText("Make a new playlist by tapping here!")
+                                    .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                                    .setBackgroundColour(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary))
+                                    .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                                        @Override
+                                        public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                                            if(tappedTarget) {
+                                                preferences.edit().putBoolean("hasSeenCreatePlaylist", true).apply();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onHidePromptComplete() {}
+                                    }).show();
+                        }
                         break;
                     default:
                         fab.hide();
@@ -557,7 +586,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if(!musicStopped) {
-                                    int seekProgress = seekBar.getProgress();
+                                    seekProgress = seekBar.getProgress();
                                     if (seekProgress < totalTime) {
                                         seekBar.setProgress(seekProgress + 100);
                                     } else {

@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.afollestad.async.Action;
@@ -66,7 +65,6 @@ public class FetchArtistImg {
                 return name;
             }
 
-            @Nullable
             @Override
             protected String run() throws InterruptedException {
                 backgroundTask();
@@ -80,28 +78,28 @@ public class FetchArtistImg {
     }
 
     private void backgroundTask() {
+        try {
+            URL url = new URL(this.url);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            String jsonResult = inputStreamToString(new BufferedInputStream(connection.getInputStream()))
+                    .toString();
             try {
-                URL url = new URL(this.url);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                String jsonResult = inputStreamToString(new BufferedInputStream(connection.getInputStream()))
-                        .toString();
-                try {
-                    JSONObject jsonResponse = new JSONObject(jsonResult);
-                    JSONArray imageArray = jsonResponse.getJSONObject("artist").getJSONArray("image");
-                    for (int i = 0; i < imageArray.length(); i++) {
-                        JSONObject image = imageArray.getJSONObject(i);
-                        if (image.optString("size").matches("large") &&
-                                !image.optString("#text").matches("")) {
-                            Bitmap downloadedImg = downloadBitmap(image.optString("#text"));
-                            String newUrl = saveImageToStorage(downloadedImg);
-                            handler.updateArtistArtWorkInDB(name, newUrl);
-                            handler.onDownloadComplete(newUrl);
-                        }
+                JSONObject jsonResponse = new JSONObject(jsonResult);
+                JSONArray imageArray = jsonResponse.getJSONObject("artist").getJSONArray("image");
+                for (int i = 0; i < imageArray.length(); i++) {
+                    JSONObject image = imageArray.getJSONObject(i);
+                    if (image.optString("size").matches("large") &&
+                            !image.optString("#text").matches("")) {
+                        Bitmap downloadedImg = downloadBitmap(image.optString("#text"));
+                        String newUrl = saveImageToStorage(downloadedImg);
+                        handler.updateArtistArtWorkInDB(name, newUrl);
+                        handler.onDownloadComplete(newUrl);
                     }
-                } catch (JSONException ignored) {}
-            } catch (IOException ignored) {}
-        }
+                }
+            } catch (JSONException ignored) {}
+        } catch (IOException ignored) {}
+    }
 
     private String saveImageToStorage(Bitmap bitmap) {
         StringBuilder fileName = new StringBuilder();

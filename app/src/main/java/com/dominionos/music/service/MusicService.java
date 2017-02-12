@@ -46,7 +46,7 @@ public class MusicService extends Service {
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSessionCompat mediaSession;
-    private ArrayList<SongListItem> songList, preShuffle;
+    private ArrayList<SongListItem> songList, preShuffle, playingList;
     private NotificationManagerCompat notificationManager;
 
     private final AudioManager.OnAudioFocusChangeListener afChangeListener =
@@ -115,7 +115,7 @@ public class MusicService extends Service {
                         intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), true);
                 playList.addSong(new SongListItem(intent.getLongExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                         intent.getStringExtra("songPath"), false,
-                        intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
+                        intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName")));
                 currentPlaylistSongId = 0;
                 pausedSongSeek = 0;
                 Intent requestSongDetails = new Intent();
@@ -149,16 +149,13 @@ public class MusicService extends Service {
                             (MediaStore.Audio.Media.ALBUM_ID);
                     int albumNameColumn = musicCursor.getColumnIndex
                             (MediaStore.Audio.Media.ALBUM);
-                    int count = 0;
                     do {
-                        count++;
                         addSong(new SongListItem(musicCursor.getLong(idColumn),
                                 musicCursor.getString(titleColumn),
                                 musicCursor.getString(artistColumn),
                                 musicCursor.getString(pathColumn), false,
                                 musicCursor.getLong(albumIdColumn),
-                                musicCursor.getString(albumNameColumn),
-                                count));
+                                musicCursor.getString(albumNameColumn)));
                     }
                     while (musicCursor.moveToNext());
                 }
@@ -283,14 +280,14 @@ public class MusicService extends Service {
                 }
                 break;
             case ACTION_PLAY_NEXT:
-                ArrayList<SongListItem> currentPlaying = playList.getCurrentPlayingList();
-                if(currentPlaying != null) {
-                    currentPlaying.add(currentPlaylistSongId++,
+                int insertPos = playingList.indexOf(new SongListItem(currentPlaylistSongId, songName, songDesc, songPath, false, albumId, albumName)) + 1;
+                if(playingList != null) {
+                    playingList.add(insertPos,
                             new SongListItem(intent.getIntExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                                     intent.getStringExtra("songPath"), false,
-                                    intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
+                                    intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName")));
                     playList.clearPlayingList();
-                    playList.addSongs(currentPlaying);
+                    playList.addSongs(playingList);
                     updatePlaylist();
                 }
                 break;
@@ -298,7 +295,7 @@ public class MusicService extends Service {
                 if (playList.getPlaybackTableSize() != 0 && currentPlaylistSongId != -1) {
                     playList.addSong(new SongListItem(intent.getLongExtra("songId", 0), intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
                             intent.getStringExtra("songPath"), false,
-                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName"), 0));
+                            intent.getLongExtra("songAlbumId", 0), intent.getStringExtra("songAlbumName")));
                     updatePlaylist();
                 } else {
                     intent.setAction(ACTION_PLAY_SINGLE);
@@ -467,7 +464,7 @@ public class MusicService extends Service {
         if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             if (singlePlay) {
                 currentPlaylistSongId = -1;
-                pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
+                pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName);
                 pausedSongPlaylistId = -1;
                 singleSong = true;
             } else {
@@ -486,10 +483,10 @@ public class MusicService extends Service {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         if(!repeatOne && !repeatAll) {
-                            if(playList.getPlaybackTableSize() == 1) {
+                            if(playingList.size() == 1) {
                                 currentPlaylistSongId = -1;
                                 pausedSongPlaylistId = -1;
-                                pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
+                                pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName);
                                 pausedSongSeek = 0;
                                 stopMusic();
                             } else {
@@ -503,22 +500,19 @@ public class MusicService extends Service {
                         } else if(repeatOne) {
                             playMusic(songId, songPath, songName, songDesc, albumId, albumName, false);
                         } else {
-                            if(playList.getPlaybackTableSize() == 1) {
-                                currentPlaylistSongId = -1;
-                                pausedSongPlaylistId = -1;
-                                pausedSong = new SongListItem(0, songName, songDesc, songPath, false, albumId, albumName, 0);
-                                pausedSongSeek = 0;
-                                stopMusic();
-                            } else if(playList.getPlaybackTableSize() != 1) {
+                            if(playingList.size() == 1) {
+                                playMusic(songId, songPath, songName, songDesc, albumId, albumName, false);
+                                updateCurrentPlaying();
+                            } else if(playingList.size() != 1) {
                                 pausedSongSeek = 0;
                                 SongListItem song = playList.getNextSong(currentPlaylistSongId);
                                 playMusic((int) song.getId(), song.getPath(), song.getName(),
                                         song.getDesc(), song.getAlbumId(),
                                         song.getAlbumName(), false);
                                 updateCurrentPlaying();
-                            } else if(playList.getLastSong() == new SongListItem(songId, songName, songDesc,
-                                    songPath, false, albumId, albumName, 0)) {
-                                playMusic(playList.getFirstSong());
+                            } else if(playingList.size() == playingList.indexOf(new SongListItem(songId, songName, songDesc,
+                                    songPath, false, albumId, albumName))) {
+                                playMusic(playingList.get(0));
                             }
                         }
                     }
@@ -529,6 +523,7 @@ public class MusicService extends Service {
                 this.songDesc = songDesc;
                 this.songPath = songPath;
                 this.albumId = albumId;
+                this.albumName = albumName;
                 startForeground(NOTIFICATION_ID, createNotification());
             } catch (IOException e) {
                 Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT).show();
@@ -570,6 +565,12 @@ public class MusicService extends Service {
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
+        if(playList.getCurrentPlayingList().size() != 0) {
+            playingList = playList.getCurrentPlayingList();
+        } else {
+            playingList = new ArrayList<>();
+        }
+
         new Runnable() {
             @Override
             public void run() {
@@ -592,16 +593,13 @@ public class MusicService extends Service {
                             (MediaStore.Audio.Media.ALBUM_ID);
                     int albumColumn = musicCursor2.getColumnIndex
                             (MediaStore.Audio.Media.ALBUM);
-                    int i2 = 0;
                     do {
-                        i2++;
                         songList.add(new SongListItem(musicCursor2.getLong(idColumn),
                                 musicCursor2.getString(titleColumn),
                                 musicCursor2.getString(artistColumn),
                                 musicCursor2.getString(pathColumn), false,
                                 musicCursor2.getLong(albumIdColumn),
-                                musicCursor2.getString(albumColumn),
-                                i2));
+                                musicCursor2.getString(albumColumn)));
                     }
                     while (musicCursor2.moveToNext());
                 }
@@ -622,6 +620,8 @@ public class MusicService extends Service {
                 new Intent(ACTION_NEXT).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
         PendingIntent cancelIntent = PendingIntent.getBroadcast(this, 100,
                 new Intent(ACTION_CANCEL_NOTIFICATION).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent launchAppIntent = PendingIntent.getActivity(this, 100,
+                new Intent(getApplicationContext(), MainActivity.class).setPackage(getPackageName()), PendingIntent.FLAG_CANCEL_CURRENT);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
 
@@ -649,6 +649,7 @@ public class MusicService extends Service {
                         .setMediaSession(mediaSession.getSessionToken())
                         .setShowActionsInCompactView(1, 2))
                 .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent))
+                .setContentIntent(launchAppIntent)
                 .setSmallIcon(R.drawable.ic_audiotrack)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(songName)
