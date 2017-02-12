@@ -1,6 +1,8 @@
 package com.dominionos.music.utils.items;
 
-public class SongListItem {
+import java.io.Serializable;
+
+public class SongListItem implements Serializable {
 
     private final long id;
     private final long albumId;
@@ -49,5 +51,4 @@ public class SongListItem {
     public Boolean getFav() {
         return fav;
     }
-
 }

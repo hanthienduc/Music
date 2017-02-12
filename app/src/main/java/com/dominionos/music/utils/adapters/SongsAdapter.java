@@ -33,7 +33,12 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     @NonNull
     @Override
     public String getSectionName(int position) {
-        return items.get(position).getName().substring(0,1);
+        String character = items.get(position).getName().substring(0, 1);
+        if(character.matches("[a-zA-Z]")) {
+            return items.get(position).getName().substring(0,1);
+        } else {
+            return "\u2605";
+        }
     }
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
@@ -76,28 +81,17 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        Intent i = new Intent();
                         switch (item.getItemId()) {
                             case R.id.menu_play_next:
-                                Intent i = new Intent();
                                 i.setAction(MusicService.ACTION_PLAY_NEXT);
-                                i.putExtra("songId", items.get(holder.getAdapterPosition()).getId());
-                                i.putExtra("songPath", items.get(holder.getAdapterPosition()).getPath());
-                                i.putExtra("songName", items.get(holder.getAdapterPosition()).getName());
-                                i.putExtra("songDesc", items.get(holder.getAdapterPosition()).getDesc());
-                                i.putExtra("songAlbumId", items.get(holder.getAdapterPosition()).getAlbumId());
-                                i.putExtra("songAlbumName", items.get(holder.getAdapterPosition()).getAlbumName());
+                                i.putExtra("song", items.get(holder.getAdapterPosition()));
                                 context.sendBroadcast(i);
                                 return true;
                             case R.id.menu_add_playing:
-                                Intent a = new Intent();
-                                a.setAction(MusicService.ACTION_ADD_SONG);
-                                a.putExtra("songId", items.get(finalPosition).getId());
-                                a.putExtra("songPath", items.get(finalPosition).getPath());
-                                a.putExtra("songName", items.get(finalPosition).getName());
-                                a.putExtra("songDesc", items.get(finalPosition).getDesc());
-                                a.putExtra("songAlbumId", items.get(finalPosition).getAlbumId());
-                                a.putExtra("songAlbumName", items.get(finalPosition).getAlbumName());
-                                context.sendBroadcast(a);
+                                i.setAction(MusicService.ACTION_ADD_SONG);
+                                i.putExtra("song", items.get(holder.getAdapterPosition()));
+                                context.sendBroadcast(i);
                                 return true;
                             case R.id.menu_add_playlist:
                                 addToPlaylist(finalPosition);
@@ -132,12 +126,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
             public void onClick(View v) {
                     Intent a = new Intent();
                     a.setAction(MusicService.ACTION_PLAY_SINGLE);
-                    a.putExtra("songId", items.get(finalPosition).getId());
-                    a.putExtra("songPath", items.get(finalPosition).getPath());
-                    a.putExtra("songName", items.get(finalPosition).getName());
-                    a.putExtra("songDesc", items.get(finalPosition).getDesc());
-                    a.putExtra("songAlbumId", items.get(finalPosition).getAlbumId());
-                    a.putExtra("songAlbumName", items.get(finalPosition).getAlbumName());
+                    a.putExtra("song", items.get(holder.getAdapterPosition()));
                     context.sendBroadcast(a);
             }
         });

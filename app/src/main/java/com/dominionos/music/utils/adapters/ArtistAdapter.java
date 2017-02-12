@@ -35,7 +35,12 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
     @NonNull
     @Override
     public String getSectionName(int position) {
-        return items.get(position).getName().substring(0,1);
+        String character = items.get(position).getName().substring(0, 1);
+        if(character.matches("[a-zA-Z]")) {
+            return items.get(position).getName().substring(0,1);
+        } else {
+            return "\u2605";
+        }
     }
 
 

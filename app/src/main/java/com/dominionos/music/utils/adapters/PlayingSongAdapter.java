@@ -59,7 +59,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
             public void onClick(View v) {
                 Intent a = new Intent();
                 a.setAction(MusicService.ACTION_PLAY_FROM_PLAYLIST);
-                a.putExtra("playListId", songs.get(holder.getAdapterPosition()).getId() + "");
+                a.putExtra("playListId", songs.get(holder.getAdapterPosition()).getId());
                 context.sendBroadcast(a);
             }
         });
