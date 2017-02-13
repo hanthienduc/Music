@@ -29,6 +29,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     private final List<SongListItem> items;
     private final Context context;
+    private Intent i;
 
     @NonNull
     @Override
@@ -44,8 +45,8 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
         final TextView desc;
-        public final View view;
-        public final ImageView menu;
+        final View view;
+        final ImageView menu;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
@@ -59,6 +60,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     public SongsAdapter(Context context, List<SongListItem> items) {
         this.context = context;
         this.items = items;
+        i = new Intent();
     }
 
     @Override
@@ -70,10 +72,8 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
-        position = holder.getAdapterPosition();
-        holder.title.setText(items.get(position).getName());
-        holder.desc.setText(items.get(position).getDesc());
-        final int finalPosition = position;
+        holder.title.setText(items.get(holder.getAdapterPosition()).getName());
+        holder.desc.setText(items.get(holder.getAdapterPosition()).getDesc());
         holder.menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,7 +81,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        Intent i = new Intent();
                         switch (item.getItemId()) {
                             case R.id.menu_play_next:
                                 i.setAction(MusicService.ACTION_PLAY_NEXT);
@@ -94,22 +93,22 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                                 context.sendBroadcast(i);
                                 return true;
                             case R.id.menu_add_playlist:
-                                addToPlaylist(finalPosition);
+                                addToPlaylist(holder.getAdapterPosition());
                                 return true;
                             case R.id.menu_share:
                                 Intent share = new Intent(Intent.ACTION_SEND);
                                 share.setType("audio/*");
-                                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" + items.get(finalPosition).getPath()));
+                                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" + items.get(holder.getAdapterPosition()).getPath()));
                                 context.startActivity(Intent.createChooser(share, context.getString(R.string.share_song)));
                                 return true;
                             case R.id.menu_delete:
-                                File file = new File(items.get(finalPosition).getPath());
+                                File file = new File(items.get(holder.getAdapterPosition()).getPath());
                                 boolean deleted = file.delete();
                                 if (deleted) {
                                     Toast.makeText(context, R.string.song_delete_success, Toast.LENGTH_SHORT).show();
                                     context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                            MediaStore.MediaColumns._ID + "='" + items.get(finalPosition).getId() + "'", null);
-                                    notifyItemRemoved(finalPosition);
+                                            MediaStore.MediaColumns._ID + "='" + items.get(holder.getAdapterPosition()).getId() + "'", null);
+                                    notifyItemRemoved(holder.getAdapterPosition());
                                 } else
                                     Toast.makeText(context, R.string.song_delete_fail, Toast.LENGTH_SHORT).show();
                                 return true;

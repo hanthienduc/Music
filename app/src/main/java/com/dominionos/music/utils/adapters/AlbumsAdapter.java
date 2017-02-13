@@ -3,7 +3,7 @@ package com.dominionos.music.utils.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -18,12 +18,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.Target;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.items.AlbumListItem;
 import com.dominionos.music.ui.layouts.activity.AlbumActivity;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.List;
@@ -92,12 +94,18 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         final int finalPosition = position;
         if (((ColorDrawable) holder.textHolder.getBackground()).getColor() != backCardColor)
             holder.textHolder.setBackgroundColor(backCardColor);
-        try {
-            Picasso.with(context).load(new File(items.get(position).getArtString()))
+            Glide.with(context)
+                    .load(new File(items.get(position).getArtString()))
+                    .asBitmap()
                     .error(R.drawable.default_artwork_dark)
-                    .into(holder.albumArt, new Callback() {
+                    .listener(new RequestListener<File, Bitmap>() {
                         @Override
-                        public void onSuccess() {
+                        public boolean onException(Exception e, File model, Target<Bitmap> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, File model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
                                 @Override
                                 public void onGenerated(Palette palette) {
@@ -115,18 +123,11 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
                                     }
                                 }
                             };
-                            Palette.from(((BitmapDrawable)holder.albumArt.getDrawable()).getBitmap()).generate(paletteAsyncListener);
+                            Palette.from(resource).generate(paletteAsyncListener);
+                            return false;
                         }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
-        } catch (Exception e) {
-            Picasso.with(context).load(R.drawable.default_artwork_dark)
-                    .into(holder.albumArt);
-        }
+                    })
+                    .into(new BitmapImageViewTarget(holder.albumArt));
         holder.realBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

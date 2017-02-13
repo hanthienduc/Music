@@ -1,8 +1,9 @@
 package com.dominionos.music.utils;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.provider.MediaStore;
+import android.graphics.Bitmap;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
 
@@ -33,5 +34,11 @@ public class Utils {
     public static int dpToPx(Context context, int dp) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        return (int) (dpWidth / 180);
     }
 }

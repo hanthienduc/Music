@@ -232,7 +232,6 @@ public class MainActivity extends AppCompatActivity {
                 sendBroadcast(intent);
             }
         }, 1000);
-
     }
 
     private void setDynamicShortcuts() {
@@ -416,9 +415,7 @@ public class MainActivity extends AppCompatActivity {
         miniAlbumArt = (ImageView) findViewById(R.id.mini_album_art);
         secondPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
-            public void onPanelSlide(View panel, float slideOffset) {
-
-            }
+            public void onPanelSlide(View panel, float slideOffset) {}
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {

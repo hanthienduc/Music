@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.dominionos.music.R;
 import com.dominionos.music.utils.SpacesItemDecoration;
+import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.adapters.AlbumsAdapter;
 import com.dominionos.music.utils.items.AlbumListItem;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
@@ -82,7 +83,7 @@ public class AlbumsFragment extends Fragment {
         if (musicCursor != null) {
             musicCursor.close();
         }
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(), 2);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(), Utils.calculateNoOfColumns(getContext()));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
