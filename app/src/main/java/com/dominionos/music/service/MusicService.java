@@ -690,7 +690,7 @@ public class MusicService extends Service {
         try {
             albumArt = BitmapFactory.decodeFile(songArt, options);
         } catch (IllegalArgumentException e) {
-            albumArt = BitmapFactory.decodeResource(getResources(), R.drawable.default_artwork_dark, options);
+            albumArt = BitmapFactory.decodeResource(getResources(), R.drawable.default_art, options);
         }
         if(cursor != null) cursor.close();
         return albumArt;

@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView songName, songDesc, currentTime, totalTime;
     private ImageView playToolbar, play, albumArt, miniAlbumArt, repeatButton, shuffleButton;
     private SeekBar seekBar;
-    private SlidingUpPanelLayout slidingPanel, secondPanel;
+    private SlidingUpPanelLayout slidingPanel;
     private Toolbar toolbar;
     private ViewPager viewPager;
     private AudioManager audioManager;
@@ -398,8 +398,6 @@ public class MainActivity extends AppCompatActivity {
         songName = (TextView) findViewById(R.id.song_name_toolbar);
         songDesc = (TextView) findViewById(R.id.song_desc_toolbar);
         slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        secondPanel = (SlidingUpPanelLayout) findViewById(R.id.playing_list_panel);
-        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         playToolbar = (ImageView) findViewById(R.id.player_play_toolbar);
         ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
         ImageView forward = (ImageView) findViewById(R.id.player_forward);
@@ -413,21 +411,6 @@ public class MainActivity extends AppCompatActivity {
         shuffleButton.getDrawable().setAlpha(140);
         albumArt = (ImageView) findViewById(R.id.album_art);
         miniAlbumArt = (ImageView) findViewById(R.id.mini_album_art);
-        secondPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View panel, float slideOffset) {}
-
-            @Override
-            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                if(newState.equals(SlidingUpPanelLayout.PanelState.EXPANDED)) {
-                    slidingPanel.setEnabled(false);
-                    slidingPanel.setClickable(false);
-                } else if(newState.equals(SlidingUpPanelLayout.PanelState.COLLAPSED)) {
-                    slidingPanel.setEnabled(true);
-                    slidingPanel.setClickable(true);
-                }
-            }
-        });
         shuffleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -508,6 +491,24 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     miniController.setVisibility(View.VISIBLE);
                 }
+
+                if(previousState == SlidingUpPanelLayout.PanelState.HIDDEN && !preferences.getBoolean("hasUsedSlidingPlayer", false)) {
+                    new MaterialTapTargetPrompt.Builder(MainActivity.this)
+                            .setTarget(miniController)
+                            .setPrimaryText("Player")
+                            .setSecondaryText("Tap (or swipe up) here to reveal the player controls!")
+                            .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                            .setBackgroundColour(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary))
+                            .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                                @Override
+                                public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                                    preferences.edit().putBoolean("hasUsedSlidingPlayer", true).apply();
+                                }
+
+                                @Override
+                                public void onHidePromptComplete() {}
+                            }).show();
+                }
             }
         });
         repeatButton.setOnClickListener(new View.OnClickListener() {
@@ -564,9 +565,6 @@ public class MainActivity extends AppCompatActivity {
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
-            int height = size.y;
-            int albumArtHeight = albumArt.getHeight();
-            secondPanel.setPanelHeight(height - albumArtHeight);
             songDesc.setText(songDetailsString);
             if(currentTime != 0 && totalTime != 0) {
                 if (timer != null) timer.cancel();
@@ -661,9 +659,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(secondPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
-            secondPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        } else if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+        if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else {
             super.onBackPressed();
