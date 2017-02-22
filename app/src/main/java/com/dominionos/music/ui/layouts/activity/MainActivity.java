@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -29,7 +28,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.DividerItemDecoration;
@@ -41,7 +39,6 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -60,11 +57,10 @@ import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
 import com.dominionos.music.ui.layouts.fragments.ArtistsFragment;
 import com.dominionos.music.ui.layouts.fragments.SongsFragment;
+import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.materialdrawer.AccountHeader;
-import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -80,8 +76,6 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
-
 public class MainActivity extends AppCompatActivity {
 
     public static final String ACTION_GET_PLAY_STATE = "get_play_state";
@@ -93,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean musicStopped = true, missingDuration = true;
     private RecyclerView rv;
     private Handler handler;
+    private SearchView search;
     private Timer timer;
     private TextView songName, songDesc, currentTime, totalTime;
     private ImageView playToolbar, play, albumArt, miniAlbumArt, repeatButton, shuffleButton;
@@ -103,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
     private AudioManager audioManager;
     private FloatingActionButton fab;
     private RelativeLayout miniController, controlHolder;
-    private SharedPreferences preferences;
     private int seekProgress;
+    private Drawer drawer;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -189,13 +184,16 @@ public class MainActivity extends AppCompatActivity {
                 Intent i = new Intent();
                 i.setAction(MusicService.ACTION_PLAY_ALL_SONGS);
                 sendBroadcast(i);
-                break;
+                return true;
             case R.id.search_item:
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                startActivity(intent);
-                break;
+                if(search.isSearchOpen()) {
+                    search.close(true);
+                } else {
+                    search.open(true, item);
+                }
+                return true;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     private void init() {
@@ -213,8 +211,6 @@ public class MainActivity extends AppCompatActivity {
 
         handler = new Handler();
 
-        preferences = getSharedPreferences("com.dominionos.music", MODE_PRIVATE);
-
         setupViewPager(viewPager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -224,6 +220,8 @@ public class MainActivity extends AppCompatActivity {
 
         setDynamicShortcuts();
 
+        setSearch();
+
         setupPlayer();
         handler.postDelayed(new Runnable() {
             @Override
@@ -232,6 +230,37 @@ public class MainActivity extends AppCompatActivity {
                 sendBroadcast(intent);
             }
         }, 1000);
+    }
+
+    private void setSearch() {
+        search = (SearchView) findViewById(R.id.searchView);
+        search.setArrowOnly(false);
+        search.setOnMenuClickListener(new SearchView.OnMenuClickListener() {
+            @Override
+            public void onMenuClick() {
+                search.close(true);
+            }
+        });
+        search.setTheme(SearchView.THEME_LIGHT);
+        search.setVersion(SearchView.VERSION_MENU_ITEM);
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                search(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    private void search(String text) {
+        Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+        intent.putExtra("query", text);
+        startActivity(intent);
     }
 
     private void setDynamicShortcuts() {
@@ -254,7 +283,6 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFrag(new PlaylistFragment(), getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
-        viewPager.setOffscreenPageLimit(4);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -281,20 +309,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDrawer() {
-        AccountHeader headerResult = new AccountHeaderBuilder()
-                .withActivity(this)
-                .withHeaderBackground(R.color.colorPrimary)
-                .build();
-
         PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(GoogleMaterial.Icon.gmd_audiotrack);
         PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.albums).withIcon(GoogleMaterial.Icon.gmd_library_music);
         PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(GoogleMaterial.Icon.gmd_account_circle);
         PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(GoogleMaterial.Icon.gmd_queue_music);
         SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
 
-        final Drawer drawer = new DrawerBuilder()
+        drawer = new DrawerBuilder()
                 .withActivity(this)
-                .withAccountHeader(headerResult)
                 .withToolbar(toolbar)
                 .withCloseOnClick(true)
                 .addDrawerItems(
@@ -309,8 +331,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        int drawerIdentifier = (int) drawerItem.getIdentifier();
-                        switch(drawerIdentifier) {
+                        switch((int) drawerItem.getIdentifier()) {
                             case 1:
                                 viewPager.setCurrentItem(0);
                                 break;
@@ -353,25 +374,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 3:
                         fab.show();
-                        if(!preferences.getBoolean("hasSeenCreatePlaylist", false)) {
-                            new MaterialTapTargetPrompt.Builder(MainActivity.this)
-                                    .setTarget(fab)
-                                    .setPrimaryText("Create a Playlist")
-                                    .setSecondaryText("Make a new playlist by tapping here!")
-                                    .setAnimationInterpolator(new FastOutSlowInInterpolator())
-                                    .setBackgroundColour(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary))
-                                    .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
-                                        @Override
-                                        public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
-                                            if(tappedTarget) {
-                                                preferences.edit().putBoolean("hasSeenCreatePlaylist", true).apply();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onHidePromptComplete() {}
-                                    }).show();
-                        }
                         break;
                     default:
                         fab.hide();
@@ -490,24 +492,6 @@ public class MainActivity extends AppCompatActivity {
                     miniController.setVisibility(View.GONE);
                 } else {
                     miniController.setVisibility(View.VISIBLE);
-                }
-
-                if(previousState == SlidingUpPanelLayout.PanelState.HIDDEN && !preferences.getBoolean("hasUsedSlidingPlayer", false)) {
-                    new MaterialTapTargetPrompt.Builder(MainActivity.this)
-                            .setTarget(miniController)
-                            .setPrimaryText("Player")
-                            .setSecondaryText("Tap (or swipe up) here to reveal the player controls!")
-                            .setAnimationInterpolator(new FastOutSlowInInterpolator())
-                            .setBackgroundColour(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary))
-                            .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
-                                @Override
-                                public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
-                                    preferences.edit().putBoolean("hasUsedSlidingPlayer", true).apply();
-                                }
-
-                                @Override
-                                public void onHidePromptComplete() {}
-                            }).show();
                 }
             }
         });
@@ -661,6 +645,8 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else if(search.isSearchOpen()) {
+            search.close(true);
         } else {
             super.onBackPressed();
         }
