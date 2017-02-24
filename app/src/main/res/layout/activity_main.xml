@@ -118,7 +118,8 @@
                         android:layout_width="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_toStartOf="@id/player_total_time"
-                        android:padding="16dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
                         android:layout_toEndOf="@id/player_current_time"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
@@ -243,12 +244,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:id="@+id/song_name_toolbar"
                     android:textColor="@android:color/primary_text_dark" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:id="@+id/song_desc_toolbar"
                     android:textColor="@android:color/secondary_text_dark" />
             </LinearLayout>

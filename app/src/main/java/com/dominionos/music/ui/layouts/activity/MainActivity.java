@@ -13,7 +13,6 @@ import android.content.pm.ShortcutManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
@@ -35,7 +34,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,6 +55,7 @@ import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
 import com.dominionos.music.ui.layouts.fragments.ArtistsFragment;
 import com.dominionos.music.ui.layouts.fragments.SongsFragment;
+import com.dominionos.music.utils.items.SongListItem;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -103,28 +102,22 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch(intent.getAction()) {
+            switch (intent.getAction()) {
                 case ACTION_GET_PLAY_STATE:
-                    if(intent.getBooleanExtra("isPlaying", false)) {
-                        playToolbar.setImageResource(R.drawable.ic_pause);
-                        play.setImageResource(R.drawable.ic_pause_circle);
-                        musicStopped = false;
-                    } else {
-                        playToolbar.setImageResource(R.drawable.ic_play);
-                        play.setImageResource(R.drawable.ic_play_circle);
-                        musicStopped = true;
-                    }
+                    updatePlayState(intent.getBooleanExtra("isPlaying", false));
                     break;
                 case ACTION_GET_PLAYING_DETAIL:
-                    changePlayerDetails(intent.getStringExtra("songName"), intent.getStringExtra("songDesc"),
-                            intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0),
-                            intent.getLongExtra("songAlbumId", 0)
-                    );
+                    SongListItem song = (SongListItem) intent.getSerializableExtra("song");
+                    if (song != null) {
+                        changePlayerDetails(song.getName(), song.getDesc(),
+                                intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0),
+                                song.getAlbumId());
+                    }
                     break;
                 case ACTION_GET_PLAYING_LIST:
                     MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
                     PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList());
-                    if(rv.getAdapter() == null) {
+                    if (rv.getAdapter() == null) {
                         LinearLayoutManager layoutManager = new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL, false);
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -156,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 init();
             } else {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -177,16 +170,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch(id) {
+        switch (id) {
             case R.id.play_all:
                 Intent i = new Intent();
                 i.setAction(MusicService.ACTION_PLAY_ALL_SONGS);
                 sendBroadcast(i);
                 return true;
             case R.id.search_item:
-                if(search.isSearchOpen()) {
+                if (search.isSearchOpen()) {
                     search.close(true);
                 } else {
                     search.open(true, item);
@@ -283,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFrag(new PlaylistFragment(), getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
+        viewPager.setOffscreenPageLimit(4);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                                if(!input.toString().equals("")) {
+                                if (!input.toString().equals("")) {
                                     MySQLiteHelper helper = new MySQLiteHelper(MainActivity.this);
                                     helper.createNewPlayList(input.toString());
                                 } else {
@@ -331,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        switch((int) drawerItem.getIdentifier()) {
+                        switch ((int) drawerItem.getIdentifier()) {
                             case 1:
                                 viewPager.setCurrentItem(0);
                                 break;
@@ -362,33 +356,19 @@ public class MainActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                switch (position) {
-                    case 0:
-                        fab.hide();
-                        break;
-                    case 1:
-                        fab.hide();
-                        break;
-                    case 2:
-                        fab.hide();
-                        break;
-                    case 3:
-                        fab.show();
-                        break;
-                    default:
-                        fab.hide();
-                        break;
-                }
+                if (position == 3)
+                    fab.show();
+                else
+                    fab.hide();
             }
 
             @Override
             public void onPageSelected(int position) {
-                drawer.setSelectionAtPosition(position + 1);
+                drawer.setSelectionAtPosition(position, false);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
     }
@@ -423,13 +403,13 @@ public class MainActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser) {
+                if (fromUser) {
                     Intent changeCurrentTime = new Intent(MusicService.ACTION_SEEK_TO);
                     changeCurrentTime.putExtra("changeSeek", progress);
                     sendBroadcast(changeCurrentTime);
                     musicStopped = false;
                 } else {
-                    if(seekBar.getProgress() == seekBar.getMax()) {
+                    if (seekBar.getProgress() == seekBar.getMax()) {
                         musicStopped = true;
                     }
 
@@ -465,9 +445,9 @@ public class MainActivity extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MusicService.ACTION_STOP);
+                Intent intent = new Intent(MusicService.ACTION_TOGGLE_PLAY);
                 sendBroadcast(intent);
-                if(missingDuration) {
+                if (missingDuration) {
                     Intent intent1 = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
                     sendBroadcast(intent1);
                 }
@@ -476,8 +456,12 @@ public class MainActivity extends AppCompatActivity {
         playToolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MusicService.ACTION_STOP);
+                Intent intent = new Intent(MusicService.ACTION_TOGGLE_PLAY);
                 sendBroadcast(intent);
+                if (missingDuration) {
+                    Intent intent1 = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                    sendBroadcast(intent1);
+                }
             }
         });
         slidingPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -488,7 +472,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
                     miniController.setVisibility(View.GONE);
                 } else {
                     miniController.setVisibility(View.VISIBLE);
@@ -507,95 +491,102 @@ public class MainActivity extends AppCompatActivity {
     private void changePlayerDetails(String songNameString, String songDetailsString,
                                      int currentTime, final int totalTime, long albumId) {
         songName.setText(songNameString);
-        if(!songName.getText().equals("")) {
-            Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                    new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                    MediaStore.Audio.Albums._ID + "=?",
-                    new String[]{String.valueOf(albumId)},
-                    null);
-            String songArt = null;
-            if(cursor != null && cursor.moveToFirst()) songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-            if(cursor != null) cursor.close();
-            if(songArt != null) {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = false;
-                options.inPreferredConfig = Bitmap.Config.RGB_565;
-                Bitmap albumArt = BitmapFactory.decodeFile(songArt, options);
-                this.albumArt.setImageBitmap(albumArt);
-                miniAlbumArt.setImageBitmap(albumArt);
-                Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
-                    @Override
-                    public void onGenerated(Palette palette) {
-                        if(palette.getVibrantSwatch() != null) {
-                            Drawable background = controlHolder.getBackground();
-                            int colorFrom = ((ColorDrawable) background).getColor();
-                            int colorTo = palette.getVibrantSwatch().getRgb();
-                            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-                            colorAnimation.setDuration(500); // milliseconds
-                            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[]{String.valueOf(albumId)},
+                null);
+        String songArt = null;
+        if (cursor != null && cursor.moveToFirst())
+            songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+        if (cursor != null) cursor.close();
+        if (songArt != null) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = false;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap albumArt = BitmapFactory.decodeFile(songArt, options);
+            this.albumArt.setImageBitmap(albumArt);
+            miniAlbumArt.setImageBitmap(albumArt);
+            Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(Palette palette) {
+                    if (palette.getVibrantSwatch() != null) {
+                        Drawable background = controlHolder.getBackground();
+                        int colorFrom = ((ColorDrawable) background).getColor();
+                        int colorTo = palette.getVibrantSwatch().getRgb();
+                        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                        colorAnimation.setDuration(500); // milliseconds
+                        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-                                @Override
-                                public void onAnimationUpdate(ValueAnimator animator) {
-                                    controlHolder.setBackgroundColor(((int) animator.getAnimatedValue()));
-                                }
-
-                            });
-                            colorAnimation.start();
-                        }
-                    }
-                };
-                Palette.from(albumArt).generate(paletteAsyncListener);
-            }
-            Display display = getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            songDesc.setText(songDetailsString);
-            if(currentTime != 0 && totalTime != 0) {
-                if (timer != null) timer.cancel();
-                missingDuration = false;
-                this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(currentTime)));
-                this.totalTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(totalTime)));
-                seekBar.setMax(totalTime);
-                seekBar.setProgress(currentTime);
-                timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
                             @Override
-                            public void run() {
-                                if(!musicStopped) {
-                                    seekProgress = seekBar.getProgress();
-                                    if (seekProgress < totalTime) {
-                                        seekBar.setProgress(seekProgress + 100);
-                                    } else {
-                                        seekBar.setProgress(100);
-                                    }
-                                    MainActivity.this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault())
-                                            .format(new Date(seekBar.getProgress())));
-                                }
+                            public void onAnimationUpdate(ValueAnimator animator) {
+                                controlHolder.setBackgroundColor(((int) animator.getAnimatedValue()));
                             }
+
                         });
+                        colorAnimation.start();
                     }
-                }, 0, 100);
-            } else {
-                missingDuration = true;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
-                        sendBroadcast(intent);
-                    }
-                }, 500);
-            }
-            if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                }
+            };
+            Palette.from(albumArt).generate(paletteAsyncListener);
+        }
+        songDesc.setText(songDetailsString);
+        if (currentTime != 0 && totalTime != 0) {
+            if (timer != null) timer.cancel();
+            missingDuration = false;
+            this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(currentTime)));
+            this.totalTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault()).format(new Date(totalTime)));
+            seekBar.setMax(totalTime);
+            seekBar.setProgress(currentTime);
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!musicStopped) {
+                                seekProgress = seekBar.getProgress();
+                                if (seekProgress < totalTime) {
+                                    seekBar.setProgress(seekProgress + 100);
+                                } else {
+                                    seekBar.setProgress(100);
+                                }
+                                MainActivity.this.currentTime.setText(new SimpleDateFormat("mm:ss", Locale.getDefault())
+                                        .format(new Date(seekBar.getProgress())));
+                            }
+                        }
+                    });
+                }
+            }, 0, 100);
         } else {
-            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            missingDuration = true;
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                    sendBroadcast(intent);
+                }
+            }, 500);
+        }
+        if (slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
+            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+    }
+
+    private void updatePlayState(boolean isPlaying) {
+        if (isPlaying) {
+            playToolbar.setImageResource(R.drawable.ic_pause);
+            play.setImageResource(R.drawable.ic_pause_circle);
+            musicStopped = false;
+        } else {
+            playToolbar.setImageResource(R.drawable.ic_play);
+            play.setImageResource(R.drawable.ic_play_circle);
+            musicStopped = true;
         }
     }
 
     private void updateShuffle(boolean shuffle) {
-        if(shuffle) {
+        if (shuffle) {
             shuffleButton.getDrawable().setAlpha(255);
         } else {
             shuffleButton.getDrawable().setAlpha(140);
@@ -625,9 +616,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch(requestCode) {
+        switch (requestCode) {
             case 1:
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     init();
                 } else {
                     finish();
@@ -643,9 +634,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+        if (slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        } else if(search.isSearchOpen()) {
+        } else if (search.isSearchOpen()) {
             search.close(true);
         } else {
             super.onBackPressed();
@@ -654,7 +645,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch(keyCode) {
+        switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
                 audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
                 break;

@@ -28,9 +28,6 @@ dependencies {
         mavenCentral()
         maven { url 'https://jitpack.io' }
         jcenter()
-        flatDir {
-            dirs 'libs'
-        }
     }
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile('com.mikepenz:materialdrawer:5.8.1@aar') {
@@ -54,5 +51,3 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.lapism:searchview:4.0'
 }
-
-apply plugin: 'com.google.gms.google-services'
