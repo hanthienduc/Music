@@ -108,6 +108,8 @@ public class MusicService extends Service {
                     mediaPlayer.pause();
                 } else if(mediaPlayer != null && !mediaPlayer.isPlaying()) {
                     mediaPlayer.start();
+                } else if(mediaPlayer == null) {
+                    playMusic(playingList.get(0));
                 }
                 updatePlayState();
                 break;
@@ -351,7 +353,11 @@ public class MusicService extends Service {
 
     private void updateCurrentPlaying() {
         Intent intent = new Intent(MainActivity.ACTION_GET_PLAYING_DETAIL);
-        intent.putExtra("song", currentSong);
+        if(currentSong != null) {
+            intent.putExtra("song", currentSong);
+        } else if(playingList.size() > 0){
+            intent.putExtra("song", playingList.get(0));
+        }
         if(mediaPlayer != null) {
             intent.putExtra("songDuration", mediaPlayer.getDuration());
             intent.putExtra("songCurrTime", mediaPlayer.getCurrentPosition());
@@ -525,8 +531,9 @@ public class MusicService extends Service {
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setActive(true);
 
-        if(playList.getCurrentPlayingList().size() != 0) {
-            playingList = playList.getCurrentPlayingList();
+        ArrayList<SongListItem> databaseList = playList.getCurrentPlayingList();
+        if(databaseList.size() != 0) {
+            playingList = databaseList;
         } else {
             playingList = new ArrayList<>();
         }
