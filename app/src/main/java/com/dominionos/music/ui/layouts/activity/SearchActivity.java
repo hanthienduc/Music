@@ -92,7 +92,7 @@ public class SearchActivity extends AppCompatActivity {
                         if (song.getName().toLowerCase().contains(query.toLowerCase())) {
                             searchResults.add(song);
                         }
-                        searchList.setAdapter(new SongsAdapter(SearchActivity.this, searchResults));
+                        searchList.setAdapter(new SongsAdapter(SearchActivity.this, searchResults, false));
                     }
                     return true;
                 }

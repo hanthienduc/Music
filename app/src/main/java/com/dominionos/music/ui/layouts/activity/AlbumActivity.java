@@ -6,13 +6,11 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -28,13 +26,14 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.adapters.AlbumSongAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 import com.dominionos.music.service.MusicService;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class AlbumActivity extends AppCompatActivity {
@@ -51,7 +50,7 @@ public class AlbumActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
         overridePendingTransition(0, 0);
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
+        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
                 findViewById(R.id.collapsing_toolbar_album);
         collapsingToolbarLayout.setTitle(getIntent().getStringExtra("albumName"));
         if ((collapsingToolbarLayout.getContentScrim()) != null) {
@@ -60,7 +59,7 @@ public class AlbumActivity extends AppCompatActivity {
         collapsingToolbarLayout.setStatusBarScrimColor(
                 getAutoStatColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor()));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_album);
-        Drawable upButton = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back, null);
+        final Drawable upButton = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back, null);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -70,7 +69,7 @@ public class AlbumActivity extends AppCompatActivity {
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        View toolbarBackground = findViewById(R.id.title_background);
+        final View toolbarBackground = findViewById(R.id.title_background);
         fab = (FloatingActionButton) findViewById(R.id.fab_album);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,56 +89,53 @@ public class AlbumActivity extends AppCompatActivity {
         if (cursor != null && cursor.moveToFirst()) {
             String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
             Glide.with(AlbumActivity.this)
-                    .load(new File(imagePath))
+                    .load(imagePath)
+                    .asBitmap()
                     .error(R.drawable.default_art)
+                    .listener(new RequestListener<String, Bitmap>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            Palette palette = new Palette.Builder(resource).generate();
+                            try {
+                                Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+                                Palette.Swatch altSwatch = palette.getDominantSwatch();
+                                int vibrantRgb;
+                                int vibrantTitleText;
+                                if (vibrantSwatch != null) {
+                                    vibrantRgb = vibrantSwatch.getRgb();
+                                    vibrantTitleText = vibrantSwatch.getTitleTextColor();
+                                } else if (altSwatch != null) {
+                                    vibrantRgb = altSwatch.getRgb();
+                                    vibrantTitleText = altSwatch.getTitleTextColor();
+                                } else {
+                                    vibrantRgb = ResourcesCompat.getColor(getResources(), R.color.cardBackground, null);
+                                    vibrantTitleText = ResourcesCompat.getColor(getResources(), android.R.color.primary_text_dark, null);
+                                }
+                                toolbarBackground.setBackgroundColor(vibrantRgb);
+                                collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(vibrantRgb));
+                                collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
+                                collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
+                                collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
+                                collapsingToolbarLayout.setBackgroundColor(vibrantRgb);
+                                if (upButton != null) {
+                                    upButton.setTintList(ColorStateList.valueOf(vibrantTitleText));
+                                }
+                            } catch (NullPointerException e) {
+                                Log.i("AlbumActivity", "Palette.Builder could not generate a vibrant swatch, falling back to default colours");
+                            }
+                            return false;
+                        }
+                    })
                     .into(albumArt);
         }
-        if (cursor != null) {
-            cursor.close();
-        }
+        if (cursor != null) cursor.close();
 
-        if(albumArt.getDrawable() != null) {
-            Bitmap bitmap = ((BitmapDrawable)albumArt.getDrawable()).getBitmap();
-            Palette palette = new Palette.Builder(bitmap).generate();
-            try {
-                Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
-                Palette.Swatch altSwatch = palette.getDominantSwatch();
-                int vibrantRgb;
-                int vibrantTitleText;
-                if (vibrantSwatch != null) {
-                    vibrantRgb = vibrantSwatch.getRgb();
-                    vibrantTitleText = vibrantSwatch.getTitleTextColor();
-                } else if (altSwatch != null) {
-                    vibrantRgb = altSwatch.getRgb();
-                    vibrantTitleText = altSwatch.getTitleTextColor();
-                } else {
-                    vibrantRgb = ResourcesCompat.getColor(getResources(), R.color.card_background, null);
-                    vibrantTitleText = ResourcesCompat.getColor(getResources(), android.R.color.primary_text_dark, null);
-                }
-                toolbarBackground.setBackgroundColor(vibrantRgb);
-                collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(vibrantRgb));
-                collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
-                collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
-                collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
-                collapsingToolbarLayout.setBackgroundColor(vibrantRgb);
-                if (upButton != null) {
-                    upButton.setTintList(ColorStateList.valueOf(vibrantTitleText));
-                }
-            } catch (NullPointerException e) {
-                Log.i("AlbumActivity", "Palette.Builder could not generate a vibrant swatch, falling back to default colours");
-            }
-        }
-
-        Handler mainHandler = new Handler(getMainLooper());
-
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                setSongList();
-            }
-        };
-        mainHandler.post(myRunnable);
-
+        setSongList();
     }
 
     private void setSongList() {

@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -29,6 +30,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTION_UPDATE_REPEAT = "update_repeat";
     public static final String ACTION_UPDATE_SHUFFLE = "update_shuffle";
 
-    private boolean musicStopped = true, missingDuration = true;
+    private boolean musicStopped = true, missingDuration = true, darkMode = false;
     private RecyclerView rv;
     private Handler handler;
     private SearchView search;
@@ -140,7 +142,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme_Main);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        darkMode = sharedPref.getBoolean("dark_theme", false);
+        if(!darkMode) {
+            setTheme(R.style.AppTheme_Main);
+        } else {
+            setTheme(R.style.AppTheme_Dark);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         overridePendingTransition(0, 0);
@@ -234,7 +242,11 @@ public class MainActivity extends AppCompatActivity {
                 search.close(true);
             }
         });
-        search.setTheme(SearchView.THEME_LIGHT);
+        if(darkMode) {
+            search.setTheme(SearchView.THEME_DARK);
+        } else {
+            search.setTheme(SearchView.THEME_LIGHT);
+        }
         search.setVersion(SearchView.VERSION_MENU_ITEM);
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -269,8 +281,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(final ViewPager viewPager) {
+        SongsFragment songs = new SongsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("dark_theme", darkMode);
+        songs.setArguments(bundle);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new SongsFragment(), getResources().getString(R.string.songs));
+        adapter.addFrag(songs, getResources().getString(R.string.songs));
         adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.album));
         adapter.addFrag(new ArtistsFragment(), getResources().getString(R.string.artist));
         adapter.addFrag(new PlaylistFragment(), getResources().getString(R.string.playlist));
@@ -307,7 +323,8 @@ public class MainActivity extends AppCompatActivity {
         PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.albums).withIcon(GoogleMaterial.Icon.gmd_library_music);
         PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(GoogleMaterial.Icon.gmd_account_circle);
         PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(GoogleMaterial.Icon.gmd_queue_music);
-        SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
+        SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_settings);
+        SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
@@ -319,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
                         artists,
                         playlist,
                         new DividerDrawerItem(),
+                        settings,
                         about
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -339,6 +357,10 @@ public class MainActivity extends AppCompatActivity {
                                 viewPager.setCurrentItem(3);
                                 break;
                             case 5:
+                                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                                startActivity(intent);
+                                break;
+                            case 6:
                                 new LibsBuilder()
                                         .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
                                         .withActivityTheme(R.style.AppTheme_Main)

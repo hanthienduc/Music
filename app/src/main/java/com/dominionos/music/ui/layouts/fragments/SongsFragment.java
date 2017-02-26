@@ -6,7 +6,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +25,11 @@ public class SongsFragment extends Fragment {
 
     private View mainView;
     private FastScrollRecyclerView rv;
+    private boolean darkMode = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        darkMode = getArguments().getBoolean("dark_theme", false);
         View v = inflater.inflate(R.layout.fragment_songs, container, false);
         mainView = v;
 
@@ -51,7 +53,11 @@ public class SongsFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
-        rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation()));
+        if(darkMode) {
+            rv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
+        } else {
+            rv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.windowBackground));
+        }
     }
 
     private void setSongList() {
@@ -93,7 +99,7 @@ public class SongsFragment extends Fragment {
             musicCursor.close();
         }
         if(songList.size() != 0) {
-            rv.setAdapter(new SongsAdapter(mainView.getContext(), songList));
+            rv.setAdapter(new SongsAdapter(mainView.getContext(), songList, darkMode));
         } else {
             getActivity().findViewById(R.id.no_songs).setVisibility(View.VISIBLE);
         }

@@ -5,19 +5,19 @@
     android:id="@+id/activity_search"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/window_background"
+    android:background="@color/windowBackground"
     tools:context="com.dominionos.music.ui.layouts.activity.SearchActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/window_background">
+        android:background="@color/windowBackground">
         <android.support.v7.widget.Toolbar
             android:id="@+id/search_toolbar"
             android:layout_width="match_parent"
             app:layout_scrollFlags="enterAlways"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/window_background"/>
+            android:background="@color/windowBackground"/>
     </android.support.design.widget.AppBarLayout>
 
     <com.lapism.searchview.SearchView

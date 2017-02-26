@@ -48,6 +48,7 @@
             android:name=".service.MusicService"
             android:enabled="true" />
 
+        <activity android:name=".ui.layouts.activity.SettingsActivity"/>
     </application>
 
 </manifest>

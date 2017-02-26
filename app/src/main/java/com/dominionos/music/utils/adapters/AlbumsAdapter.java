@@ -27,7 +27,6 @@ import com.dominionos.music.utils.items.AlbumListItem;
 import com.dominionos.music.ui.layouts.activity.AlbumActivity;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
-import java.io.File;
 import java.util.List;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItemViewHolder>
@@ -92,21 +91,21 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
             albumDesc = desc + " • " + songCount + " " + context.getString(R.string.song);
         }
         holder.albumDesc.setText(albumDesc);
-        int backCardColor = ResourcesCompat.getColor(context.getResources(), R.color.card_background, null);
+        int backCardColor = ResourcesCompat.getColor(context.getResources(), R.color.cardBackground, null);
         if (((ColorDrawable) holder.textHolder.getBackground()).getColor() != backCardColor)
             holder.textHolder.setBackgroundColor(backCardColor);
             Glide.with(context)
-                    .load(new File(items.get(adapterPosition).getArtString()))
+                    .load(items.get(adapterPosition).getArtString())
                     .asBitmap()
                     .error(R.drawable.default_art)
-                    .listener(new RequestListener<File, Bitmap>() {
+                    .listener(new RequestListener<String, Bitmap>() {
                         @Override
-                        public boolean onException(Exception e, File model, Target<Bitmap> target, boolean isFirstResource) {
+                        public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
                             return false;
                         }
 
                         @Override
-                        public boolean onResourceReady(Bitmap resource, File model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
                                 @Override
                                 public void onGenerated(Palette palette) {

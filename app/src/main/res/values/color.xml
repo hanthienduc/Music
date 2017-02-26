@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Light colour palette -->
     <color name="colorPrimary">#3E4147</color>
     <color name="colorPrimaryDark">#2A2C31</color>
     <color name="colorAccent">#FFD50000</color>
-    <color name="card_background">@color/colorAccent</color>
-    <color name="window_background">#FFFAFAFA</color>
-    <color name="album_title_text">@android:color/primary_text_dark</color>
-    <color name="album_desc_text">@android:color/secondary_text_dark</color>
+    <color name="cardBackground">@color/colorAccent</color>
+    <color name="windowBackground">#FFFAFAFA</color>
+    <color name="primaryTextLight">@android:color/primary_text_light</color>
+    <color name="secondaryTextLight">@android:color/secondary_text_light</color>
 
+    <!-- Dark colour palette -->
+    <color name="darkColorPrimary">#F44336</color>
+    <color name="darkColorPrimaryDark">#D32F2F</color>
+    <color name="darkColorAccent">#FFD50000</color>
+    <color name="darkCardBackground">@color/darkColorAccent</color>
+    <color name="darkWindowBackground">#303030</color>
+    <color name="primaryTextDark">@android:color/primary_text_dark</color>
+    <color name="secondaryTextDark">@android:color/secondary_text_dark</color>
 </resources>

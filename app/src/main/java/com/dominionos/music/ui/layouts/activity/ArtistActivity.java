@@ -82,7 +82,7 @@ public class ArtistActivity extends AppCompatActivity {
                     return songListItem.getName().compareTo(t1.getName());
                 }
             });
-            rv.setAdapter(new SongsAdapter(this, songList));
+            rv.setAdapter(new SongsAdapter(this, songList, false));
         }
         if (musicCursor != null) {
             musicCursor.close();

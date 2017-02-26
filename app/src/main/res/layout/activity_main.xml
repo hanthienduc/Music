@@ -39,7 +39,7 @@
             android:id="@+id/main_viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/window_background"
+            android:background="@color/windowBackground"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <com.lapism.searchview.SearchView
@@ -49,8 +49,8 @@
             app:layout_behavior="com.lapism.searchview.SearchBehavior" />
 
         <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:id="@+id/fab"
             android:layout_margin="16dp"
             android:src="@drawable/ic_add"
@@ -199,7 +199,7 @@
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:clipToPadding="false"
-                    android:background="@color/window_background"
+                    android:background="@color/windowBackground"
                     android:layout_below="@id/control_holder"
                     android:id="@+id/playing_list"/>
             </RelativeLayout>
@@ -208,7 +208,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
+            android:background="#424242"
             android:id="@+id/mini_controller"
             android:orientation="horizontal">
             <ImageView

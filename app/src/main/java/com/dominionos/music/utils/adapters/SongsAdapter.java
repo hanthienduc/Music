@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     private final List<SongListItem> items;
     private final Context context;
+    private boolean darkMode;
     private Intent i;
 
     @NonNull
@@ -57,9 +59,10 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         }
     }
 
-    public SongsAdapter(Context context, List<SongListItem> items) {
+    public SongsAdapter(Context context, List<SongListItem> items, boolean darkMode) {
         this.context = context;
         this.items = items;
+        this.darkMode = darkMode;
         i = new Intent();
     }
 
@@ -72,6 +75,11 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
+        if(darkMode) {
+            holder.title.setTextColor(ContextCompat.getColor(context, R.color.primaryTextDark));
+            holder.desc.setTextColor(ContextCompat.getColor(context, R.color.secondaryTextDark));
+            holder.menu.setColorFilter(ContextCompat.getColor(context, R.color.primaryTextDark));
+        }
         holder.title.setText(items.get(holder.getAdapterPosition()).getName());
         holder.desc.setText(items.get(holder.getAdapterPosition()).getDesc());
         holder.menu.setOnClickListener(new View.OnClickListener() {
