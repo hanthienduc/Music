@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -28,6 +29,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     private final List<Playlist> items;
     private final Context context;
+    private boolean darkMode;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         final TextView gridName;
@@ -43,9 +45,10 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
         }
     }
 
-    public PlaylistAdapter(Context context, List<Playlist> items) {
+    public PlaylistAdapter(Context context, List<Playlist> items, boolean darkMode) {
         this.context = context;
         this.items = items;
+        this.darkMode = darkMode;
     }
 
     @Override
@@ -59,6 +62,10 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
+        if(darkMode) {
+            holder.gridName.setTextColor(ContextCompat.getColor(context, R.color.primaryTextDark));
+            holder.overflow.setColorFilter(ContextCompat.getColor(context, R.color.primaryTextDark));
+        }
         position = holder.getAdapterPosition();
         holder.gridName.setText(items.get(position).getName());
         final int finalPosition = position;

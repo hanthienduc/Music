@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +23,7 @@ public class PlaylistFragment extends Fragment {
 
     private View mainView;
     private RecyclerView rv;
+    private boolean darkMode;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -29,6 +31,8 @@ public class PlaylistFragment extends Fragment {
         this.mainView = v;
         rv = (RecyclerView) mainView.findViewById(R.id.playlist_list);
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
+
+        darkMode = getArguments().getBoolean("dark_theme", false);
 
         Runnable myRunnable = new Runnable() {
             @Override
@@ -47,9 +51,11 @@ public class PlaylistFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
-        rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation()));
         rv.setHasFixedSize(true);
-        rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList));
+        rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList, darkMode));
+        if(darkMode) {
+            rv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
+        }
     }
 
 }
