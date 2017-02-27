@@ -55,8 +55,6 @@ public class SongsFragment extends Fragment {
         rv.setLayoutManager(layoutManager);
         if(darkMode) {
             rv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
-        } else {
-            rv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.windowBackground));
         }
     }
 

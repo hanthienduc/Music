@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ public class AlbumsFragment extends Fragment {
 
     private View mainView;
     private FastScrollRecyclerView gv;
+    private boolean darkMode = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,13 +37,9 @@ public class AlbumsFragment extends Fragment {
         gv = (FastScrollRecyclerView) mainView.findViewById(R.id.album_grid);
         Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
 
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                getAlbumList();
-            }
-        };
-        mainHandler.post(myRunnable);
+        darkMode = getArguments().getBoolean("dark_theme", false);
+
+        getAlbumList();
 
         return v;
     }
@@ -89,6 +87,9 @@ public class AlbumsFragment extends Fragment {
         gv.setLayoutManager(gridLayoutManager);
         gv.addItemDecoration(new SpacesItemDecoration(8, 2));
         gv.setHasFixedSize(true);
+        if(darkMode) {
+            gv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
+        }
         if(albumList.size() != 0) {
             gv.setAdapter(new AlbumsAdapter(mainView.getContext(), albumList));
         } else {

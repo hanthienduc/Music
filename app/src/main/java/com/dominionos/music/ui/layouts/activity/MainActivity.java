@@ -282,14 +282,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(final ViewPager viewPager) {
         SongsFragment songs = new SongsFragment();
+        AlbumsFragment albums = new AlbumsFragment();
+        ArtistsFragment artists = new ArtistsFragment();
+        PlaylistFragment playlists = new PlaylistFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean("dark_theme", darkMode);
         songs.setArguments(bundle);
+        albums.setArguments(bundle);
+        artists.setArguments(bundle);
+        playlists.setArguments(bundle);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(songs, getResources().getString(R.string.songs));
-        adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.album));
-        adapter.addFrag(new ArtistsFragment(), getResources().getString(R.string.artist));
-        adapter.addFrag(new PlaylistFragment(), getResources().getString(R.string.playlist));
+        adapter.addFrag(albums, getResources().getString(R.string.album));
+        adapter.addFrag(artists, getResources().getString(R.string.artist));
+        adapter.addFrag(playlists, getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
         viewPager.setOffscreenPageLimit(4);

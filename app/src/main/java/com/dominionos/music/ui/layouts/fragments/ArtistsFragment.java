@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ public class ArtistsFragment extends Fragment {
     private View mainView;
     private FastScrollRecyclerView rv;
     private Context context;
+    private boolean darkMode;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -34,16 +36,11 @@ public class ArtistsFragment extends Fragment {
         context = v.getContext();
         this.mainView = v;
 
-        init();
-        Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
+        darkMode = getArguments().getBoolean("dark_theme", false);
 
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                getArtistList();
-            }
-        };
-        mainHandler.post(myRunnable);
+        init();
+
+        getArtistList();
 
         return v;
     }
@@ -60,7 +57,6 @@ public class ArtistsFragment extends Fragment {
                 query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, null, null, null, orderBy);
 
         if (musicCursor != null && musicCursor.moveToFirst()) {
-            //get columns
             int titleColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Artists.ARTIST);
             int idColumn = musicCursor.getColumnIndex
@@ -69,7 +65,6 @@ public class ArtistsFragment extends Fragment {
                     (MediaStore.Audio.Artists.NUMBER_OF_ALBUMS);
             int numOfTracksColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Artists.NUMBER_OF_TRACKS);
-            //add albums to list
             do {
                 artistList.add(new ArtistListItem(
                         musicCursor.getLong(idColumn),
@@ -93,9 +88,13 @@ public class ArtistsFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
-        rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation()));
+
+        if(darkMode) {
+            rv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
+        }
+
         if(artistList.size() != 0) {
-            rv.setAdapter(new ArtistAdapter(context, artistList));
+            rv.setAdapter(new ArtistAdapter(context, artistList, darkMode));
         } else {
             getActivity().findViewById(R.id.no_artists).setVisibility(View.VISIBLE);
         }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     private final List<ArtistListItem> items;
     private final Context context;
+    private final boolean darkMode;
 
     @NonNull
     @Override
@@ -55,9 +57,10 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         }
     }
 
-    public ArtistAdapter(Context context, List<ArtistListItem> items) {
+    public ArtistAdapter(Context context, List<ArtistListItem> items, boolean darkMode) {
         this.items = items;
         this.context = context;
+        this.darkMode = darkMode;
     }
 
     @Override
@@ -69,12 +72,16 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     @Override
     public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
-        position = holder.getAdapterPosition();
-        int albumCount = items.get(position).getNumOfAlbums();
-        int songCount = items.get(position).getNumOfTracks();
+        if(darkMode) {
+            holder.artistName.setTextColor(ContextCompat.getColor(context, R.color.primaryTextDark));
+            holder.artistDesc.setTextColor(ContextCompat.getColor(context, R.color.secondaryTextDark));
+        }
+        final int adapterPosition = holder.getAdapterPosition();
+        int albumCount = items.get(adapterPosition).getNumOfAlbums();
+        int songCount = items.get(adapterPosition).getNumOfTracks();
         String artistItemsCount;
-        holder.artistName.setText(items.get(position).getName());
-        getArtistImg(holder, position);
+        holder.artistName.setText(items.get(adapterPosition).getName());
+        getArtistImg(holder, adapterPosition);
 
         if(albumCount == 1 && songCount == 1) {
             artistItemsCount = (albumCount + " " + context.getString(R.string.album) + " • " + songCount + " " + context.getString(R.string.song));
@@ -87,12 +94,11 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         }
         holder.artistDesc.setText(artistItemsCount);
 
-        final int finalPosition = position;
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(context, ArtistActivity.class);
-                i.putExtra("artistName", items.get(finalPosition).getName());
+                i.putExtra("artistName", items.get(adapterPosition).getName());
                 context.startActivity(i);
             }
         });
