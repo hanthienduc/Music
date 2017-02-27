@@ -2,6 +2,7 @@ package com.dominionos.music.utils.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
 
     private final List<SongListItem> songs;
     private final Context context;
+    private boolean darkMode;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
@@ -38,9 +40,10 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         }
     }
 
-    public PlayingSongAdapter(Context context, List<SongListItem> songs) {
+    public PlayingSongAdapter(Context context, List<SongListItem> songs, boolean darkMode) {
         this.context = context;
         this.songs = songs;
+        this.darkMode = darkMode;
     }
 
     @Override
@@ -52,6 +55,11 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
 
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
+        if(darkMode) {
+            holder.title.setTextColor(ContextCompat.getColor(context, R.color.primaryTextDark));
+            holder.desc.setTextColor(ContextCompat.getColor(context, R.color.secondaryTextDark));
+            holder.menu.setColorFilter(ContextCompat.getColor(context, R.color.primaryTextDark));
+        }
         holder.title.setText(songs.get(position).getName());
         holder.desc.setText(songs.get(position).getDesc());
         holder.view.setOnClickListener(new View.OnClickListener() {

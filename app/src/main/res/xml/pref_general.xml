@@ -7,7 +7,12 @@
         <android.support.v7.preference.SwitchPreferenceCompat
             android:key="dark_theme"
             android:title="Dark Theme"
-            android:summary="EXPERIMENTAL"
+            android:defaultValue="false" />
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="colour_navbar"
+            android:title="Coloured navigation bar"
+            android:summary="Tints the navigation bar to the colour of the status bar"
             android:defaultValue="false" />
 
     </android.support.v7.preference.PreferenceCategory>

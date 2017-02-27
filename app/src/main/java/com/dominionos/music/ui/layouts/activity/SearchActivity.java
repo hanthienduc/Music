@@ -2,6 +2,7 @@ package com.dominionos.music.ui.layouts.activity;
 
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,8 +26,11 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final boolean darkMode = getIntent().getBooleanExtra("dark_theme", false);
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.search_toolbar);
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.darkWindowBackground));
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -38,6 +42,9 @@ public class SearchActivity extends AppCompatActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         searchList.setLayoutManager(layoutManager);
+        if(darkMode) {
+            searchList.setBackgroundColor(ContextCompat.getColor(this, R.color.darkWindowBackground));
+        }
 
         final ArrayList<SongListItem> songs = new ArrayList<>();
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
@@ -75,7 +82,11 @@ public class SearchActivity extends AppCompatActivity {
             musicCursor.close();
             final List<SongListItem> searchResults = new ArrayList<>();
             SearchView search = (SearchView) findViewById(R.id.searchView);
-            search.setTheme(SearchView.THEME_LIGHT);
+            if(darkMode) {
+                search.setTheme(SearchView.THEME_DARK);
+            } else {
+                search.setTheme(SearchView.THEME_LIGHT);
+            }
             search.setVersion(SearchView.VERSION_TOOLBAR);
             search.setArrowOnly(false);
             search.setOnMenuClickListener(new SearchView.OnMenuClickListener() {
@@ -92,7 +103,7 @@ public class SearchActivity extends AppCompatActivity {
                         if (song.getName().toLowerCase().contains(query.toLowerCase())) {
                             searchResults.add(song);
                         }
-                        searchList.setAdapter(new SongsAdapter(SearchActivity.this, searchResults, false));
+                        searchList.setAdapter(new SongsAdapter(SearchActivity.this, searchResults, darkMode));
                     }
                     return true;
                 }

@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -46,6 +47,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.async.Action;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case ACTION_GET_PLAYING_LIST:
                     MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
-                    PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList());
+                    PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList(), darkMode);
                     if (rv.getAdapter() == null) {
                         LinearLayoutManager layoutManager = new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL, false);
@@ -150,6 +152,12 @@ public class MainActivity extends AppCompatActivity {
             setTheme(R.style.AppTheme_Dark);
         }
         super.onCreate(savedInstanceState);
+        if(sharedPref.getBoolean("colour_navbar", false)) {
+            if(darkMode)
+                getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.darkColorPrimaryDark));
+            else
+                getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        }
         setContentView(R.layout.activity_main);
         overridePendingTransition(0, 0);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
@@ -264,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void search(String text) {
         Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+        intent.putExtra("dark_theme", darkMode);
         intent.putExtra("query", text);
         startActivity(intent);
     }
@@ -330,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
         PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(GoogleMaterial.Icon.gmd_account_circle);
         PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(GoogleMaterial.Icon.gmd_queue_music);
         SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_settings);
-        SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
+        final SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
@@ -364,17 +373,23 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case 5:
                                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                                intent.putExtra("dark_theme", darkMode);
                                 startActivity(intent);
                                 break;
                             case 6:
-                                new LibsBuilder()
-                                        .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
-                                        .withActivityTheme(R.style.AppTheme_Main)
+                                LibsBuilder aboutPage = new LibsBuilder()
                                         .withActivityTitle(getString(R.string.about))
                                         .withAboutIconShown(true)
                                         .withAboutVersionShown(true)
-                                        .withAboutDescription(getString(R.string.about_text))
-                                        .start(MainActivity.this);
+                                        .withAboutDescription(getString(R.string.about_text));
+                                if(darkMode) {
+                                    aboutPage.withActivityStyle(Libs.ActivityStyle.DARK)
+                                            .withActivityTheme(R.style.AppTheme_Dark);
+                                } else {
+                                    aboutPage.withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                                            .withActivityTheme(R.style.AppTheme_Main);
+                                }
+                                aboutPage.start(MainActivity.this);
                                 break;
                         }
                         return true;
@@ -412,13 +427,16 @@ public class MainActivity extends AppCompatActivity {
         ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
         ImageView forward = (ImageView) findViewById(R.id.player_forward);
         repeatButton = (ImageView) findViewById(R.id.player_repeat);
-        repeatButton.getDrawable().setAlpha(140);
+        repeatButton.setAlpha(0.6f);
         rv = (RecyclerView) findViewById(R.id.playing_list);
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
         controlHolder = (RelativeLayout) findViewById(R.id.control_holder);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
-        shuffleButton.getDrawable().setAlpha(140);
+        shuffleButton.setAlpha(0.6f);
+        if(darkMode) {
+            rv.setBackgroundColor(ContextCompat.getColor(this, R.color.darkWindowBackground));
+        }
         albumArt = (ImageView) findViewById(R.id.album_art);
         miniAlbumArt = (ImageView) findViewById(R.id.mini_album_art);
         shuffleButton.setOnClickListener(new View.OnClickListener() {
@@ -445,14 +463,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -517,47 +531,67 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changePlayerDetails(String songNameString, String songDetailsString,
-                                     int currentTime, final int totalTime, long albumId) {
-        songName.setText(songNameString);
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                MediaStore.Audio.Albums._ID + "=?",
-                new String[]{String.valueOf(albumId)},
-                null);
-        String songArt = null;
-        if (cursor != null && cursor.moveToFirst())
-            songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-        if (cursor != null) cursor.close();
-        if (songArt != null) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = false;
-            options.inPreferredConfig = Bitmap.Config.RGB_565;
-            Bitmap albumArt = BitmapFactory.decodeFile(songArt, options);
-            this.albumArt.setImageBitmap(albumArt);
-            miniAlbumArt.setImageBitmap(albumArt);
-            Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
-                @Override
-                public void onGenerated(Palette palette) {
-                    if (palette.getVibrantSwatch() != null) {
-                        Drawable background = controlHolder.getBackground();
-                        int colorFrom = ((ColorDrawable) background).getColor();
-                        int colorTo = palette.getVibrantSwatch().getRgb();
-                        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-                        colorAnimation.setDuration(500); // milliseconds
-                        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                     int currentTime, final int totalTime, final long albumId) {
+        new Action<Bitmap>() {
+            @NonNull
+            @Override
+            public String id() {
+                return "get-player-art";
+            }
 
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animator) {
-                                controlHolder.setBackgroundColor(((int) animator.getAnimatedValue()));
-                            }
-
-                        });
-                        colorAnimation.start();
-                    }
+            @Nullable
+            @Override
+            protected Bitmap run() throws InterruptedException {
+                Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                        new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                        MediaStore.Audio.Albums._ID + "=?",
+                        new String[]{String.valueOf(albumId)},
+                        null);
+                String songArt = null;
+                if (cursor != null && cursor.moveToFirst())
+                    songArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                if (cursor != null) cursor.close();
+                if (songArt != null) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = false;
+                    options.inPreferredConfig = Bitmap.Config.RGB_565;
+                    return BitmapFactory.decodeFile(songArt, options);
                 }
-            };
-            Palette.from(albumArt).generate(paletteAsyncListener);
-        }
+                return null;
+            }
+
+            @Override
+            protected void done(@Nullable Bitmap result) {
+                albumArt.setImageBitmap(result);
+                miniAlbumArt.setImageBitmap(result);
+                if(result != null) {
+                    Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
+                        @Override
+                        public void onGenerated(Palette palette) {
+                            if (palette.getVibrantSwatch() != null) {
+                                Drawable background = controlHolder.getBackground();
+                                int colorFrom = ((ColorDrawable) background).getColor();
+                                int colorTo = palette.getVibrantSwatch().getRgb();
+                                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                                colorAnimation.setDuration(500); // milliseconds
+                                colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                                    @Override
+                                    public void onAnimationUpdate(ValueAnimator animator) {
+                                        controlHolder.setBackgroundColor(((int) animator.getAnimatedValue()));
+                                    }
+
+                                });
+                                colorAnimation.start();
+                            }
+                        }
+                    };
+                    Palette.from(result).generate(paletteAsyncListener);
+                }
+            }
+        }.execute();
+
+        songName.setText(songNameString);
         songDesc.setText(songDetailsString);
         if (currentTime != 0 && totalTime != 0) {
             if (timer != null) timer.cancel();
@@ -615,9 +649,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateShuffle(boolean shuffle) {
         if (shuffle) {
-            shuffleButton.getDrawable().setAlpha(255);
+            shuffleButton.setAlpha(1.0f);
         } else {
-            shuffleButton.getDrawable().setAlpha(140);
+            shuffleButton.setAlpha(0.6f);
         }
     }
 
