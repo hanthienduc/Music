@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.albums).withIcon(GoogleMaterial.Icon.gmd_library_music);
         PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(GoogleMaterial.Icon.gmd_account_circle);
         PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(GoogleMaterial.Icon.gmd_queue_music);
-        SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName("Settings").withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_settings);
+        SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(getString(R.string.settings)).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_settings);
         final SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
 
         drawer = new DrawerBuilder()

@@ -15,6 +15,21 @@
             android:summary="Tints the navigation bar to the colour of the status bar"
             android:defaultValue="false" />
 
+        <android.support.v7.preference.Preference
+            android:key="primary_colour"
+            android:title="Primary colour"
+            android:summary="Sets the apps primary colour" />
+
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Advanced">
+
+        <android.support.v7.preference.Preference
+            android:key="reset_app"
+            android:title="Reset the apps data"
+            android:summary="Equivalent to wiping the apps data from settings" />
+
     </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>
