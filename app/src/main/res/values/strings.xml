@@ -77,6 +77,16 @@
     <string name="no_artists">No artists found!</string>
 
     <!-- Settings strings -->
+    <string name="appearance">Appearance</string>
+    <string name="lock_screen">Lock Screen</string>
+    <string name="advanced">Advanced</string>
+    <string name="reset_app">Reset app data</string>
+    <string name="reset_app_summary">Reset app data, equivalent to clear data from device settings</string>
+    <string name="lock_screen_art">Album art on lock screen</string>
+    <string name="lock_screen_art_summary">Choose whether or not album art is shown on the lock screen</string>
+    <string name="dark_mode">Dark theme</string>
+    <string name="colour_navbar">Coloured navigation bar</string>
+    <string name="colour_navbar_summary">Tints the navigation bar to the colour of the status bar</string>
     <string name="dark_mode_enabled">Dark theme enabled</string>
     <string name="dark_mode_disabled">Dark theme disabled</string>
 

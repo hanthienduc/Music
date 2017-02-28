@@ -334,11 +334,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDrawer() {
-        PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(GoogleMaterial.Icon.gmd_audiotrack);
-        PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.albums).withIcon(GoogleMaterial.Icon.gmd_library_music);
-        PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(GoogleMaterial.Icon.gmd_account_circle);
-        PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(GoogleMaterial.Icon.gmd_queue_music);
-        SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(getString(R.string.settings)).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_settings);
+        final PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(GoogleMaterial.Icon.gmd_audiotrack);
+        final PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.albums).withIcon(GoogleMaterial.Icon.gmd_library_music);
+        final PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(GoogleMaterial.Icon.gmd_account_circle);
+        final PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(GoogleMaterial.Icon.gmd_queue_music);
+        final SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(getString(R.string.settings)).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_settings);
         final SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
 
         drawer = new DrawerBuilder()
@@ -377,19 +377,14 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 break;
                             case 6:
-                                LibsBuilder aboutPage = new LibsBuilder()
+                                new LibsBuilder()
                                         .withActivityTitle(getString(R.string.about))
                                         .withAboutIconShown(true)
                                         .withAboutVersionShown(true)
-                                        .withAboutDescription(getString(R.string.about_text));
-                                if(darkMode) {
-                                    aboutPage.withActivityStyle(Libs.ActivityStyle.DARK)
-                                            .withActivityTheme(R.style.AppTheme_Dark);
-                                } else {
-                                    aboutPage.withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
-                                            .withActivityTheme(R.style.AppTheme_Main);
-                                }
-                                aboutPage.start(MainActivity.this);
+                                        .withAboutDescription(getString(R.string.about_text))
+                                        .withActivityStyle(darkMode ? Libs.ActivityStyle.DARK : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                                        .withActivityTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main)
+                                        .start(MainActivity.this);
                                 break;
                         }
                         return true;

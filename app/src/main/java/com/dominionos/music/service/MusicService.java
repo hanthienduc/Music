@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -47,6 +49,7 @@ public class MusicService extends Service {
     private ArrayList<SongListItem> songList, preShuffle, playingList;
     private NotificationManagerCompat notificationManager;
     private SongListItem currentSong;
+    private SharedPreferences prefs;
 
     private final AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -497,6 +500,8 @@ public class MusicService extends Service {
         commandFilter.addAction(ACTION_REPEAT);
         registerReceiver(musicPlayer, commandFilter);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         mediaSession = new MediaSessionCompat(this, "MusicService");
@@ -580,6 +585,8 @@ public class MusicService extends Service {
 
     private void updateSession(String changed) {
 
+        boolean showAlbumArtOnLockscreen = prefs.getBoolean("lock_screen_art", true);
+
         int playState = mediaPlayer != null && mediaPlayer.isPlaying()
                 ? PlaybackStateCompat.STATE_PLAYING
                 : PlaybackStateCompat.STATE_PAUSED;
@@ -592,7 +599,8 @@ public class MusicService extends Service {
             mediaSession.setMetadata(new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, currentSong.getAlbumName())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentSong.getName())
-                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getAlbumArt())
+                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, showAlbumArtOnLockscreen
+                            ? getAlbumArt() : null)
                     .build());
         } else if(changed.equals("state")) {
             mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
