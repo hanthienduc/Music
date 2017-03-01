@@ -50,15 +50,15 @@ import android.widget.Toast;
 import com.afollestad.async.Action;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
+import com.dominionos.music.service.MusicService;
+import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
+import com.dominionos.music.ui.layouts.fragments.ArtistsFragment;
 import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
+import com.dominionos.music.ui.layouts.fragments.SongsFragment;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.adapters.PlayingSongAdapter;
 import com.dominionos.music.utils.adapters.ViewPagerAdapter;
-import com.dominionos.music.service.MusicService;
-import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
-import com.dominionos.music.ui.layouts.fragments.ArtistsFragment;
-import com.dominionos.music.ui.layouts.fragments.SongsFragment;
 import com.dominionos.music.utils.items.SongListItem;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private RelativeLayout miniController, controlHolder;
     private int seekProgress;
-    private Drawer drawer;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -141,26 +140,25 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    private Drawer drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         darkMode = sharedPref.getBoolean("dark_theme", false);
-        if(!darkMode) {
+        if (!darkMode) {
             setTheme(R.style.AppTheme_Main);
         } else {
             setTheme(R.style.AppTheme_Dark);
         }
         super.onCreate(savedInstanceState);
-        if(sharedPref.getBoolean("colour_navbar", false)) {
-            if(darkMode)
-                getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.darkColorPrimaryDark));
-            else
-                getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        if (sharedPref.getBoolean("colour_navbar", false)) {
+            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
         }
         setContentView(R.layout.activity_main);
         overridePendingTransition(0, 0);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        findViewById(R.id.main_appbar).setBackgroundColor(sharedPref.getInt("primary_colour", ContextCompat.getColor(this, R.color.colorPrimary)));
         setSupportActionBar(toolbar);
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -250,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 search.close(true);
             }
         });
-        if(darkMode) {
+        if (darkMode) {
             search.setTheme(SearchView.THEME_DARK);
         } else {
             search.setTheme(SearchView.THEME_LIGHT);
@@ -422,14 +420,14 @@ public class MainActivity extends AppCompatActivity {
         ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
         ImageView forward = (ImageView) findViewById(R.id.player_forward);
         repeatButton = (ImageView) findViewById(R.id.player_repeat);
-        repeatButton.setAlpha(0.6f);
+        repeatButton.setAlpha(0.5f);
         rv = (RecyclerView) findViewById(R.id.playing_list);
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
         controlHolder = (RelativeLayout) findViewById(R.id.control_holder);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
-        shuffleButton.setAlpha(0.6f);
-        if(darkMode) {
+        shuffleButton.setAlpha(0.5f);
+        if (darkMode) {
             rv.setBackgroundColor(ContextCompat.getColor(this, R.color.darkWindowBackground));
         }
         albumArt = (ImageView) findViewById(R.id.album_art);
@@ -458,10 +456,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -559,7 +559,7 @@ public class MainActivity extends AppCompatActivity {
             protected void done(@Nullable Bitmap result) {
                 albumArt.setImageBitmap(result);
                 miniAlbumArt.setImageBitmap(result);
-                if(result != null) {
+                if (result != null) {
                     Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
                         @Override
                         public void onGenerated(Palette palette) {
@@ -646,7 +646,7 @@ public class MainActivity extends AppCompatActivity {
         if (shuffle) {
             shuffleButton.setAlpha(1.0f);
         } else {
-            shuffleButton.setAlpha(0.6f);
+            shuffleButton.setAlpha(0.5f);
         }
     }
 
@@ -654,15 +654,15 @@ public class MainActivity extends AppCompatActivity {
         switch (repeatMode) {
             case "all":
                 repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
-                repeatButton.getDrawable().setAlpha(255);
+                repeatButton.setAlpha(1.0f);
                 break;
             case "one":
                 repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_one));
-                repeatButton.getDrawable().setAlpha(255);
+                repeatButton.setAlpha(1.0f);
                 break;
             case "none":
                 repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
-                repeatButton.getDrawable().setAlpha(140);
+                repeatButton.setAlpha(0.5f);
                 break;
             default:
                 repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));

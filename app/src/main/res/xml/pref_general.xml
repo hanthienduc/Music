@@ -15,6 +15,16 @@
             android:summary="@string/colour_navbar_summary"
             android:defaultValue="false" />
 
+        <android.support.v7.preference.Preference
+            android:key="primary_colour_item"
+            android:title="Primary colour"
+            android:summary="Set the apps primary colour" />
+
+        <android.support.v7.preference.Preference
+            android:key="accent_colour_item"
+            android:title="Accent colour"
+            android:summary="Set the apps accent colour" />
+
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory

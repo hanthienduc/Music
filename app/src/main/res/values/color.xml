@@ -11,10 +11,6 @@
     <color name="secondaryTextLight">@android:color/secondary_text_light</color>
 
     <!-- Dark colour palette -->
-    <color name="darkColorPrimary">#F44336</color>
-    <color name="darkColorPrimaryDark">#D32F2F</color>
-    <color name="darkColorAccent">#FFD50000</color>
-    <color name="darkCardBackground">@color/darkColorAccent</color>
     <color name="darkWindowBackground">#303030</color>
     <color name="primaryTextDark">@android:color/primary_text_dark</color>
     <color name="secondaryTextDark">@android:color/secondary_text_dark</color>

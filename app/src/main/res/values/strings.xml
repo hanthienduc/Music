@@ -89,5 +89,6 @@
     <string name="colour_navbar_summary">Tints the navigation bar to the colour of the status bar</string>
     <string name="dark_mode_enabled">Dark theme enabled</string>
     <string name="dark_mode_disabled">Dark theme disabled</string>
+    <string name="primary_colour">Primary colour</string>
 
 </resources>

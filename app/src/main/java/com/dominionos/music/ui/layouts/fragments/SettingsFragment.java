@@ -2,9 +2,8 @@ package com.dominionos.music.ui.layouts.fragments;
 
 import android.app.ActivityManager;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.widget.Toast;
@@ -13,10 +12,11 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.dominionos.music.R;
+import com.dominionos.music.ui.layouts.activity.SettingsActivity;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 
-public class SettingsFragment extends PreferenceFragmentCompat implements ColorChooserDialog.ColorCallback {
+public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.pref_general);
@@ -34,6 +34,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements ColorC
                 return true;
             }
         });
+
         darkMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -44,13 +45,23 @@ public class SettingsFragment extends PreferenceFragmentCompat implements ColorC
             }
         });
 
+        findPreference("primary_colour_item").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.primary_colour)
+                        .accentMode(false)
+                        .preselect(preference.getSharedPreferences().getInt("primary_colour", 0xFFF44336))
+                        .show();
+                return true;
+            }
+        });
         Preference reset = findPreference("reset_app");
         reset.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 new MaterialDialog.Builder(getContext())
-                        .title("Reset app data")
-                        .content("This will reset EVERYTHING in the app, are you sure?")
+                        .title(getString(R.string.reset_app))
+                        .content(getString(R.string.reset_app_summary))
                         .positiveText("Yes")
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -64,15 +75,5 @@ public class SettingsFragment extends PreferenceFragmentCompat implements ColorC
                 return true;
             }
         });
-    }
-
-    @Override
-    public void onColorSelection(@NonNull ColorChooserDialog dialog, @ColorInt int selectedColor) {
-
-    }
-
-    @Override
-    public void onColorChooserDismissed(@NonNull ColorChooserDialog dialog) {
-
     }
 }
