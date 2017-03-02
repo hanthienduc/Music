@@ -40,7 +40,6 @@ public class SettingsActivity extends AppCompatActivity implements ColorChooserD
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
@@ -52,11 +51,11 @@ public class SettingsActivity extends AppCompatActivity implements ColorChooserD
     public void onColorSelection(@NonNull ColorChooserDialog dialog, @ColorInt int selectedColor) {
         if(!dialog.isAccentMode()) {
             PreferenceManager.getDefaultSharedPreferences(this).edit().putInt("primary_colour", selectedColor).apply();
+        } else {
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt("accent_colour", selectedColor).apply();
         }
     }
 
     @Override
-    public void onColorChooserDismissed(@NonNull ColorChooserDialog dialog) {
-
-    }
+    public void onColorChooserDismissed(@NonNull ColorChooserDialog dialog) {}
 }

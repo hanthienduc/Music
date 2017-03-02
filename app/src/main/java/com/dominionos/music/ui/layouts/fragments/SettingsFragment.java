@@ -3,7 +3,6 @@ package com.dominionos.music.ui.layouts.fragments;
 import android.app.ActivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.widget.Toast;
@@ -51,6 +50,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.primary_colour)
                         .accentMode(false)
                         .preselect(preference.getSharedPreferences().getInt("primary_colour", 0xFFF44336))
+                        .show();
+                return true;
+            }
+        });
+
+        findPreference("accent_colour_item").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.primary_colour)
+                        .accentMode(true)
+                        .preselect(preference.getSharedPreferences().getInt("primary_colour", 0xFFD50000))
                         .show();
                 return true;
             }
