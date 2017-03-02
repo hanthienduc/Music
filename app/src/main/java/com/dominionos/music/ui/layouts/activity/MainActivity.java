@@ -21,7 +21,6 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,7 +40,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -88,9 +86,10 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTION_UPDATE_REPEAT = "update_repeat";
     public static final String ACTION_UPDATE_SHUFFLE = "update_shuffle";
 
+    public static final int SETTINGS_REQUEST_CODE = 6118;
+
     private boolean musicStopped = true, missingDuration = true, darkMode = false;
     private RecyclerView rv;
-    private Handler handler;
     private SearchView search;
     private Timer timer;
     private TextView songName, songDesc, currentTime, totalTime;
@@ -147,23 +146,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         darkMode = sharedPref.getBoolean("dark_theme", false);
-        if (!darkMode) {
-            setTheme(R.style.AppTheme_Main);
-        } else {
-            setTheme(R.style.AppTheme_Dark);
-        }
+        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         super.onCreate(savedInstanceState);
-        if (sharedPref.getBoolean("colour_navbar", false)) {
-            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-        }
         setContentView(R.layout.activity_main);
-        overridePendingTransition(0, 0);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        findViewById(R.id.main_appbar).setBackgroundColor(sharedPref.getInt("primary_colour", ContextCompat.getColor(this, R.color.colorPrimary)));
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         setSupportActionBar(toolbar);
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 init();
@@ -176,7 +165,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             init();
         }
-
     }
 
     @Override
@@ -190,19 +178,28 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.play_all:
-                Intent i = new Intent();
-                i.setAction(MusicService.ACTION_PLAY_ALL_SONGS);
+                Intent i = new Intent(MusicService.ACTION_PLAY_ALL_SONGS);
                 sendBroadcast(i);
                 return true;
             case R.id.search_item:
-                if (search.isSearchOpen()) {
-                    search.close(true);
-                } else {
-                    search.open(true, item);
-                }
+                search.open(true, item);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+        sendBroadcast(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SETTINGS_REQUEST_CODE) {
+            recreate();
+        }
     }
 
     private void init() {
@@ -218,8 +215,6 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(ACTION_UPDATE_SHUFFLE);
         registerReceiver(broadcastReceiver, filter);
 
-        handler = new Handler();
-
         setupViewPager(viewPager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -232,13 +227,6 @@ public class MainActivity extends AppCompatActivity {
         setSearch();
 
         setupPlayer();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
-                sendBroadcast(intent);
-            }
-        }, 1000);
     }
 
     private void setSearch() {
@@ -372,8 +360,7 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case 5:
                                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                                intent.putExtra("dark_theme", darkMode);
-                                startActivity(intent);
+                                startActivityForResult(intent, SETTINGS_REQUEST_CODE);
                                 break;
                             case 6:
                                 new LibsBuilder()
@@ -619,13 +606,8 @@ public class MainActivity extends AppCompatActivity {
             }, 0, 100);
         } else {
             missingDuration = true;
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
-                    sendBroadcast(intent);
-                }
-            }, 500);
+            Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+            sendBroadcast(intent);
         }
         if (slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
             slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
@@ -644,11 +626,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateShuffle(boolean shuffle) {
-        if (shuffle) {
-            shuffleButton.setAlpha(1.0f);
-        } else {
-            shuffleButton.setAlpha(0.5f);
-        }
+        shuffleButton.setAlpha(shuffle ? 1.0f : 0.5f);
     }
 
     private void updateRepeat(String repeatMode) {
@@ -661,13 +639,9 @@ public class MainActivity extends AppCompatActivity {
                 repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_one));
                 repeatButton.setAlpha(1.0f);
                 break;
-            case "none":
-                repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
-                repeatButton.setAlpha(0.5f);
-                break;
             default:
                 repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
-                repeatButton.getDrawable().setAlpha(140);
+                repeatButton.setAlpha(0.5f);
                 break;
         }
     }

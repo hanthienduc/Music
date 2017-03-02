@@ -1,11 +1,12 @@
 package com.dominionos.music.ui.layouts.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -30,17 +31,12 @@ public class PlaylistFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_playlists, container, false);
         this.mainView = v;
         rv = (RecyclerView) mainView.findViewById(R.id.playlist_list);
-        Handler mainHandler = new Handler(mainView.getContext().getMainLooper());
 
-        darkMode = getArguments().getBoolean("dark_theme", false);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        darkMode = sharedPref.getBoolean("dark_theme", false);
 
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                getPlaylistList();
-            }
-        };
-        mainHandler.post(myRunnable);
+        getPlaylistList();
+
         return v;
     }
 
