@@ -65,8 +65,8 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     @Override
     public ArtistAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.artist_list_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.artist_list_item, parent, false);
         return new SimpleItemViewHolder(itemView);
     }
 
@@ -128,14 +128,13 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     private void setImageToView(String url, final SimpleItemViewHolder holder) {
         try {
-            int px = Utils.dpToPx(context, 48);
+            final int px = Utils.dpToPx(context, 48);
             Glide.with(context)
                     .load(new File(url))
                     .error(R.drawable.default_art)
                     .centerCrop()
                     .override(px, px)
                     .into(holder.artistImg);
-
         } catch (NullPointerException e) {
             Glide.with(context)
                     .load(R.drawable.default_art)

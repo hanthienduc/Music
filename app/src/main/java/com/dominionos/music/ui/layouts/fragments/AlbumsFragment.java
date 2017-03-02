@@ -38,6 +38,9 @@ public class AlbumsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_albums, container, false);
         this.mainView = v;
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        darkMode = sharedPref.getBoolean("dark_theme", false);
+
         gv = (FastScrollRecyclerView) mainView.findViewById(R.id.album_grid);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(), Utils.calculateNoOfColumns(getContext()));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -48,9 +51,6 @@ public class AlbumsFragment extends Fragment {
         if(darkMode) {
             gv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
         }
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        darkMode = sharedPref.getBoolean("dark_theme", false);
 
         getAlbumList();
 
