@@ -41,6 +41,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -159,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         findViewById(R.id.main_appbar).setBackgroundColor(sharedPref.getInt("primary_colour", ContextCompat.getColor(this, R.color.colorPrimary)));
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         setSupportActionBar(toolbar);
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -343,14 +345,13 @@ public class MainActivity extends AppCompatActivity {
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withCloseOnClick(true)
+                .addStickyDrawerItems(settings, about)
                 .addDrawerItems(
                         songs,
                         albums,
                         artists,
                         playlist,
-                        new DividerDrawerItem(),
-                        settings,
-                        about
+                        new DividerDrawerItem()
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
 
