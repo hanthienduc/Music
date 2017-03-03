@@ -30,7 +30,7 @@ public class Utils {
         return imagePath;
     }
 
-    public void addToPlaylistDialog(Context context, SongListItem position) {
+    public static void addToPlaylistDialog(Context context, SongListItem position) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);

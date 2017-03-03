@@ -57,14 +57,12 @@ import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
 import com.dominionos.music.ui.layouts.fragments.SongsFragment;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
-import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.adapters.PlayingSongAdapter;
 import com.dominionos.music.utils.adapters.ViewPagerAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
-import com.mikepenz.aboutlibraries.util.Util;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -417,7 +415,6 @@ public class MainActivity extends AppCompatActivity {
         rv = (RecyclerView) findViewById(R.id.playing_list);
         bottomSheetBehavior = BottomSheetBehavior.from(rv);
         bottomSheetBehavior.setHideable(false);
-        bottomSheetBehavior.setPeekHeight(Utils.dpToPx(this, 108));
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -628,6 +625,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }, 0, 100);
+            bottomSheetBehavior.setPeekHeight(108);
         } else {
             missingDuration = true;
             Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
