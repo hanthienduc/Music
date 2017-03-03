@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private RelativeLayout miniController, controlHolder;
     private int seekProgress;
+    private SharedPreferences sharedPrefs;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -144,8 +145,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        darkMode = sharedPref.getBoolean("dark_theme", false);
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        darkMode = sharedPrefs.getBoolean("dark_theme", false);
         setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         super.onCreate(savedInstanceState);
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SETTINGS_REQUEST_CODE) {
-            recreate();
+            if(darkMode != sharedPrefs.getBoolean("dark_theme", false)) recreate();
         }
     }
 
