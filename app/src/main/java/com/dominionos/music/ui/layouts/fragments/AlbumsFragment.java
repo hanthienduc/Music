@@ -31,7 +31,6 @@ public class AlbumsFragment extends Fragment {
 
     private View mainView;
     private FastScrollRecyclerView gv;
-    private boolean darkMode = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,7 +38,7 @@ public class AlbumsFragment extends Fragment {
         this.mainView = v;
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        darkMode = sharedPref.getBoolean("dark_theme", false);
+        boolean darkMode = sharedPref.getBoolean("dark_theme", false);
 
         gv = (FastScrollRecyclerView) mainView.findViewById(R.id.album_grid);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(), Utils.calculateNoOfColumns(getContext()));

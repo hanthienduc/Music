@@ -16,9 +16,6 @@
     <string name="about">About</string>
 
     <!-- Shortcuts -->
-    <string name="view_library_short">Library</string>
-    <string name="view_library_long">View library</string>
-    <string name="search_library_long">Search library</string>
 
     <!-- Actions -->
     <string name="add">Add</string>
@@ -85,8 +82,6 @@
     <string name="lock_screen_art">Album art on lock screen</string>
     <string name="lock_screen_art_summary">Choose whether or not album art is shown on the lock screen</string>
     <string name="dark_mode">Dark theme</string>
-    <string name="colour_navbar">Coloured navigation bar</string>
-    <string name="colour_navbar_summary">Tints the navigation bar to the colour of the status bar</string>
     <string name="dark_mode_enabled">Dark theme enabled</string>
     <string name="dark_mode_disabled">Dark theme disabled</string>
 

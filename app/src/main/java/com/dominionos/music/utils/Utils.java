@@ -1,9 +1,8 @@
 package com.dominionos.music.utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.database.Cursor;
+import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
 
@@ -16,6 +15,20 @@ import com.dominionos.music.utils.items.SongListItem;
 import java.util.List;
 
 public class Utils {
+
+    public static String getAlbumArt(Context context, long albumId) {
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[]{String.valueOf(albumId)},
+                null);
+        String imagePath = "";
+        if (cursor != null && cursor.moveToFirst()) {
+            imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+            cursor.close();
+        }
+        return imagePath;
+    }
 
     public void addToPlaylistDialog(Context context, SongListItem position) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);

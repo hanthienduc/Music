@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.activity.ArtistActivity;
 import com.dominionos.music.utils.ArtistImgHandler;
+import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.items.ArtistListItem;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
@@ -133,11 +134,13 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                     .load(new File(url))
                     .error(R.drawable.default_art)
                     .centerCrop()
+                    .transform(new CircleTransform(context))
                     .override(px, px)
                     .into(holder.artistImg);
         } catch (NullPointerException e) {
             Glide.with(context)
                     .load(R.drawable.default_art)
+                    .transform(new CircleTransform(context))
                     .into(holder.artistImg);
         }
     }

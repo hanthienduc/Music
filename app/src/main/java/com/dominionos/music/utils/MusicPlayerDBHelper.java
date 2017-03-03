@@ -85,19 +85,6 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         addSongs(songs);
     }
 
-    public SongListItem getLastSong() {
-        String query = "SELECT * FROM " + TABLE_PLAYBACK + " ORDER BY "
-                + SONG_KEY_ID + " DESC LIMIT 1";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        if (cursor.moveToFirst()) {
-            db.close();
-            return getSongFromCursor(cursor);
-        }
-        db.close();
-        return null;
-    }
-
     public SongListItem getNextSong(int currentId) {
         String query = "SELECT * FROM " + TABLE_PLAYBACK;
         SQLiteDatabase db = this.getWritableDatabase();

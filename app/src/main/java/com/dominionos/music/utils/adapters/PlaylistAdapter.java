@@ -29,7 +29,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     private final List<Playlist> items;
     private final Context context;
-    private boolean darkMode;
+    private final boolean darkMode;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         final TextView gridName;

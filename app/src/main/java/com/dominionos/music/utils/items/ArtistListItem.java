@@ -23,10 +23,6 @@ public class ArtistListItem {
         return numOfTracks;
     }
 
-    public long getId() {
-        return this.id;
-    }
-
     public String getName() {
         return this.name;
     }

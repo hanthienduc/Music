@@ -258,7 +258,7 @@ public class MusicService extends Service {
             case ACTION_PLAY_FROM_PLAYLIST:
                 pausedSongSeek = 0;
                 song = (SongListItem) intent.getSerializableExtra("song");
-                playSingle(song);
+                playMusic(song);
                 updateCurrentPlaying();
                 requestSongDetails = new Intent();
                 requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);

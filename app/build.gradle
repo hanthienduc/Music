@@ -13,8 +13,8 @@ android {
     }
     buildTypes {
         release {
-            shrinkResources true
-            minifyEnabled true
+            shrinkResources false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -51,7 +51,6 @@ dependencies {
     compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
     compile 'com.sothree.slidinguppanel:library:3.3.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.lapism:searchview:4.0'
     compile 'com.android.support:preference-v7:25.2.0'
     compile 'com.android.support:preference-v14:25.2.0'

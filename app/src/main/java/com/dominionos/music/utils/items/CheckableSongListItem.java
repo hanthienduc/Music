@@ -52,10 +52,6 @@ public class CheckableSongListItem {
         return this.count;
     }
 
-    public boolean isSelected() {
-        return isSelected;
-    }
-
     public void setSelected(boolean selected) {
         this.isSelected = selected;
     }

@@ -30,8 +30,8 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     private final List<SongListItem> items;
     private final Context context;
-    private boolean darkMode;
-    private Intent i;
+    private final boolean darkMode;
+    private final Intent i;
 
     @NonNull
     @Override

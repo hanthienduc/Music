@@ -3,9 +3,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="72dp"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
     android:background="?android:attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/song_item_art"
+        android:layout_width="72dp"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/album_art"
+        android:src="@drawable/default_art"/>
+
+    <ImageView
+        android:id="@+id/song_item_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/unbounded_ripple"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_margin="-16dp"
+        android:padding="16dp"
+        android:src="@drawable/ic_overflow_dark"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -13,7 +35,10 @@
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
         android:orientation="vertical"
-        android:layout_marginEnd="34dp"
+        android:paddingStart="72dp"
+        android:paddingEnd="0dp"
+        android:layout_toEndOf="@id/song_item_art"
+        android:layout_toStartOf="@id/song_item_menu"
         tools:ignore="RelativeOverlap">
         <TextView
             android:id="@+id/song_item_name"
@@ -33,18 +58,4 @@
             android:textSize="14sp"
             android:ellipsize="end" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/song_item_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:background="@drawable/unbounded_ripple"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:layout_margin="-8dp"
-        android:padding="8dp"
-        android:src="@drawable/ic_overflow_dark"
-        tools:ignore="ContentDescription" />
 </RelativeLayout>

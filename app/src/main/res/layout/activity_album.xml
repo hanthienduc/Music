@@ -32,7 +32,6 @@
                     android:contentDescription="@string/album_art" />
 
                 <RelativeLayout
-                    android:id="@+id/shade_over_art"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/image_inner_shadow"

@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -56,12 +57,14 @@ import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
 import com.dominionos.music.ui.layouts.fragments.SongsFragment;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
+import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.adapters.PlayingSongAdapter;
 import com.dominionos.music.utils.adapters.ViewPagerAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.aboutlibraries.util.Util;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -86,8 +89,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTION_UPDATE_REPEAT = "update_repeat";
     public static final String ACTION_UPDATE_SHUFFLE = "update_shuffle";
 
-    public static final int SETTINGS_REQUEST_CODE = 6118;
+    private static final int SETTINGS_REQUEST_CODE = 6118;
 
+    private BottomSheetBehavior bottomSheetBehavior;
     private boolean musicStopped = true, missingDuration = true, darkMode = false;
     private RecyclerView rv;
     private SearchView search;
@@ -192,8 +196,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
-        sendBroadcast(intent);
+        //Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+        //sendBroadcast(intent);
     }
 
     @Override
@@ -411,6 +415,25 @@ public class MainActivity extends AppCompatActivity {
         repeatButton = (ImageView) findViewById(R.id.player_repeat);
         repeatButton.setAlpha(0.5f);
         rv = (RecyclerView) findViewById(R.id.playing_list);
+        bottomSheetBehavior = BottomSheetBehavior.from(rv);
+        bottomSheetBehavior.setHideable(false);
+        bottomSheetBehavior.setPeekHeight(Utils.dpToPx(this, 108));
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if(newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    slidingPanel.setTouchEnabled(true);
+                } else if(newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    slidingPanel.setTouchEnabled(false);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
         controlHolder = (RelativeLayout) findViewById(R.id.control_holder);
