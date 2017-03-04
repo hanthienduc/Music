@@ -8,13 +8,13 @@ android {
         applicationId "com.dominionos.music"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 12
-        versionName "2.2"
+        versionCode 13
+        versionName "2.3"
     }
     buildTypes {
         release {
-            shrinkResources false
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
