@@ -4,9 +4,11 @@ import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
@@ -21,10 +23,13 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -32,7 +37,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.preference.PreferenceManager;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -49,6 +53,7 @@ import android.widget.Toast;
 
 import com.afollestad.async.Action;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.vending.billing.IInAppBillingService;
 import com.dominionos.music.R;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
@@ -57,13 +62,14 @@ import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
 import com.dominionos.music.ui.layouts.fragments.SongsFragment;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
+import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.adapters.PlayingSongAdapter;
 import com.dominionos.music.utils.adapters.ViewPagerAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -102,9 +108,22 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private AudioManager audioManager;
     private FloatingActionButton fab;
-    private RelativeLayout miniController, controlHolder;
+    private CoordinatorLayout holder;
+    private RelativeLayout miniController;
     private int seekProgress;
     private SharedPreferences sharedPrefs;
+    private IInAppBillingService mService;
+    private ServiceConnection mServiceConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mService = IInAppBillingService.Stub.asInterface(service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mService = null;
+        }
+    };
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -128,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
                                 LinearLayoutManager.VERTICAL, false);
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         rv.setLayoutManager(layoutManager);
-                        rv.addItemDecoration(new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation()));
                         rv.setAdapter(adapter);
                     } else {
                         rv.swapAdapter(adapter, false);
@@ -230,6 +248,12 @@ public class MainActivity extends AppCompatActivity {
         setSearch();
 
         setupPlayer();
+
+        Intent serviceIntent =
+                new Intent("com.android.vending.billing.InAppBillingService.BIND");
+        serviceIntent.setPackage("com.android.vending");
+        bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
+
     }
 
     private void setSearch() {
@@ -325,18 +349,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDrawer() {
-        final PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(GoogleMaterial.Icon.gmd_audiotrack);
-        final PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.albums).withIcon(GoogleMaterial.Icon.gmd_library_music);
-        final PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(GoogleMaterial.Icon.gmd_account_circle);
-        final PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(GoogleMaterial.Icon.gmd_queue_music);
-        final SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(getString(R.string.settings)).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_settings);
-        final SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.about).withSelectable(false).withIcon(GoogleMaterial.Icon.gmd_info_outline);
+        final PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(MaterialDesignIconic.Icon.gmi_audio);
+        final PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.albums).withIcon(MaterialDesignIconic.Icon.gmi_collection_music);
+        final PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(MaterialDesignIconic.Icon.gmi_account_circle);
+        final PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
+        final SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(getString(R.string.settings)).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_settings);
+        final SecondaryDrawerItem donate = new SecondaryDrawerItem().withName("Donate").withIdentifier(6).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_money);
+        final SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(7).withName(R.string.about).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_info);
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withCloseOnClick(true)
-                .addStickyDrawerItems(settings, about)
+                .addStickyDrawerItems(donate, settings, about)
                 .addDrawerItems(
                         songs,
                         albums,
@@ -366,6 +391,14 @@ public class MainActivity extends AppCompatActivity {
                                 startActivityForResult(intent, SETTINGS_REQUEST_CODE);
                                 break;
                             case 6:
+                                try {
+                                    int isBillingSupported = mService.isBillingSupported(Build.VERSION.SDK_INT, getPackageName(), "inapp");
+                                    Toast.makeText(MainActivity.this, String.valueOf(isBillingSupported), Toast.LENGTH_SHORT).show();
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 7:
                                 new LibsBuilder()
                                         .withActivityTitle(getString(R.string.about))
                                         .withAboutIconShown(true)
@@ -413,6 +446,7 @@ public class MainActivity extends AppCompatActivity {
         repeatButton = (ImageView) findViewById(R.id.player_repeat);
         repeatButton.setAlpha(0.5f);
         rv = (RecyclerView) findViewById(R.id.playing_list);
+        holder = (CoordinatorLayout) findViewById(R.id.holder);
         bottomSheetBehavior = BottomSheetBehavior.from(rv);
         bottomSheetBehavior.setHideable(false);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -433,7 +467,6 @@ public class MainActivity extends AppCompatActivity {
         });
         play = (ImageView) findViewById(R.id.player_play);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
-        controlHolder = (RelativeLayout) findViewById(R.id.control_holder);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
         shuffleButton.setAlpha(0.5f);
         if (darkMode) {
@@ -573,7 +606,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onGenerated(Palette palette) {
                             if (palette.getVibrantSwatch() != null) {
-                                Drawable background = controlHolder.getBackground();
+                                Drawable background = holder.getBackground();
                                 int colorFrom = ((ColorDrawable) background).getColor();
                                 int colorTo = palette.getVibrantSwatch().getRgb();
                                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
@@ -582,7 +615,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onAnimationUpdate(ValueAnimator animator) {
-                                        controlHolder.setBackgroundColor(((int) animator.getAnimatedValue()));
+                                        holder.setBackgroundColor(((int) animator.getAnimatedValue()));
                                     }
 
                                 });
@@ -625,7 +658,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }, 0, 100);
-            bottomSheetBehavior.setPeekHeight(108);
+            bottomSheetBehavior.setPeekHeight(Utils.dpToPx(this, 80));
         } else {
             missingDuration = true;
             Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
@@ -684,6 +717,7 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+        if(mService != null) unbindService(mServiceConn);
     }
 
     @Override

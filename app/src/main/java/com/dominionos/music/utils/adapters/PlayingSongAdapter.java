@@ -160,8 +160,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
 
     private void addToPlaylist(int position) {
         SongListItem item = songs.get(position);
-        Utils utils = new Utils();
-        utils.addToPlaylistDialog(context, item);
+        Utils.addToPlaylistDialog(context, item);
     }
 
     @Override

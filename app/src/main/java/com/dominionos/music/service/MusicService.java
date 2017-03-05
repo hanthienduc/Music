@@ -168,7 +168,7 @@ public class MusicService extends Service {
                 if (musicCursor != null) {
                     musicCursor.close();
                 }
-                playMusic(0);
+                playMusic(playingList.get(0));
                 requestSongDetails = new Intent();
                 requestSongDetails.setAction(ACTION_REQUEST_SONG_DETAILS);
                 sendBroadcast(requestSongDetails);
@@ -390,20 +390,6 @@ public class MusicService extends Service {
             mediaPlayer = null;
         }
         updateCurrentPlaying();
-    }
-
-    private void playMusic(int playingPos) {
-        if (playList.getPlaybackTableSize() > 0) {
-            try {
-                SongListItem song = playList.getSong(playingPos);
-                playMusic(song);
-                currentPlaylistSongId = playingPos;
-            } catch (NullPointerException e) {
-                playMusic(playList.getFirstSong());
-            }
-        } else {
-            Toast.makeText(MusicService.this, getString(R.string.nothing_to_play), Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void playSingle(SongListItem song) {

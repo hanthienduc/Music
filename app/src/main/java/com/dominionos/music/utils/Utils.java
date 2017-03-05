@@ -1,10 +1,12 @@
 package com.dominionos.music.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
@@ -15,6 +17,14 @@ import com.dominionos.music.utils.items.SongListItem;
 import java.util.List;
 
 public class Utils {
+
+    public static int getPxToBottomEdge(View view) {
+        int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        int[] locationOnScreen = new int[2];
+        view.getLocationOnScreen(locationOnScreen);
+        int bottomOfView = locationOnScreen[1] + (view.getHeight() / 2);
+        return screenHeight - bottomOfView;
+    }
 
     public static String getAlbumArt(Context context, long albumId) {
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
