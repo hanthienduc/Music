@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "585114533987",
+    "firebase_url": "https://music-cee59.firebaseio.com",
+    "project_id": "music-cee59",
+    "storage_bucket": "music-cee59.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585114533987:android:9340d5b3efab5556",
+        "android_client_info": {
+          "package_name": "com.dominionos.music"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "585114533987-a81qfe8o1htpseqj4ollpjg5ggmvl20m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dominionos.music",
+            "certificate_hash": "aca44629ff67049e439799f276d9326910002f76"
+          }
+        },
+        {
+          "client_id": "585114533987-hh15ggfuv9248n5r3ts3mc9o4n7q12sr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHgc7Vvtnboy0DDwZ36PQY_U1XjDUsLR0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "585114533987-hh15ggfuv9248n5r3ts3mc9o4n7q12sr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
