@@ -391,12 +391,7 @@ public class MainActivity extends AppCompatActivity {
                                 startActivityForResult(intent, SETTINGS_REQUEST_CODE);
                                 break;
                             case 6:
-                                try {
-                                    int isBillingSupported = mService.isBillingSupported(Build.VERSION.SDK_INT, getPackageName(), "inapp");
-                                    Toast.makeText(MainActivity.this, String.valueOf(isBillingSupported), Toast.LENGTH_SHORT).show();
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
+                                Toast.makeText(MainActivity.this, "Coming soon", Toast.LENGTH_LONG).show();
                                 break;
                             case 7:
                                 new LibsBuilder()
