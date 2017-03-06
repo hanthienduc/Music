@@ -2,6 +2,7 @@ package com.dominionos.music.ui.layouts.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,7 +31,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.adapters.AlbumSongAdapter;
+import com.dominionos.music.utils.Utils;
+import com.dominionos.music.utils.adapters.SongsAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 import com.dominionos.music.service.MusicService;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
@@ -41,11 +44,15 @@ public class AlbumActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private final ArrayList<SongListItem> songList = new ArrayList<>();
     private AudioManager audioManager;
+    private boolean darkMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
         getWindow().setStatusBarColor(Color.TRANSPARENT);
+        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
@@ -57,7 +64,7 @@ public class AlbumActivity extends AppCompatActivity {
             collapsingToolbarLayout.setContentScrimColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor());
         }
         collapsingToolbarLayout.setStatusBarScrimColor(
-                getAutoStatColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor()));
+                Utils.getAutoStatColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor()));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_album);
         final Drawable upButton = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back, null);
         setSupportActionBar(toolbar);
@@ -113,11 +120,11 @@ public class AlbumActivity extends AppCompatActivity {
                                     vibrantRgb = altSwatch.getRgb();
                                     vibrantTitleText = altSwatch.getTitleTextColor();
                                 } else {
-                                    vibrantRgb = ResourcesCompat.getColor(getResources(), R.color.cardBackground, null);
-                                    vibrantTitleText = ResourcesCompat.getColor(getResources(), android.R.color.primary_text_dark, null);
+                                    vibrantRgb = Utils.getColor(AlbumActivity.this, R.color.cardBackground);
+                                    vibrantTitleText = Utils.getColor(AlbumActivity.this, R.color.primaryTextDark);
                                 }
                                 toolbarBackground.setBackgroundColor(vibrantRgb);
-                                collapsingToolbarLayout.setStatusBarScrimColor(getAutoStatColor(vibrantRgb));
+                                collapsingToolbarLayout.setStatusBarScrimColor(Utils.getAutoStatColor(vibrantRgb));
                                 collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
                                 collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
                                 collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
@@ -126,7 +133,7 @@ public class AlbumActivity extends AppCompatActivity {
                                     upButton.setTintList(ColorStateList.valueOf(vibrantTitleText));
                                 }
                             } catch (NullPointerException e) {
-                                Log.i("AlbumActivity", "Palette.Builder could not generate a vibrant swatch, falling back to default colours");
+                                Log.i("AlbumActivity", "Palette.Builder could not generate swatches, falling back to default colours");
                             }
                             return false;
                         }
@@ -180,8 +187,11 @@ public class AlbumActivity extends AppCompatActivity {
         FastScrollRecyclerView rv = (FastScrollRecyclerView) findViewById(R.id.rv_album);
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
+        rv.setBackgroundColor(darkMode
+                ? Utils.getColor(this, R.color.darkWindowBackground)
+                : Utils.getColor(this, R.color.windowBackground));
 
-        rv.setAdapter(new AlbumSongAdapter(AlbumActivity.this, songList));
+        rv.setAdapter(new SongsAdapter(AlbumActivity.this, songList, darkMode));
     }
 
     @Override
@@ -199,13 +209,6 @@ public class AlbumActivity extends AppCompatActivity {
     public void onBackPressed() {
         fab.setVisibility(View.GONE);
         super.onBackPressed();
-    }
-
-    private int getAutoStatColor(int baseColor) {
-        float[] hsv = new float[3];
-        Color.colorToHSV(baseColor, hsv);
-        hsv[2] *= 0.8f;
-        return Color.HSVToColor(hsv);
     }
 
     @Override

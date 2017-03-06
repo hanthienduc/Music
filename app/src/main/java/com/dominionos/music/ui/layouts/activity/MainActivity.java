@@ -24,7 +24,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -464,9 +463,9 @@ public class MainActivity extends AppCompatActivity {
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
         shuffleButton.setAlpha(0.5f);
-        if (darkMode) {
-            rv.setBackgroundColor(ContextCompat.getColor(this, R.color.darkWindowBackground));
-        }
+        rv.setBackgroundColor(darkMode
+                ? Utils.getColor(this, R.color.darkWindowBackground)
+                : Utils.getColor(this, R.color.windowBackground));
         albumArt = (ImageView) findViewById(R.id.album_art);
         miniAlbumArt = (ImageView) findViewById(R.id.mini_album_art);
         shuffleButton.setOnClickListener(new View.OnClickListener() {

@@ -11,12 +11,14 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dominionos.music.R;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.MySQLiteHelper;
+import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.items.SongListItem;
 
 import java.io.File;
@@ -28,11 +30,13 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
     private final Context context;
     private final List<SongListItem> data;
     private final int playlistId;
+    private final boolean darkMode;
 
-    public PlaylistActivityAdapter(Context context, List<SongListItem> data, int playlistId) {
+    public PlaylistActivityAdapter(Context context, List<SongListItem> data, int playlistId, boolean darkMode) {
         this.data = data;
         this.context = context;
         this.playlistId = playlistId;
+        this.darkMode = darkMode;
     }
 
     @Override
@@ -45,6 +49,15 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
     @Override
     public void onBindViewHolder(final MainViewHolder holder, int position) {
         position = holder.getAdapterPosition();
+        holder.songName.setTextColor(darkMode
+                ? Utils.getColor(context, R.color.primaryTextDark)
+                : Utils.getColor(context, R.color.primaryTextLight));
+        holder.songDesc.setTextColor(darkMode
+                ? Utils.getColor(context, R.color.secondaryTextDark)
+                : Utils.getColor(context, R.color.secondaryTextLight));
+        holder.menu.setColorFilter(darkMode
+                ? Utils.getColor(context, R.color.primaryTextDark)
+                : Utils.getColor(context, R.color.primaryTextLight));
         holder.songName.setText(data.get(position).getName());
         holder.songDesc.setText(data.get(position).getDesc());
         final int finalPosition = position;
@@ -133,14 +146,14 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
         final View view;
         final TextView songName;
         final TextView songDesc;
-        public final View menu;
+        public final ImageView menu;
 
         MainViewHolder(View itemView) {
             super(itemView);
             view = itemView;
             songName = (TextView) itemView.findViewById(R.id.song_item_name);
             songDesc = (TextView) itemView.findViewById(R.id.song_item_desc);
-            menu = itemView.findViewById(R.id.song_item_menu);
+            menu = (ImageView) itemView.findViewById(R.id.song_item_menu);
         }
     }
 }

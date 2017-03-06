@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -75,11 +74,16 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
-        if(darkMode) {
-            holder.title.setTextColor(ContextCompat.getColor(context, R.color.primaryTextDark));
-            holder.desc.setTextColor(ContextCompat.getColor(context, R.color.secondaryTextDark));
-            holder.menu.setColorFilter(ContextCompat.getColor(context, R.color.primaryTextDark));
-        }
+
+        holder.title.setTextColor(darkMode
+                ? Utils.getColor(context, R.color.primaryTextDark)
+                : Utils.getColor(context, R.color.primaryTextLight));
+        holder.desc.setTextColor(darkMode
+                ? Utils.getColor(context, R.color.secondaryTextDark)
+                : Utils.getColor(context, R.color.secondaryTextLight));
+        holder.menu.setColorFilter(darkMode
+                ? Utils.getColor(context, R.color.primaryTextDark)
+                : Utils.getColor(context, R.color.primaryTextLight));
         holder.title.setText(items.get(holder.getAdapterPosition()).getName());
         holder.desc.setText(items.get(holder.getAdapterPosition()).getDesc());
         holder.menu.setOnClickListener(new View.OnClickListener() {
@@ -131,18 +135,17 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    Intent a = new Intent();
-                    a.setAction(MusicService.ACTION_PLAY_SINGLE);
-                    a.putExtra("song", items.get(holder.getAdapterPosition()));
-                    context.sendBroadcast(a);
+                Intent a = new Intent();
+                a.setAction(MusicService.ACTION_PLAY_SINGLE);
+                a.putExtra("song", items.get(holder.getAdapterPosition()));
+                context.sendBroadcast(a);
             }
         });
     }
 
     private void addToPlaylist(int position) {
         SongListItem item = items.get(position);
-        Utils utils = new Utils();
-        utils.addToPlaylistDialog(context, item);
+        Utils.addToPlaylistDialog(context, item);
     }
 
     @Override

@@ -2,12 +2,14 @@ package com.dominionos.music.ui.layouts.activity;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +17,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import com.dominionos.music.R;
+import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.adapters.SongsAdapter;
 import com.dominionos.music.utils.items.SongListItem;
 
@@ -25,9 +28,14 @@ import java.util.Comparator;
 public class ArtistActivity extends AppCompatActivity {
 
     private AudioManager audioManager;
+    private boolean darkMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        darkMode = sharedPrefs.getBoolean("dark_theme", false);
+
+        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist);
         String artistName = getIntent().getStringExtra("artistName");
@@ -82,7 +90,11 @@ public class ArtistActivity extends AppCompatActivity {
                     return songListItem.getName().compareTo(t1.getName());
                 }
             });
-            rv.setAdapter(new SongsAdapter(this, songList, false));
+
+            rv.setBackgroundColor(darkMode
+                    ? Utils.getColor(this, R.color.darkWindowBackground)
+                    : Utils.getColor(this, R.color.windowBackground));
+            rv.setAdapter(new SongsAdapter(this, songList, darkMode));
         }
         if (musicCursor != null) {
             musicCursor.close();

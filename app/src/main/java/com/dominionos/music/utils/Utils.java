@@ -1,12 +1,12 @@
 package com.dominionos.music.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
-import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
@@ -18,12 +18,15 @@ import java.util.List;
 
 public class Utils {
 
-    public static int getPxToBottomEdge(View view) {
-        int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-        int[] locationOnScreen = new int[2];
-        view.getLocationOnScreen(locationOnScreen);
-        int bottomOfView = locationOnScreen[1] + (view.getHeight() / 2);
-        return screenHeight - bottomOfView;
+    public static int getAutoStatColor(int baseColor) {
+        float[] hsv = new float[3];
+        Color.colorToHSV(baseColor, hsv);
+        hsv[2] *= 0.8f;
+        return Color.HSVToColor(hsv);
+    }
+
+    public static int getColor(Context context, int colourRes) {
+        return ContextCompat.getColor(context, colourRes);
     }
 
     public static String getAlbumArt(Context context, long albumId) {
