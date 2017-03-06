@@ -37,12 +37,11 @@ public class PlaylistActivity extends AppCompatActivity {
     private int playlistId;
     private CheckableSongsAdapter adapter;
     private String title;
-    private boolean darkMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        darkMode = sharedPrefs.getBoolean("dark_theme", false);
+        boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
         setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
         super.onCreate(savedInstanceState);
@@ -103,7 +102,7 @@ public class PlaylistActivity extends AppCompatActivity {
         if (musicCursor2 != null) {
             musicCursor2.close();
         }
-        adapter = new CheckableSongsAdapter(songList);
+        adapter = new CheckableSongsAdapter(this, songList, darkMode);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

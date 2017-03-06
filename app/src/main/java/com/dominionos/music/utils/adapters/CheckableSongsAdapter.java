@@ -1,5 +1,6 @@
 package com.dominionos.music.utils.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.dominionos.music.R;
+import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.items.CheckableSongListItem;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import java.util.List;
 public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAdapter.SimpleItemViewHolder> {
     private final List<CheckableSongListItem> items;
     private final List<CheckableSongListItem> checkedItems;
+    private final boolean darkMode;
+    private final Context context;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
@@ -33,9 +37,11 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
         }
     }
 
-    public CheckableSongsAdapter(List<CheckableSongListItem> items) {
+    public CheckableSongsAdapter(Context context, List<CheckableSongListItem> items, boolean darkMode) {
+        this.context = context;
         this.items = items;
         checkedItems = new ArrayList<>();
+        this.darkMode = darkMode;
     }
 
     @Override
@@ -48,6 +54,12 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
     @Override
     public void onBindViewHolder(final CheckableSongsAdapter.SimpleItemViewHolder holder, int position) {
         position = holder.getAdapterPosition();
+        holder.title.setTextColor(darkMode
+                ? Utils.getColor(context, R.color.primaryTextDark)
+                : Utils.getColor(context, R.color.primaryTextLight));
+        holder.desc.setTextColor(darkMode
+                ? Utils.getColor(context, R.color.secondaryTextDark)
+                : Utils.getColor(context, R.color.secondaryTextLight));
         holder.title.setText(items.get(position).getName());
         holder.desc.setText(items.get(position).getDesc());
         holder.checkBox.setOnCheckedChangeListener(null);
