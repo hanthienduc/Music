@@ -51,7 +51,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         final TextView albumName;
         final TextView albumDesc;
         final ImageView albumArt;
-        final View realBackground;
+        final View background;
         final View textHolder;
 
         SimpleItemViewHolder(View view) {
@@ -61,7 +61,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
             albumDesc = (TextView) view.findViewById(R.id.grid_desc);
             albumArt = (ImageView) view.findViewById(R.id.grid_art);
             textHolder = view.findViewById(R.id.text_holder);
-            realBackground = view.findViewById(R.id.real_background);
+            background = view.findViewById(R.id.background);
         }
     }
 
@@ -120,7 +120,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
                             }
                         }
                     });
-        holder.realBackground.setOnClickListener(new View.OnClickListener() {
+        holder.background.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, AlbumActivity.class);

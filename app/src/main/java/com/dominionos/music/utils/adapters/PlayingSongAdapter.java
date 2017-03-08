@@ -15,8 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.async.Action;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.DrawableRequestBuilder;
+import com.bumptech.glide.RequestManager;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Config;
@@ -32,6 +32,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     private final Context context;
     private final boolean darkMode;
     private final SongListItem currentSong;
+    private final DrawableRequestBuilder<String> glideRequest;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
@@ -50,11 +51,18 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         }
     }
 
-    public PlayingSongAdapter(Context context, List<SongListItem> songs, boolean darkMode, SongListItem currentSong) {
+    public PlayingSongAdapter(Context context, List<SongListItem> songs, boolean darkMode, SongListItem currentSong, RequestManager glide) {
         this.context = context;
         this.songs = songs;
         this.darkMode = darkMode;
         this.currentSong = currentSong;
+        final int px = Utils.dpToPx(context, 72);
+        this.glideRequest = glide
+                .fromString()
+                .centerCrop()
+                .crossFade()
+                .transform(new CircleTransform(context))
+                .override(px, px);
     }
 
     @Override
@@ -150,23 +158,11 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
 
                 @Override
                 protected void done(String result) {
-                    final int px = Utils.dpToPx(context, 72);
-                    Glide.with(context)
+                    glideRequest
                             .load(result)
-                            .centerCrop()
-                            .crossFade()
-                            .transform(new CircleTransform(context))
-                            .override(px, px)
                             .into(holder.art);
                 }
             }.execute();
-        } else {
-            Glide.with(context)
-                    .load(R.drawable.ic_audiotrack)
-                    .centerCrop()
-                    .crossFade()
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(holder.art);
         }
     }
 

@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.DrawableRequestBuilder;
+import com.bumptech.glide.RequestManager;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.activity.ArtistActivity;
 import com.dominionos.music.utils.ArtistImgHandler;
@@ -30,6 +31,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
     private final List<ArtistListItem> items;
     private final Context context;
     private final boolean darkMode;
+    private final DrawableRequestBuilder<File> glideRequest;
 
     @NonNull
     @Override
@@ -58,10 +60,16 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         }
     }
 
-    public ArtistAdapter(Context context, List<ArtistListItem> items, boolean darkMode) {
+    public ArtistAdapter(Context context, List<ArtistListItem> items, boolean darkMode, RequestManager glide) {
         this.items = items;
         this.context = context;
         this.darkMode = darkMode;
+        final int px = Utils.dpToPx(context, 48);
+        this.glideRequest = glide
+                .fromFile()
+                .centerCrop()
+                .transform(new CircleTransform(context))
+                .override(px, px);
     }
 
     @Override
@@ -129,19 +137,11 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     private void setImageToView(String url, final SimpleItemViewHolder holder) {
         try {
-            final int px = Utils.dpToPx(context, 48);
-            Glide.with(context)
+            glideRequest
                     .load(new File(url))
-                    .error(R.drawable.default_art)
-                    .centerCrop()
-                    .transform(new CircleTransform(context))
-                    .override(px, px)
                     .into(holder.artistImg);
         } catch (NullPointerException e) {
-            Glide.with(context)
-                    .load(R.drawable.default_art)
-                    .transform(new CircleTransform(context))
-                    .into(holder.artistImg);
+            e.printStackTrace();
         }
     }
 

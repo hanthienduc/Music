@@ -50,6 +50,7 @@ import android.widget.Toast;
 
 import com.afollestad.async.Action;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Config.GET_PLAYING_LIST:
                     MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
-                    PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList(), darkMode, currentSong);
+                    PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList(), darkMode, currentSong, Glide.with(context));
                     if (rv.getAdapter() == null) {
                         LinearLayoutManager layoutManager = new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL, false);

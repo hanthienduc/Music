@@ -62,7 +62,6 @@
 
     <!-- MusicService -->
     <string name="service_generate_list_warning">The service has not yet built a list of your songs</string>
-    <string name="nothing_to_play">Nothing to play</string>
     <string name="file_invalid">File invalid</string>
     <string name="unable_gain_focus">Unable to gain audio focus</string>
 

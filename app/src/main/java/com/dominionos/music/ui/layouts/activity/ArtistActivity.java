@@ -28,12 +28,11 @@ import java.util.Comparator;
 public class ArtistActivity extends AppCompatActivity {
 
     private AudioManager audioManager;
-    private boolean darkMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        darkMode = sharedPrefs.getBoolean("dark_theme", false);
+        boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
         setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
         super.onCreate(savedInstanceState);

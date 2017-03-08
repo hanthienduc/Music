@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.afollestad.async.Action;
+import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.adapters.ArtistAdapter;
 import com.dominionos.music.utils.items.ArtistListItem;
@@ -82,7 +83,6 @@ public class ArtistsFragment extends Fragment {
                             (MediaStore.Audio.Artists.NUMBER_OF_TRACKS);
                     do {
                         artistList.add(new ArtistListItem(
-                                musicCursor.getLong(idColumn),
                                 musicCursor.getString(titleColumn),
                                 musicCursor.getInt(numOfTracksColumn),
                                 musicCursor.getInt(numOfAlbumsColumn)));
@@ -104,7 +104,7 @@ public class ArtistsFragment extends Fragment {
             @Override
             protected void done(ArrayList<ArtistListItem> artistList) {
                 if(artistList.size() != 0) {
-                    rv.setAdapter(new ArtistAdapter(context, artistList, darkMode));
+                    rv.setAdapter(new ArtistAdapter(context, artistList, darkMode, Glide.with(context)));
                 } else {
                     getActivity().findViewById(R.id.no_artists).setVisibility(View.VISIBLE);
                 }
