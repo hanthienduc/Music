@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
-import com.dominionos.music.service.MusicService;
+import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.items.Playlist;
 import com.dominionos.music.utils.items.SongListItem;
@@ -101,7 +101,7 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
                                 case R.id.menu_playlist_play:
                                     Intent i = new Intent();
                                     i.putExtra("playlistId", items.get(finalPosition).getId());
-                                    i.setAction(MusicService.ACTION_PLAY_PLAYLIST);
+                                    i.setAction(Config.PLAY_PLAYLIST);
                                     context.sendBroadcast(i);
                                     return true;
                                 case R.id.menu_playlist_rename:

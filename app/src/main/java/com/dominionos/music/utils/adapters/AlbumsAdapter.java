@@ -3,7 +3,6 @@ package com.dominionos.music.utils.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -18,11 +17,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.BitmapRequestBuilder;
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.target.ImageViewTarget;
 import com.dominionos.music.R;
+import com.dominionos.music.utils.PaletteBitmap;
+import com.dominionos.music.utils.PaletteBitmapTranscoder;
 import com.dominionos.music.utils.items.AlbumListItem;
 import com.dominionos.music.ui.layouts.activity.AlbumActivity;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
@@ -34,6 +34,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
 
     private final List<AlbumListItem> items;
     private final Context context;
+    private final BitmapRequestBuilder<String, PaletteBitmap> glideRequest;
 
     @NonNull
     @Override
@@ -64,16 +65,20 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         }
     }
 
-    public AlbumsAdapter(Context context, List<AlbumListItem> items) {
+    public AlbumsAdapter(Context context, List<AlbumListItem> items, RequestManager glide) {
         this.context = context;
         this.items = items;
+        this.glideRequest = glide
+                .fromString()
+                .asBitmap()
+                .transcode(new PaletteBitmapTranscoder(context), PaletteBitmap.class)
+                .error(R.drawable.default_art);
     }
 
     @Override
     public AlbumsAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.grid_item, parent, false);
-
 
         return new SimpleItemViewHolder(itemView);
     }
@@ -94,40 +99,27 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         int backCardColor = ResourcesCompat.getColor(context.getResources(), R.color.cardBackground, null);
         if (((ColorDrawable) holder.textHolder.getBackground()).getColor() != backCardColor)
             holder.textHolder.setBackgroundColor(backCardColor);
-            Glide.with(context)
+            glideRequest
                     .load(items.get(adapterPosition).getArtString())
-                    .asBitmap()
-                    .error(R.drawable.default_art)
-                    .listener(new RequestListener<String, Bitmap>() {
+                    .into(new ImageViewTarget<PaletteBitmap>(holder.albumArt) {
                         @Override
-                        public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
-                            return false;
+                        protected void setResource(PaletteBitmap resource) {
+                            super.view.setImageBitmap(resource.bitmap);
+                            Palette palette = resource.palette;
+                            Palette.Swatch swatch;
+                            if(palette.getVibrantSwatch() != null) {
+                                swatch = palette.getVibrantSwatch();
+                                holder.textHolder.setBackgroundColor(swatch.getRgb());
+                                holder.albumName.setTextColor(swatch.getTitleTextColor());
+                                holder.albumDesc.setTextColor(swatch.getBodyTextColor());
+                            } else if(palette.getDominantSwatch() != null) {
+                                swatch = palette.getDominantSwatch();
+                                holder.textHolder.setBackgroundColor(swatch.getRgb());
+                                holder.albumName.setTextColor(swatch.getTitleTextColor());
+                                holder.albumDesc.setTextColor(swatch.getBodyTextColor());
+                            }
                         }
-
-                        @Override
-                        public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
-                                @Override
-                                public void onGenerated(Palette palette) {
-                                    Palette.Swatch swatch;
-                                    if(palette.getVibrantSwatch() != null) {
-                                        swatch = palette.getVibrantSwatch();
-                                        holder.textHolder.setBackgroundColor(swatch.getRgb());
-                                        holder.albumName.setTextColor(swatch.getTitleTextColor());
-                                        holder.albumDesc.setTextColor(swatch.getBodyTextColor());
-                                    } else if(palette.getDominantSwatch() != null) {
-                                        swatch = palette.getDominantSwatch();
-                                        holder.textHolder.setBackgroundColor(swatch.getRgb());
-                                        holder.albumName.setTextColor(swatch.getTitleTextColor());
-                                        holder.albumDesc.setTextColor(swatch.getBodyTextColor());
-                                    }
-                                }
-                            };
-                            Palette.from(resource).generate(paletteAsyncListener);
-                            return false;
-                        }
-                    })
-                    .into(new BitmapImageViewTarget(holder.albumArt));
+                    });
         holder.realBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

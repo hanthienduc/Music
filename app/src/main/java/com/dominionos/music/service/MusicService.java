@@ -17,6 +17,8 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -26,8 +28,10 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
+import com.afollestad.async.Action;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.layouts.activity.MainActivity;
+import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.items.SongListItem;
@@ -72,28 +76,6 @@ public class MusicService extends Service {
             };
 
     private static final int NOTIFICATION_ID = 596;
-    public static final String ACTION_PREV = "prev";
-    public static final String ACTION_NEXT = "next";
-    public static final String ACTION_TOGGLE_PLAY = "toggle_play";
-    private static final String ACTION_CANCEL_NOTIFICATION = "cancel_notification";
-    public static final String ACTION_PLAY_ALBUM = "player_play_album";
-    public static final String ACTION_PLAY_ALL_SONGS = "play_all_songs";
-    public static final String ACTION_MENU_FROM_PLAYLIST = "player_menu_from_playlist";
-    public static final String ACTION_PLAY_FROM_PLAYLIST = "player_play_from_playlist";
-    public static final String ACTION_PLAY_PLAYLIST = "player_play_playlist";
-    public static final String ACTION_PLAY_NEXT = "player_play_next";
-    public static final String ACTION_PLAY_SINGLE = "play_single_song";
-    public static final String ACTION_ADD_SONG = "add_song_to_playlist";
-    public static final String ACTION_REQUEST_SONG_DETAILS = "player_request_song_details";
-    public static final String ACTION_SEEK_TO = "player_seek_to_song";
-    private static final String ACTION_SEEK_GET = "player_seek_get_song";
-    public static final String ACTION_SHUFFLE_PLAYLIST = "player_shuffle_playlist";
-    public static final String ACTION_REPEAT = "repeat";
-
-    public static final String ACTION_MENU_PLAY_NEXT = "menu_play_next";
-    public static final String ACTION_MENU_REMOVE_FROM_QUEUE = "menu_from_queue";
-    public static final String ACTION_MENU_SHARE = "menu_share";
-    public static final String ACTION_MENU_DELETE = "menu_delete";
 
     private final BroadcastReceiver musicPlayer = new BroadcastReceiver() {
         @Override
@@ -106,7 +88,7 @@ public class MusicService extends Service {
     private void handleBroadcastReceived(Context context, Intent intent) {
         SongListItem song;
         switch(intent.getAction()) {
-            case ACTION_TOGGLE_PLAY:
+            case Config.TOGGLE_PLAY:
                 if(mediaPlayer != null && mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
                 } else if(mediaPlayer != null && !mediaPlayer.isPlaying()) {
@@ -116,22 +98,23 @@ public class MusicService extends Service {
                 }
                 updatePlayState();
                 break;
-            case ACTION_PLAY_SINGLE:
+            case Config.PLAY_SINGLE_SONG:
                 pausedSongSeek = 0;
                 song = (SongListItem) intent.getSerializableExtra("song");
-                playSingle(song);
                 currentPlaylistSongId = 0;
-                pausedSongSeek = 0;
+                playingList.clear();
+                playingList.add(song);
                 playList.clearPlayingList();
                 playList.addSongs(playingList);
+                playSingle(song);
                 Intent requestSongDetails = new Intent();
-                requestSongDetails.setAction(ACTION_REQUEST_SONG_DETAILS);
+                requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
                 sendBroadcast(requestSongDetails);
                 break;
-            case ACTION_CANCEL_NOTIFICATION:
+            case Config.CANCEL_NOTIFICATION:
                 stopNotification();
                 break;
-            case ACTION_PLAY_ALBUM:
+            case Config.PLAY_ALBUM:
                 pausedSongSeek = 0;
                 playList.clearPlayingList();
                 Cursor musicCursor;
@@ -170,15 +153,15 @@ public class MusicService extends Service {
                 }
                 playMusic(playingList.get(0));
                 requestSongDetails = new Intent();
-                requestSongDetails.setAction(ACTION_REQUEST_SONG_DETAILS);
+                requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
                 sendBroadcast(requestSongDetails);
                 break;
-            case ACTION_NEXT:
+            case Config.NEXT:
                 pausedSongSeek = 0;
                 playMusic(playList.getNextSong(currentPlaylistSongId));
                 updateCurrentPlaying();
                 break;
-            case ACTION_PREV:
+            case Config.PREV:
                 if (mediaPlayer != null && mediaPlayer.getCurrentPosition() >= 5000) {
                     mediaPlayer.seekTo(0);
                 } else {
@@ -187,11 +170,11 @@ public class MusicService extends Service {
                 }
                 updateCurrentPlaying();
                 break;
-            case ACTION_REQUEST_SONG_DETAILS:
+            case Config.REQUEST_SONG_DETAILS:
                 updateCurrentPlaying();
                 updatePlaylist();
                 break;
-            case ACTION_SEEK_TO:
+            case Config.SEEK_TO_SONG:
                 try {
                     mediaPlayer.seekTo(intent.getIntExtra("changeSeek", 0));
                 } catch (NullPointerException e) {
@@ -201,7 +184,7 @@ public class MusicService extends Service {
                     pausedSongSeek = 0;
                 }
                 break;
-            case ACTION_SHUFFLE_PLAYLIST:
+            case Config.SHUFFLE_PLAYLIST:
                 if(playList.getPlaybackTableSize() > 1) {
                     if(!shuffle) {
                         String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
@@ -235,7 +218,7 @@ public class MusicService extends Service {
                     updateShuffle();
                 }
                 break;
-            case ACTION_PLAY_NEXT:
+            case Config.PLAY_NEXT:
                 int insertPos = playingList.indexOf(currentSong) + 1;
                 song = (SongListItem) intent.getSerializableExtra("song");
                 playingList.add(insertPos, song);
@@ -243,7 +226,7 @@ public class MusicService extends Service {
                 playList.addSongs(playingList);
                 updatePlaylist();
                 break;
-            case ACTION_ADD_SONG:
+            case Config.ADD_SONG_TO_PLAYLIST:
                 song = (SongListItem) intent.getSerializableExtra("song");
                 if (playList.getPlaybackTableSize() != 0 && currentPlaylistSongId != -1) {
                     playingList.add(song);
@@ -251,36 +234,36 @@ public class MusicService extends Service {
                     playList.addSongs(playingList);
                     updatePlaylist();
                 } else {
-                    intent.setAction(ACTION_PLAY_SINGLE);
+                    intent.setAction(Config.PLAY_SINGLE_SONG);
                     sendBroadcast(intent);
                 }
                 break;
-            case ACTION_PLAY_FROM_PLAYLIST:
+            case Config.PLAY_FROM_PLAYLIST:
                 pausedSongSeek = 0;
                 song = (SongListItem) intent.getSerializableExtra("song");
                 playMusic(song);
                 updateCurrentPlaying();
                 requestSongDetails = new Intent();
-                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
                 sendBroadcast(requestSongDetails);
                 break;
-            case ACTION_MENU_FROM_PLAYLIST:
+            case Config.MENU_FROM_PLAYLIST:
                 String action = intent.getStringExtra("action");
-                if (action.matches(ACTION_MENU_PLAY_NEXT)) {
+                if (action.matches(Config.MENU_PLAY_NEXT)) {
                     SongListItem item = playList.getSong(intent.getIntExtra("count", -1));
                     playList.addSong(item);
                     updatePlaylist();
-                } else if (action.matches(ACTION_MENU_REMOVE_FROM_QUEUE)) {
+                } else if (action.matches(Config.MENU_REMOVE_FROM_QUEUE)) {
                     playList.removeSong(intent.getIntExtra("count", -1));
                     updatePlaylist();
-                } else if (action.matches(ACTION_MENU_SHARE)) {
+                } else if (action.matches(Config.MENU_SHARE)) {
                     Intent share = new Intent(Intent.ACTION_SEND);
                     share.setType("audio/*");
                     share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" +
                             playList.getSong(intent.getIntExtra("count", -1)).getPath()));
                     share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(share);
-                } else if (action.matches(ACTION_MENU_DELETE)) {
+                } else if (action.matches(Config.MENU_DELETE)) {
                     int pos = intent.getIntExtra("count", -1);
                     SongListItem song2 = playList.getSong(pos);
                     File file = new File(song2.getPath());
@@ -295,17 +278,17 @@ public class MusicService extends Service {
                         Toast.makeText(context, getString(R.string.song_delete_fail), Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case ACTION_PLAY_PLAYLIST:
+            case Config.PLAY_PLAYLIST:
                 MySQLiteHelper helper = new MySQLiteHelper(context);
                 playList.clearPlayingList();
                 playingList = helper.getPlayListSongs(intent.getIntExtra("playlistId", -1));
                 playList.addSongs(playingList);
                 playMusic(playList.getFirstSong());
                 requestSongDetails = new Intent();
-                requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
                 sendBroadcast(requestSongDetails);
                 break;
-            case ACTION_PLAY_ALL_SONGS:
+            case Config.PLAY_ALL_SONGS:
                 if(songList != null) {
                     playList.clearPlayingList();
                     playList.addSongs(songList);
@@ -313,13 +296,13 @@ public class MusicService extends Service {
                     pausedSongSeek = 0;
                     playMusic(playingList.get(0));
                     requestSongDetails = new Intent();
-                    requestSongDetails.setAction(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                    requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
                     sendBroadcast(requestSongDetails);
                 } else {
                     Toast.makeText(context, getString(R.string.service_generate_list_warning), Toast.LENGTH_LONG).show();
                 }
                 break;
-            case ACTION_REPEAT:
+            case Config.REPEAT:
                 if(!repeatAll && !repeatOne) {
                     repeatAll = true;
                     repeatOne = false;
@@ -336,7 +319,7 @@ public class MusicService extends Service {
     }
 
     private void updateRepeat() {
-        Intent intent = new Intent(MainActivity.ACTION_UPDATE_REPEAT);
+        Intent intent = new Intent(Config.UPDATE_REPEAT);
         if(repeatAll) {
             intent.putExtra("repeat", "all");
         } else if (repeatOne) {
@@ -348,14 +331,14 @@ public class MusicService extends Service {
     }
 
     private void updateShuffle() {
-        Intent intent = new Intent(MainActivity.ACTION_UPDATE_SHUFFLE);
+        Intent intent = new Intent(Config.UPDATE_SHUFFLE);
         intent.putExtra("shuffle", shuffle);
         sendBroadcast(intent);
         updatePlaylist();
     }
 
     private void updateCurrentPlaying() {
-        Intent intent = new Intent(MainActivity.ACTION_GET_PLAYING_DETAIL);
+        Intent intent = new Intent(Config.GET_PLAYING_DETAIL);
         if(currentSong != null) {
             intent.putExtra("song", currentSong);
         } else if(playingList.size() > 0){
@@ -371,7 +354,7 @@ public class MusicService extends Service {
     }
 
     private void updatePlayState() {
-        Intent intent = new Intent(MainActivity.ACTION_GET_PLAY_STATE);
+        Intent intent = new Intent(Config.GET_PLAY_STATE);
         intent.putExtra("isPlaying", mediaPlayer != null && mediaPlayer.isPlaying());
         sendBroadcast(intent);
         if(mediaPlayer != null && currentSong != null) updateNotification();
@@ -379,7 +362,7 @@ public class MusicService extends Service {
     }
 
     private void updatePlaylist() {
-        Intent playlistIntent = new Intent(MainActivity.ACTION_GET_PLAYING_LIST);
+        Intent playlistIntent = new Intent(Config.GET_PLAYING_LIST);
         sendBroadcast(playlistIntent);
     }
 
@@ -390,6 +373,7 @@ public class MusicService extends Service {
             mediaPlayer = null;
         }
         updateCurrentPlaying();
+        updateSession("state");
     }
 
     private void playSingle(SongListItem song) {
@@ -458,7 +442,7 @@ public class MusicService extends Service {
             Toast.makeText(MusicService.this, getString(R.string.unable_gain_focus), Toast.LENGTH_SHORT).show();
         }
 
-        Intent intent = new Intent(MainActivity.ACTION_GET_PLAY_STATE);
+        Intent intent = new Intent(Config.GET_PLAY_STATE);
         intent.putExtra("isPlaying", mediaPlayer != null && mediaPlayer.isPlaying());
         sendBroadcast(intent);
     }
@@ -467,23 +451,23 @@ public class MusicService extends Service {
     public int onStartCommand(final Intent intent, int flags, int startId) {
         playList = new MusicPlayerDBHelper(this);
         IntentFilter commandFilter = new IntentFilter();
-        commandFilter.addAction(ACTION_TOGGLE_PLAY);
-        commandFilter.addAction(ACTION_CANCEL_NOTIFICATION);
-        commandFilter.addAction(ACTION_PLAY_SINGLE);
-        commandFilter.addAction(ACTION_PLAY_ALL_SONGS);
-        commandFilter.addAction(ACTION_ADD_SONG);
-        commandFilter.addAction(ACTION_REQUEST_SONG_DETAILS);
-        commandFilter.addAction(ACTION_SEEK_TO);
-        commandFilter.addAction(ACTION_SEEK_GET);
-        commandFilter.addAction(ACTION_NEXT);
-        commandFilter.addAction(ACTION_MENU_FROM_PLAYLIST);
-        commandFilter.addAction(ACTION_PLAY_NEXT);
-        commandFilter.addAction(ACTION_PLAY_FROM_PLAYLIST);
-        commandFilter.addAction(ACTION_PLAY_PLAYLIST);
-        commandFilter.addAction(ACTION_PREV);
-        commandFilter.addAction(ACTION_PLAY_ALBUM);
-        commandFilter.addAction(ACTION_SHUFFLE_PLAYLIST);
-        commandFilter.addAction(ACTION_REPEAT);
+        commandFilter.addAction(Config.TOGGLE_PLAY);
+        commandFilter.addAction(Config.CANCEL_NOTIFICATION);
+        commandFilter.addAction(Config.PLAY_SINGLE_SONG);
+        commandFilter.addAction(Config.PLAY_ALL_SONGS);
+        commandFilter.addAction(Config.ADD_SONG_TO_PLAYLIST);
+        commandFilter.addAction(Config.REQUEST_SONG_DETAILS);
+        commandFilter.addAction(Config.SEEK_TO_SONG);
+        commandFilter.addAction(Config.SEEK_GET_SONG);
+        commandFilter.addAction(Config.NEXT);
+        commandFilter.addAction(Config.MENU_FROM_PLAYLIST);
+        commandFilter.addAction(Config.PLAY_NEXT);
+        commandFilter.addAction(Config.PLAY_FROM_PLAYLIST);
+        commandFilter.addAction(Config.PLAY_PLAYLIST);
+        commandFilter.addAction(Config.PREV);
+        commandFilter.addAction(Config.PLAY_ALBUM);
+        commandFilter.addAction(Config.SHUFFLE_PLAYLIST);
+        commandFilter.addAction(Config.REPEAT);
         registerReceiver(musicPlayer, commandFilter);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -496,25 +480,42 @@ public class MusicService extends Service {
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onPlay() {
-                Intent intent = new Intent(ACTION_TOGGLE_PLAY);
+                Intent intent = new Intent(Config.TOGGLE_PLAY);
                 sendBroadcast(intent);
                 super.onPlay();
             }
             @Override
             public void onPause() {
-                Intent intent = new Intent(ACTION_TOGGLE_PLAY);
+                Intent intent = new Intent(Config.TOGGLE_PLAY);
                 sendBroadcast(intent);
                 super.onPause();
             }
             @Override
+            public void onStop() {
+                stopNotification();
+                super.onStop();
+            }
+            @Override
+            public void onFastForward() {
+                Intent intent = new Intent(Config.NEXT);
+                sendBroadcast(intent);
+                super.onFastForward();
+            }
+            @Override
+            public void onRewind() {
+                Intent intent = new Intent(Config.PREV);
+                sendBroadcast(intent);
+                super.onRewind();
+            }
+            @Override
             public void onSkipToNext() {
-                Intent intent = new Intent(ACTION_NEXT);
+                Intent intent = new Intent(Config.NEXT);
                 sendBroadcast(intent);
                 super.onSkipToNext();
             }
             @Override
             public void onSkipToPrevious() {
-                Intent intent = new Intent(ACTION_PREV);
+                Intent intent = new Intent(Config.PREV);
                 sendBroadcast(intent);
                 super.onSkipToPrevious();
             }
@@ -529,9 +530,17 @@ public class MusicService extends Service {
             playingList = new ArrayList<>();
         }
 
-        new Runnable() {
+        new Action<ArrayList<SongListItem>>() {
+
+            @NonNull
             @Override
-            public void run() {
+            public String id() {
+                return "get_all_songs";
+            }
+
+            @Nullable
+            @Override
+            protected ArrayList<SongListItem> run() throws InterruptedException {
                 songList = new ArrayList<>();
                 Cursor musicCursor2;
                 final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
@@ -564,8 +573,9 @@ public class MusicService extends Service {
                 if (musicCursor2 != null) {
                     musicCursor2.close();
                 }
+                return songList;
             }
-        }.run();
+        }.execute();
         return START_STICKY;
     }
 
@@ -621,13 +631,13 @@ public class MusicService extends Service {
 
     private Notification createNotification() {
         PendingIntent playIntent = PendingIntent.getBroadcast(this, 100,
-                new Intent(ACTION_TOGGLE_PLAY).setPackage(getPackageName()), PendingIntent.FLAG_UPDATE_CURRENT);
+                new Intent(Config.TOGGLE_PLAY).setPackage(getPackageName()), PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent prevIntent = PendingIntent.getBroadcast(this, 100,
-                new Intent(ACTION_PREV).setPackage(getPackageName()), PendingIntent.FLAG_UPDATE_CURRENT);
+                new Intent(Config.PREV).setPackage(getPackageName()), PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent nextIntent = PendingIntent.getBroadcast(this, 100,
-                new Intent(ACTION_NEXT).setPackage(getPackageName()), PendingIntent.FLAG_UPDATE_CURRENT);
+                new Intent(Config.NEXT).setPackage(getPackageName()), PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent cancelIntent = PendingIntent.getBroadcast(this, 100,
-                new Intent(ACTION_CANCEL_NOTIFICATION).setPackage(getPackageName()), PendingIntent.FLAG_UPDATE_CURRENT);
+                new Intent(Config.CANCEL_NOTIFICATION).setPackage(getPackageName()), PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent launchAppIntent = PendingIntent.getActivity(this, 100,
                 new Intent(getApplicationContext(), MainActivity.class).setPackage(getPackageName()), PendingIntent.FLAG_UPDATE_CURRENT);
 

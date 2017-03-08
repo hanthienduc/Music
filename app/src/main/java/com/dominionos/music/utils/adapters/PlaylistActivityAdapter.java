@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dominionos.music.R;
-import com.dominionos.music.service.MusicService;
+import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.items.SongListItem;
@@ -71,12 +71,12 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
                         Intent i = new Intent();
                         switch (item.getItemId()) {
                             case R.id.menu_play_next:
-                                i.setAction(MusicService.ACTION_PLAY_NEXT);
+                                i.setAction(Config.PLAY_NEXT);
                                 i.putExtra("song", data.get(finalPosition));
                                 context.sendBroadcast(i);
                                 return true;
                             case R.id.menu_add_playing:
-                                i.setAction(MusicService.ACTION_ADD_SONG);
+                                i.setAction(Config.ADD_SONG_TO_PLAYLIST);
                                 i.putExtra("song", data.get(finalPosition));
                                 context.sendBroadcast(i);
                                 return true;
@@ -118,7 +118,7 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
             @Override
             public void onClick(View v) {
                 Intent a = new Intent();
-                a.setAction(MusicService.ACTION_PLAY_SINGLE);
+                a.setAction(Config.PLAY_SINGLE_SONG);
                 a.putExtra("song", data.get(finalPosition));
                 context.sendBroadcast(a);
             }

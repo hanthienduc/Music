@@ -31,10 +31,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.dominionos.music.R;
+import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.adapters.SongsAdapter;
 import com.dominionos.music.utils.items.SongListItem;
-import com.dominionos.music.service.MusicService;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class AlbumActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent bro = new Intent();
-                bro.setAction(MusicService.ACTION_PLAY_ALBUM);
+                bro.setAction(Config.PLAY_ALBUM);
                 bro.putExtra("albumId", getIntent().getLongExtra("albumId", 0));
                 sendBroadcast(bro);
             }

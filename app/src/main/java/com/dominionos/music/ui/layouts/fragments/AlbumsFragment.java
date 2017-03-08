@@ -1,5 +1,6 @@
 package com.dominionos.music.ui.layouts.fragments;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.afollestad.async.Action;
+import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.SpacesItemDecoration;
 import com.dominionos.music.utils.Utils;
@@ -29,26 +31,26 @@ import java.util.Comparator;
 
 public class AlbumsFragment extends Fragment {
 
-    private View mainView;
     private FastScrollRecyclerView gv;
+    private Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_albums, container, false);
-        this.mainView = v;
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        context = getContext();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         boolean darkMode = sharedPref.getBoolean("dark_theme", false);
 
-        gv = (FastScrollRecyclerView) mainView.findViewById(R.id.album_grid);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(mainView.getContext(), Utils.calculateNoOfColumns(getContext()));
+        gv = (FastScrollRecyclerView) v.findViewById(R.id.album_grid);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, Utils.calculateNoOfColumns(context));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
         gv.addItemDecoration(new SpacesItemDecoration(8, 2));
         gv.setHasFixedSize(true);
         if(darkMode) {
-            gv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
+            gv.setBackgroundColor(ContextCompat.getColor(context, R.color.darkWindowBackground));
         }
 
         getAlbumList();
@@ -70,7 +72,7 @@ public class AlbumsFragment extends Fragment {
             protected ArrayList<AlbumListItem> run() throws InterruptedException {
                 final ArrayList<AlbumListItem> albumList = new ArrayList<>();
                 final String orderBy = MediaStore.Audio.Albums.ALBUM;
-                Cursor musicCursor = getContext().getContentResolver().
+                Cursor musicCursor = context.getContentResolver().
                         query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, orderBy);
 
                 if (musicCursor != null && musicCursor.moveToFirst()) {
@@ -109,7 +111,7 @@ public class AlbumsFragment extends Fragment {
             @Override
             protected void done(ArrayList<AlbumListItem> albumList) {
                 if(albumList.size() != 0) {
-                    gv.setAdapter(new AlbumsAdapter(mainView.getContext(), albumList));
+                    gv.setAdapter(new AlbumsAdapter(context, albumList, Glide.with(context)));
                 } else {
                     getActivity().findViewById(R.id.no_albums).setVisibility(View.VISIBLE);
                 }

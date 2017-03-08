@@ -4,11 +4,9 @@ import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
@@ -23,7 +21,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -52,13 +50,13 @@ import android.widget.Toast;
 
 import com.afollestad.async.Action;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.android.vending.billing.IInAppBillingService;
 import com.dominionos.music.R;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
 import com.dominionos.music.ui.layouts.fragments.ArtistsFragment;
 import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
 import com.dominionos.music.ui.layouts.fragments.SongsFragment;
+import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.Utils;
@@ -86,15 +84,8 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String ACTION_GET_PLAY_STATE = "get_play_state";
-    public static final String ACTION_GET_PLAYING_LIST = "get_playing_list";
-    public static final String ACTION_GET_PLAYING_DETAIL = "get_playing_detail";
-    public static final String ACTION_UPDATE_REPEAT = "update_repeat";
-    public static final String ACTION_UPDATE_SHUFFLE = "update_shuffle";
-
     private static final int SETTINGS_REQUEST_CODE = 6118;
 
-    private BottomSheetBehavior bottomSheetBehavior;
     private boolean musicStopped = true, missingDuration = true, darkMode = false;
     private RecyclerView rv;
     private SearchView search;
@@ -111,36 +102,25 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout miniController;
     private int seekProgress;
     private SharedPreferences sharedPrefs;
-    private IInAppBillingService mService;
-    private ServiceConnection mServiceConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = IInAppBillingService.Stub.asInterface(service);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mService = null;
-        }
-    };
+    private SongListItem currentSong;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
-                case ACTION_GET_PLAY_STATE:
+                case Config.GET_PLAY_STATE:
                     updatePlayState(intent.getBooleanExtra("isPlaying", false));
                     break;
-                case ACTION_GET_PLAYING_DETAIL:
-                    SongListItem song = (SongListItem) intent.getSerializableExtra("song");
-                    if (song != null) {
-                        changePlayerDetails(song.getName(), song.getDesc(),
+                case Config.GET_PLAYING_DETAIL:
+                    currentSong = (SongListItem) intent.getSerializableExtra("song");
+                    if (currentSong != null) {
+                        changePlayerDetails(currentSong.getName(), currentSong.getDesc(),
                                 intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0),
-                                song.getAlbumId());
+                                currentSong.getAlbumId());
                     }
                     break;
-                case ACTION_GET_PLAYING_LIST:
+                case Config.GET_PLAYING_LIST:
                     MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
-                    PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList(), darkMode);
+                    PlayingSongAdapter adapter = new PlayingSongAdapter(context, helper.getCurrentPlayingList(), darkMode, currentSong);
                     if (rv.getAdapter() == null) {
                         LinearLayoutManager layoutManager = new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL, false);
@@ -151,10 +131,10 @@ public class MainActivity extends AppCompatActivity {
                         rv.swapAdapter(adapter, false);
                     }
                     break;
-                case ACTION_UPDATE_REPEAT:
+                case Config.UPDATE_REPEAT:
                     updateRepeat(intent.getStringExtra("repeat"));
                     break;
-                case ACTION_UPDATE_SHUFFLE:
+                case Config.UPDATE_SHUFFLE:
                     updateShuffle(intent.getBooleanExtra("shuffle", false));
                     break;
             }
@@ -198,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.play_all:
-                Intent i = new Intent(MusicService.ACTION_PLAY_ALL_SONGS);
+                Intent i = new Intent(Config.PLAY_ALL_SONGS);
                 sendBroadcast(i);
                 return true;
             case R.id.search_item:
@@ -211,14 +191,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
-        //sendBroadcast(intent);
+        Intent intent = new Intent(Config.REQUEST_SONG_DETAILS);
+        sendBroadcast(intent);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SETTINGS_REQUEST_CODE) {
-            if(darkMode != sharedPrefs.getBoolean("dark_theme", false)) recreate();
+            if (darkMode != sharedPrefs.getBoolean("dark_theme", false)) recreate();
         }
     }
 
@@ -228,11 +208,11 @@ public class MainActivity extends AppCompatActivity {
         startService(i);
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_GET_PLAY_STATE);
-        filter.addAction(ACTION_GET_PLAYING_LIST);
-        filter.addAction(ACTION_GET_PLAYING_DETAIL);
-        filter.addAction(ACTION_UPDATE_REPEAT);
-        filter.addAction(ACTION_UPDATE_SHUFFLE);
+        filter.addAction(Config.GET_PLAY_STATE);
+        filter.addAction(Config.GET_PLAYING_LIST);
+        filter.addAction(Config.GET_PLAYING_DETAIL);
+        filter.addAction(Config.UPDATE_REPEAT);
+        filter.addAction(Config.UPDATE_SHUFFLE);
         registerReceiver(broadcastReceiver, filter);
 
         setupViewPager(viewPager);
@@ -248,11 +228,14 @@ public class MainActivity extends AppCompatActivity {
 
         setupPlayer();
 
-        Intent serviceIntent =
-                new Intent("com.android.vending.billing.InAppBillingService.BIND");
-        serviceIntent.setPackage("com.android.vending");
-        bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
-
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(Config.REQUEST_SONG_DETAILS);
+                sendBroadcast(intent);
+            }
+        }, 2500);
     }
 
     private void setSearch() {
@@ -264,11 +247,7 @@ public class MainActivity extends AppCompatActivity {
                 search.close(true);
             }
         });
-        if (darkMode) {
-            search.setTheme(SearchView.THEME_DARK);
-        } else {
-            search.setTheme(SearchView.THEME_LIGHT);
-        }
+        search.setTheme(darkMode ? SearchView.THEME_DARK : SearchView.THEME_LIGHT);
         search.setVersion(SearchView.VERSION_MENU_ITEM);
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -353,14 +332,13 @@ public class MainActivity extends AppCompatActivity {
         final PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(MaterialDesignIconic.Icon.gmi_account_circle);
         final PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
         final SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(getString(R.string.settings)).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_settings);
-        final SecondaryDrawerItem donate = new SecondaryDrawerItem().withName("Donate").withIdentifier(6).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_money);
-        final SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(7).withName(R.string.about).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_info);
+        final SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.about).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_info);
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withCloseOnClick(true)
-                .addStickyDrawerItems(donate, settings, about)
+                .addStickyDrawerItems(settings, about)
                 .addDrawerItems(
                         songs,
                         albums,
@@ -390,9 +368,6 @@ public class MainActivity extends AppCompatActivity {
                                 startActivityForResult(intent, SETTINGS_REQUEST_CODE);
                                 break;
                             case 6:
-                                Toast.makeText(MainActivity.this, "Coming soon", Toast.LENGTH_LONG).show();
-                                break;
-                            case 7:
                                 new LibsBuilder()
                                         .withActivityTitle(getString(R.string.about))
                                         .withAboutIconShown(true)
@@ -435,21 +410,25 @@ public class MainActivity extends AppCompatActivity {
         songDesc = (TextView) findViewById(R.id.song_desc_toolbar);
         slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         playToolbar = (ImageView) findViewById(R.id.player_play_toolbar);
-        ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
-        ImageView forward = (ImageView) findViewById(R.id.player_forward);
         repeatButton = (ImageView) findViewById(R.id.player_repeat);
-        repeatButton.setAlpha(0.5f);
         rv = (RecyclerView) findViewById(R.id.playing_list);
         holder = (CoordinatorLayout) findViewById(R.id.holder);
-        bottomSheetBehavior = BottomSheetBehavior.from(rv);
+        play = (ImageView) findViewById(R.id.player_play);
+        miniController = (RelativeLayout) findViewById(R.id.mini_controller);
+        shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
+        ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
+        ImageView forward = (ImageView) findViewById(R.id.player_forward);
+        repeatButton.setAlpha(Config.BUTTON_INACTIVE);
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(rv);
         bottomSheetBehavior.setHideable(false);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.setPeekHeight(Utils.dpToPx(this, 80));
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if(newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     slidingPanel.setTouchEnabled(true);
-                } else if(newState == BottomSheetBehavior.STATE_EXPANDED) {
+                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     slidingPanel.setTouchEnabled(false);
                 }
             }
@@ -459,10 +438,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        play = (ImageView) findViewById(R.id.player_play);
-        miniController = (RelativeLayout) findViewById(R.id.mini_controller);
-        shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
-        shuffleButton.setAlpha(0.5f);
+
+        shuffleButton.setAlpha(Config.BUTTON_INACTIVE);
         rv.setBackgroundColor(darkMode
                 ? Utils.getColor(this, R.color.darkWindowBackground)
                 : Utils.getColor(this, R.color.windowBackground));
@@ -471,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
         shuffleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MusicService.ACTION_SHUFFLE_PLAYLIST);
+                Intent intent = new Intent(Config.SHUFFLE_PLAYLIST);
                 sendBroadcast(intent);
             }
         });
@@ -479,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    Intent changeCurrentTime = new Intent(MusicService.ACTION_SEEK_TO);
+                    Intent changeCurrentTime = new Intent(Config.SEEK_TO_SONG);
                     changeCurrentTime.putExtra("changeSeek", progress);
                     sendBroadcast(changeCurrentTime);
                     musicStopped = false;
@@ -487,7 +464,6 @@ public class MainActivity extends AppCompatActivity {
                     if (seekBar.getProgress() == seekBar.getMax()) {
                         musicStopped = true;
                     }
-
                 }
             }
 
@@ -502,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MusicService.ACTION_NEXT);
+                Intent intent = new Intent(Config.NEXT);
                 seekBar.setProgress(0);
                 sendBroadcast(intent);
             }
@@ -510,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
         rewind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MusicService.ACTION_PREV);
+                Intent intent = new Intent(Config.PREV);
                 seekBar.setProgress(0);
                 sendBroadcast(intent);
             }
@@ -518,10 +494,10 @@ public class MainActivity extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MusicService.ACTION_TOGGLE_PLAY);
+                Intent intent = new Intent(Config.TOGGLE_PLAY);
                 sendBroadcast(intent);
                 if (missingDuration) {
-                    Intent intent1 = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                    Intent intent1 = new Intent(Config.REQUEST_SONG_DETAILS);
                     sendBroadcast(intent1);
                 }
             }
@@ -529,10 +505,10 @@ public class MainActivity extends AppCompatActivity {
         playToolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MusicService.ACTION_TOGGLE_PLAY);
+                Intent intent = new Intent(Config.TOGGLE_PLAY);
                 sendBroadcast(intent);
                 if (missingDuration) {
-                    Intent intent1 = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+                    Intent intent1 = new Intent(Config.REQUEST_SONG_DETAILS);
                     sendBroadcast(intent1);
                 }
             }
@@ -555,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
         repeatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MusicService.ACTION_REPEAT);
+                Intent intent = new Intent(Config.REPEAT);
                 sendBroadcast(intent);
             }
         });
@@ -652,10 +628,9 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }, 0, 100);
-            bottomSheetBehavior.setPeekHeight(Utils.dpToPx(this, 80));
         } else {
             missingDuration = true;
-            Intent intent = new Intent(MusicService.ACTION_REQUEST_SONG_DETAILS);
+            Intent intent = new Intent(Config.REQUEST_SONG_DETAILS);
             sendBroadcast(intent);
         }
         if (slidingPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
@@ -675,22 +650,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateShuffle(boolean shuffle) {
-        shuffleButton.setAlpha(shuffle ? 1.0f : 0.5f);
+        shuffleButton.setAlpha(shuffle ? Config.BUTTON_ACTIVE : Config.BUTTON_INACTIVE);
     }
 
     private void updateRepeat(String repeatMode) {
         switch (repeatMode) {
             case "all":
                 repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
-                repeatButton.setAlpha(1.0f);
+                repeatButton.setAlpha(Config.BUTTON_ACTIVE);
                 break;
             case "one":
                 repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_one));
-                repeatButton.setAlpha(1.0f);
+                repeatButton.setAlpha(Config.BUTTON_ACTIVE);
                 break;
             default:
                 repeatButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_all));
-                repeatButton.setAlpha(0.5f);
+                repeatButton.setAlpha(Config.BUTTON_INACTIVE);
                 break;
         }
     }
@@ -711,7 +686,6 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
-        if(mService != null) unbindService(mServiceConn);
     }
 
     @Override

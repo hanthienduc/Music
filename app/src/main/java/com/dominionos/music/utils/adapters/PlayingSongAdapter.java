@@ -16,9 +16,10 @@ import android.widget.TextView;
 
 import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dominionos.music.R;
-import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.CircleTransform;
+import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.utils.items.SongListItem;
 
@@ -30,6 +31,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     private final List<SongListItem> songs;
     private final Context context;
     private final boolean darkMode;
+    private final SongListItem currentSong;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
@@ -48,10 +50,11 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         }
     }
 
-    public PlayingSongAdapter(Context context, List<SongListItem> songs, boolean darkMode) {
+    public PlayingSongAdapter(Context context, List<SongListItem> songs, boolean darkMode, SongListItem currentSong) {
         this.context = context;
         this.songs = songs;
         this.darkMode = darkMode;
+        this.currentSong = currentSong;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
             @Override
             public void onClick(View v) {
                 Intent a = new Intent();
-                a.setAction(MusicService.ACTION_PLAY_FROM_PLAYLIST);
+                a.setAction(Config.PLAY_FROM_PLAYLIST);
                 a.putExtra("song", songs.get(adapterPosition));
                 context.sendBroadcast(a);
             }
@@ -90,16 +93,16 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                         switch (item.getItemId()) {
                             case R.id.menu_play_next:
                                 Intent a = new Intent();
-                                a.setAction(MusicService.ACTION_MENU_FROM_PLAYLIST);
+                                a.setAction(Config.MENU_FROM_PLAYLIST);
                                 a.putExtra("count", adapterPosition);
-                                a.putExtra("action", MusicService.ACTION_MENU_PLAY_NEXT);
+                                a.putExtra("action", Config.MENU_PLAY_NEXT);
                                 context.sendBroadcast(a);
                                 return true;
                             case R.id.menu_remove_playing:
                                 Intent b = new Intent();
-                                b.setAction(MusicService.ACTION_MENU_FROM_PLAYLIST);
+                                b.setAction(Config.MENU_FROM_PLAYLIST);
                                 b.putExtra("count", adapterPosition);
-                                b.putExtra("action", MusicService.ACTION_MENU_REMOVE_FROM_QUEUE);
+                                b.putExtra("action", Config.MENU_REMOVE_FROM_QUEUE);
                                 context.sendBroadcast(b);
                                 notifyItemRemoved(adapterPosition);
                                 return true;
@@ -108,16 +111,16 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                                 return true;
                             case R.id.menu_share:
                                 Intent c = new Intent();
-                                c.setAction(MusicService.ACTION_MENU_FROM_PLAYLIST);
+                                c.setAction(Config.MENU_FROM_PLAYLIST);
                                 c.putExtra("count", (int) songs.get(adapterPosition).getId());
-                                c.putExtra("action", MusicService.ACTION_MENU_SHARE);
+                                c.putExtra("action", Config.MENU_SHARE);
                                 context.sendBroadcast(c);
                                 return true;
                             case R.id.menu_delete:
                                 Intent d = new Intent();
-                                d.setAction(MusicService.ACTION_MENU_FROM_PLAYLIST);
+                                d.setAction(Config.MENU_FROM_PLAYLIST);
                                 d.putExtra("count", adapterPosition);
-                                d.putExtra("action", MusicService.ACTION_MENU_DELETE);
+                                d.putExtra("action", Config.MENU_DELETE);
                                 context.sendBroadcast(d);
                                 notifyItemRemoved(adapterPosition);
                                 return true;
@@ -130,32 +133,41 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
             }
         });
 
-        new Action<String>() {
+        if(songs.get(adapterPosition) != currentSong) {
+            new Action<String>() {
 
-            @NonNull
-            @Override
-            public String id() {
-                return "song_art";
-            }
+                @NonNull
+                @Override
+                public String id() {
+                    return "song_art";
+                }
 
-            @Nullable
-            @Override
-            protected String run() throws InterruptedException {
-                return Utils.getAlbumArt(context, songs.get(adapterPosition).getAlbumId());
-            }
+                @Nullable
+                @Override
+                protected String run() throws InterruptedException {
+                    return Utils.getAlbumArt(context, songs.get(adapterPosition).getAlbumId());
+                }
 
-            @Override
-            protected void done(String result) {
-                final int px = Utils.dpToPx(context, 72);
-                Glide.with(context)
-                        .load(result)
-                        .centerCrop()
-                        .crossFade()
-                        .transform(new CircleTransform(context))
-                        .override(px, px)
-                        .into(holder.art);
-            }
-        }.execute();
+                @Override
+                protected void done(String result) {
+                    final int px = Utils.dpToPx(context, 72);
+                    Glide.with(context)
+                            .load(result)
+                            .centerCrop()
+                            .crossFade()
+                            .transform(new CircleTransform(context))
+                            .override(px, px)
+                            .into(holder.art);
+                }
+            }.execute();
+        } else {
+            Glide.with(context)
+                    .load(R.drawable.ic_audiotrack)
+                    .centerCrop()
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(holder.art);
+        }
     }
 
     private void addToPlaylist(int position) {
