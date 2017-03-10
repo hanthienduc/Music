@@ -25,7 +25,7 @@ public abstract class ArtistImgHandler extends SQLiteOpenHelper {
 
     protected ArtistImgHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        randomNumbers = randomNumbers(1000);
+        randomNumbers = randomNumbers();
         this.context = context;
     }
 
@@ -90,8 +90,8 @@ public abstract class ArtistImgHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    private Integer[] randomNumbers(int range) {
-        Integer[] arr = new Integer[range];
+    private Integer[] randomNumbers() {
+        Integer[] arr = new Integer[1000];
         for (int i = 0; i < arr.length; i++) {
             arr[i] = i;
         }

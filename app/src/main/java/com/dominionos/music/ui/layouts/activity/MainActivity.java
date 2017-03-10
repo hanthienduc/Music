@@ -85,12 +85,11 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int SETTINGS_REQUEST_CODE = 6118;
-
     private boolean musicStopped = true, missingDuration = true, darkMode = false;
     private RecyclerView rv;
     private SearchView search;
     private Timer timer;
+    private Drawer drawer;
     private TextView songName, songDesc, currentTime, totalTime;
     private ImageView playToolbar, play, albumArt, miniAlbumArt, repeatButton, shuffleButton;
     private SeekBar seekBar;
@@ -141,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-    private Drawer drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SETTINGS_REQUEST_CODE) {
+        if (requestCode == Config.SETTINGS_REQUEST_CODE) {
             if (darkMode != sharedPrefs.getBoolean("dark_theme", false)) recreate();
         }
     }
@@ -366,7 +364,7 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case 5:
                                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                                startActivityForResult(intent, SETTINGS_REQUEST_CODE);
+                                startActivityForResult(intent, Config.SETTINGS_REQUEST_CODE);
                                 break;
                             case 6:
                                 new LibsBuilder()

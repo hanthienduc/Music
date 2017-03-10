@@ -1,6 +1,8 @@
 package com.dominionos.music.utils;
 
 public class Config {
+    public static final int SETTINGS_REQUEST_CODE = 6118;
+
     public static final float BUTTON_ACTIVE = 1.0f;
     public static final float BUTTON_INACTIVE = 0.5f;
 

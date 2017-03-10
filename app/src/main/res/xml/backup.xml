@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-
-    <exclude domain="database" path="PlaylistDB.db"/>
+    <include domain="sharedpref" path="dark_theme"/>
+    <include domain="sharedpref" path="lock_screen_art"/>
 
 </full-backup-content>

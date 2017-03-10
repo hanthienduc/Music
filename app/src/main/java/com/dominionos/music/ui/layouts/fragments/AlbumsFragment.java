@@ -47,7 +47,7 @@ public class AlbumsFragment extends Fragment {
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
-        gv.addItemDecoration(new SpacesItemDecoration(8, 2));
+        gv.addItemDecoration(new SpacesItemDecoration());
         gv.setHasFixedSize(true);
         if(darkMode) {
             gv.setBackgroundColor(ContextCompat.getColor(context, R.color.darkWindowBackground));

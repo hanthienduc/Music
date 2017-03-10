@@ -8,9 +8,9 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
     private final int space;
     private final int columns;
 
-    public SpacesItemDecoration(int space, int columns) {
-        this.space = space;
-        this.columns = columns;
+    public SpacesItemDecoration() {
+        this.space = 8;
+        this.columns = 2;
     }
 
     @Override
