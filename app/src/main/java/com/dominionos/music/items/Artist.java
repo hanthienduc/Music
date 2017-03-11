@@ -1,13 +1,13 @@
-package com.dominionos.music.utils.items;
+package com.dominionos.music.items;
 
-public class ArtistListItem {
+public class Artist {
 
     private final String name;
     private final int numOfTracks;
     private final int numOfAlbums;
 
 
-    public ArtistListItem(String name, int numOfTracks, int numOfAlbums) {
+    public Artist(String name, int numOfTracks, int numOfAlbums) {
         this.name = name;
         this.numOfTracks = numOfTracks;
         this.numOfAlbums = numOfAlbums;

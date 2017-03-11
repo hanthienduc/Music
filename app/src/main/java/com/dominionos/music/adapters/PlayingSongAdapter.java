@@ -1,4 +1,4 @@
-package com.dominionos.music.utils.adapters;
+package com.dominionos.music.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,17 +21,17 @@ import com.dominionos.music.R;
 import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.items.Song;
 
 import java.util.List;
 
 
 public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.SimpleItemViewHolder> {
 
-    private final List<SongListItem> songs;
+    private final List<Song> songs;
     private final Context context;
     private final boolean darkMode;
-    private final SongListItem currentSong;
+    private final Song currentSong;
     private final DrawableRequestBuilder<String> glideRequest;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
@@ -51,7 +51,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         }
     }
 
-    public PlayingSongAdapter(Context context, List<SongListItem> songs, boolean darkMode, SongListItem currentSong, RequestManager glide) {
+    public PlayingSongAdapter(Context context, List<Song> songs, boolean darkMode, Song currentSong, RequestManager glide) {
         this.context = context;
         this.songs = songs;
         this.darkMode = darkMode;
@@ -167,7 +167,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     }
 
     private void addToPlaylist(int position) {
-        SongListItem item = songs.get(position);
+        Song item = songs.get(position);
         Utils.addToPlaylistDialog(context, item);
     }
 

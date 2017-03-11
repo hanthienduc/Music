@@ -1,4 +1,4 @@
-package com.dominionos.music.utils.adapters;
+package com.dominionos.music.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,11 +15,11 @@ import android.widget.TextView;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.dominionos.music.R;
-import com.dominionos.music.ui.layouts.activity.ArtistActivity;
+import com.dominionos.music.ui.activity.ArtistActivity;
 import com.dominionos.music.utils.ArtistImgHandler;
 import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.items.ArtistListItem;
+import com.dominionos.music.items.Artist;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.io.File;
@@ -28,7 +28,7 @@ import java.util.List;
 public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItemViewHolder>
         implements FastScrollRecyclerView.SectionedAdapter {
 
-    private final List<ArtistListItem> items;
+    private final List<Artist> items;
     private final Context context;
     private final boolean darkMode;
     private final DrawableRequestBuilder<File> glideRequest;
@@ -60,7 +60,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         }
     }
 
-    public ArtistAdapter(Context context, List<ArtistListItem> items, boolean darkMode, RequestManager glide) {
+    public ArtistAdapter(Context context, List<Artist> items, boolean darkMode, RequestManager glide) {
         this.items = items;
         this.context = context;
         this.darkMode = darkMode;

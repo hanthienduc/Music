@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.activity;
+package com.dominionos.music.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,8 +33,8 @@ import com.bumptech.glide.request.target.Target;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.adapters.SongsAdapter;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.adapters.SongsAdapter;
+import com.dominionos.music.items.Song;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ import java.util.ArrayList;
 public class AlbumActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
-    private final ArrayList<SongListItem> songList = new ArrayList<>();
+    private final ArrayList<Song> songList = new ArrayList<>();
     private AudioManager audioManager;
     private boolean darkMode = false;
 
@@ -169,7 +169,7 @@ public class AlbumActivity extends AppCompatActivity {
             int albumNameColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
             do {
-                songList.add(new SongListItem(musicCursor.getLong(idColumn),
+                songList.add(new Song(musicCursor.getLong(idColumn),
                         musicCursor.getString(titleColumn),
                         musicCursor.getString(artistColumn),
                         musicCursor.getString(pathColumn), false,

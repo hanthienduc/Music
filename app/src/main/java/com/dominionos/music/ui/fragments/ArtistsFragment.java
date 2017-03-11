@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.fragments;
+package com.dominionos.music.ui.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,8 +18,8 @@ import android.view.ViewGroup;
 import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.adapters.ArtistAdapter;
-import com.dominionos.music.utils.items.ArtistListItem;
+import com.dominionos.music.adapters.ArtistAdapter;
+import com.dominionos.music.items.Artist;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -34,14 +34,14 @@ public class ArtistsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_artists, container, false);
-        context = v.getContext();
+        View view = inflater.inflate(R.layout.fragment_artists, container, false);
+        context = view.getContext();
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         darkMode = sharedPref.getBoolean("dark_theme", false);
 
-        rv = (FastScrollRecyclerView) v.findViewById(R.id.artist_list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(v.getContext());
+        rv = (FastScrollRecyclerView) view.findViewById(R.id.artist_list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
@@ -51,12 +51,12 @@ public class ArtistsFragment extends Fragment {
 
         getArtistList();
 
-        return v;
+        return view;
     }
 
 
     private void getArtistList() {
-        new Action<ArrayList<ArtistListItem>>() {
+        new Action<ArrayList<Artist>>() {
 
             @NonNull
             @Override
@@ -66,8 +66,8 @@ public class ArtistsFragment extends Fragment {
 
             @Nullable
             @Override
-            protected ArrayList<ArtistListItem> run() throws InterruptedException {
-                final ArrayList<ArtistListItem> artistList = new ArrayList<>();
+            protected ArrayList<Artist> run() throws InterruptedException {
+                final ArrayList<Artist> artistList = new ArrayList<>();
                 final String orderBy = MediaStore.Audio.Artists.ARTIST;
                 Cursor musicCursor = context.getContentResolver().
                         query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, null, null, null, orderBy);
@@ -82,17 +82,17 @@ public class ArtistsFragment extends Fragment {
                     int numOfTracksColumn = musicCursor.getColumnIndex
                             (MediaStore.Audio.Artists.NUMBER_OF_TRACKS);
                     do {
-                        artistList.add(new ArtistListItem(
+                        artistList.add(new Artist(
                                 musicCursor.getString(titleColumn),
                                 musicCursor.getInt(numOfTracksColumn),
                                 musicCursor.getInt(numOfAlbumsColumn)));
                     }
                     while (musicCursor.moveToNext());
                 }
-                Collections.sort(artistList, new Comparator<ArtistListItem>() {
+                Collections.sort(artistList, new Comparator<Artist>() {
                     @Override
-                    public int compare(ArtistListItem artistListItem, ArtistListItem t1) {
-                        return artistListItem.getName().compareToIgnoreCase(t1.getName());
+                    public int compare(Artist artist, Artist t1) {
+                        return artist.getName().compareToIgnoreCase(t1.getName());
                     }
                 });
                 if (musicCursor != null) {
@@ -102,7 +102,7 @@ public class ArtistsFragment extends Fragment {
             }
 
             @Override
-            protected void done(ArrayList<ArtistListItem> artistList) {
+            protected void done(ArrayList<Artist> artistList) {
                 if(artistList.size() != 0) {
                     rv.setAdapter(new ArtistAdapter(context, artistList, darkMode, Glide.with(context)));
                 } else {

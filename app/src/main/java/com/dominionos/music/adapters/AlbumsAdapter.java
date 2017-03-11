@@ -1,4 +1,4 @@
-package com.dominionos.music.utils.adapters;
+package com.dominionos.music.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,8 +23,9 @@ import com.bumptech.glide.request.target.ImageViewTarget;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.PaletteBitmap;
 import com.dominionos.music.utils.PaletteBitmapTranscoder;
-import com.dominionos.music.utils.items.AlbumListItem;
-import com.dominionos.music.ui.layouts.activity.AlbumActivity;
+import com.dominionos.music.utils.Utils;
+import com.dominionos.music.items.Album;
+import com.dominionos.music.ui.activity.AlbumActivity;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.List;
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItemViewHolder>
         implements FastScrollRecyclerView.SectionedAdapter {
 
-    private final List<AlbumListItem> items;
+    private final List<Album> items;
     private final Context context;
     private final BitmapRequestBuilder<String, PaletteBitmap> glideRequest;
 
@@ -65,13 +66,16 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         }
     }
 
-    public AlbumsAdapter(Context context, List<AlbumListItem> items, RequestManager glide) {
+    public AlbumsAdapter(Context context, List<Album> items, RequestManager glide) {
         this.context = context;
         this.items = items;
+        final int px = Utils.dpToPx(context, 180);
         this.glideRequest = glide
                 .fromString()
                 .asBitmap()
                 .transcode(new PaletteBitmapTranscoder(context), PaletteBitmap.class)
+                .centerCrop()
+                .override(px, px)
                 .error(R.drawable.default_art);
     }
 

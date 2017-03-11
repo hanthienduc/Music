@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.activity;
+package com.dominionos.music.ui.activity;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -12,8 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import com.dominionos.music.R;
-import com.dominionos.music.utils.adapters.SongsAdapter;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.adapters.SongsAdapter;
+import com.dominionos.music.items.Song;
 import com.lapism.searchview.SearchView;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class SearchActivity extends AppCompatActivity {
                 ContextCompat.getColor(this, R.color.darkWindowBackground) : ContextCompat.getColor(this, R.color.windowBackground));
 
 
-        final ArrayList<SongListItem> songs = new ArrayList<>();
+        final ArrayList<Song> songs = new ArrayList<>();
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final String orderBy = MediaStore.Audio.Media.TITLE;
         Cursor musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -69,7 +69,7 @@ public class SearchActivity extends AppCompatActivity {
             int albumColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
             do {
-                songs.add(new SongListItem(musicCursor.getLong(idColumn),
+                songs.add(new Song(musicCursor.getLong(idColumn),
                         musicCursor.getString(titleColumn),
                         musicCursor.getString(artistColumn),
                         musicCursor.getString(pathColumn), false,
@@ -77,14 +77,14 @@ public class SearchActivity extends AppCompatActivity {
                         musicCursor.getString(albumColumn)));
             }
             while (musicCursor.moveToNext());
-            Collections.sort(songs, new Comparator<SongListItem>() {
+            Collections.sort(songs, new Comparator<Song>() {
                 @Override
-                public int compare(SongListItem songListItem, SongListItem t1) {
-                    return songListItem.getName().compareTo(t1.getName());
+                public int compare(Song song, Song t1) {
+                    return song.getName().compareTo(t1.getName());
                 }
             });
             musicCursor.close();
-            final List<SongListItem> searchResults = new ArrayList<>();
+            final List<Song> searchResults = new ArrayList<>();
             SearchView search = (SearchView) findViewById(R.id.searchView);
             if(darkMode) {
                 search.setTheme(SearchView.THEME_DARK);
@@ -103,7 +103,7 @@ public class SearchActivity extends AppCompatActivity {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     searchResults.clear();
-                    for (SongListItem song : songs) {
+                    for (Song song : songs) {
                         if (song.getName().toLowerCase().contains(query.toLowerCase())) {
                             searchResults.add(song);
                         }

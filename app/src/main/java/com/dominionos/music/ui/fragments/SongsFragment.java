@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.fragments;
+package com.dominionos.music.ui.fragments;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -16,8 +16,8 @@ import android.view.ViewGroup;
 
 import com.afollestad.async.Action;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.adapters.SongsAdapter;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.adapters.SongsAdapter;
+import com.dominionos.music.items.Song;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class SongsFragment extends Fragment {
     }
 
     private void setSongList() {
-        new Action<ArrayList<SongListItem>>() {
+        new Action<ArrayList<Song>>() {
 
             @NonNull
             @Override
@@ -67,8 +67,8 @@ public class SongsFragment extends Fragment {
 
             @Nullable
             @Override
-            protected ArrayList<SongListItem> run() throws InterruptedException {
-                final ArrayList<SongListItem> songList = new ArrayList<>();
+            protected ArrayList<Song> run() throws InterruptedException {
+                final ArrayList<Song> songList = new ArrayList<>();
                 final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
                 final String orderBy = MediaStore.Audio.Media.TITLE;
                 Cursor musicCursor = getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -87,7 +87,7 @@ public class SongsFragment extends Fragment {
                     int albumColumn = musicCursor.getColumnIndex
                             (MediaStore.Audio.Media.ALBUM);
                     do {
-                        songList.add(new SongListItem(musicCursor.getLong(idColumn),
+                        songList.add(new Song(musicCursor.getLong(idColumn),
                                 musicCursor.getString(titleColumn),
                                 musicCursor.getString(artistColumn),
                                 musicCursor.getString(pathColumn), false,
@@ -100,17 +100,17 @@ public class SongsFragment extends Fragment {
                 if (musicCursor != null) {
                     musicCursor.close();
                 }
-                Collections.sort(songList, new Comparator<SongListItem>() {
+                Collections.sort(songList, new Comparator<Song>() {
                     @Override
-                    public int compare(SongListItem songListItem, SongListItem t1) {
-                        return songListItem.getName().compareToIgnoreCase(t1.getName());
+                    public int compare(Song song, Song t1) {
+                        return song.getName().compareToIgnoreCase(t1.getName());
                     }
                 });
                 return songList;
             }
 
             @Override
-            protected void done(ArrayList<SongListItem> songList) {
+            protected void done(ArrayList<Song> songList) {
                 if(songList.size() != 0) {
                     rv.setAdapter(new SongsAdapter(mainView.getContext(), songList, darkMode));
                 } else {

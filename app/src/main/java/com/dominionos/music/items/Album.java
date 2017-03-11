@@ -1,6 +1,6 @@
-package com.dominionos.music.utils.items;
+package com.dominionos.music.items;
 
-public class AlbumListItem {
+public class Album {
 
     private final long id;
     private final String name;
@@ -8,7 +8,7 @@ public class AlbumListItem {
     private final String artString;
     private final int songCount;
 
-    public AlbumListItem(long id, String name, String desc, String artString, int songCount) {
+    public Album(long id, String name, String desc, String artString, int songCount) {
         this.desc = desc;
         this.id = id;
         this.name = name;

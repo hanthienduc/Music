@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.items.Song;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +56,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
     private static final String SONG_KEY_ALBUM_NAME = "song_album_name";
     private static final String SONG_KEY_PLAYING = "song_playing";
 
-    public void addSong(SongListItem song) {
+    public void addSong(Song song) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.putNull(SONG_KEY_ID);
@@ -79,17 +79,17 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
     }
 
     public void shuffleRows() {
-        ArrayList<SongListItem> songs = getCurrentPlayingList();
+        ArrayList<Song> songs = getCurrentPlayingList();
         Collections.shuffle(songs);
         clearPlayingList();
         addSongs(songs);
     }
 
-    public SongListItem getNextSong(int currentId) {
+    public Song getNextSong(int currentId) {
         String query = "SELECT * FROM " + TABLE_PLAYBACK;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        SongListItem firstSong = null;
+        Song firstSong = null;
         if (cursor.moveToFirst()) {
             boolean isNext = false, isFirst = true;
             do {
@@ -107,13 +107,13 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         return firstSong;
     }
 
-    public SongListItem getPrevSong(int currentId) {
+    public Song getPrevSong(int currentId) {
         String query = "SELECT * FROM " + TABLE_PLAYBACK;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         boolean isFirst = true;
         int counter = 0;
-        ArrayList<SongListItem> songs = new ArrayList<>();
+        ArrayList<Song> songs = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
                 if (isFirst) {
@@ -129,7 +129,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         return songs.get(songs.size() - 1);
     }
 
-    public SongListItem getFirstSong() {
+    public Song getFirstSong() {
         String query = "SELECT * FROM " + TABLE_PLAYBACK + " LIMIT 1";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -141,12 +141,12 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public ArrayList<SongListItem> getCurrentPlayingList() {
-        ArrayList<SongListItem> songs = new ArrayList<>();
+    public ArrayList<Song> getCurrentPlayingList() {
+        ArrayList<Song> songs = new ArrayList<>();
         String query = "SELECT  * FROM " + TABLE_PLAYBACK;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        SongListItem song;
+        Song song;
         if (cursor.moveToFirst()) {
             do {
                 song = getSongFromCursor(cursor);
@@ -174,10 +174,10 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
     }
 
 
-    public void addSongs(ArrayList<SongListItem> playList) {
+    public void addSongs(ArrayList<Song> playList) {
         SQLiteDatabase db = this.getWritableDatabase();
         for (int i = 0; i < playList.size(); i++) {
-            SongListItem song = playList.get(i);
+            Song song = playList.get(i);
             ContentValues values = new ContentValues();
             Log.v("sname", song.getName());
             values.putNull(SONG_KEY_ID);
@@ -193,7 +193,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public SongListItem getSong(int playingPos) {
+    public Song getSong(int playingPos) {
         String query = "SELECT  * FROM " + TABLE_PLAYBACK + " WHERE " +
                 SONG_KEY_REAL_ID + "='" + playingPos + "'";
         SQLiteDatabase db = this.getWritableDatabase();
@@ -204,10 +204,10 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    private SongListItem getSongFromCursor(Cursor cursor) {
+    private Song getSongFromCursor(Cursor cursor) {
         boolean fav;
         fav = !cursor.getString(4).matches("0");
-        return new SongListItem(Long.valueOf(cursor.getString(1)),
+        return new Song(Long.valueOf(cursor.getString(1)),
                 cursor.getString(6), cursor.getString(3),
                 cursor.getString(5), fav, Long.parseLong(cursor.getString(2)),
                 cursor.getString(8));

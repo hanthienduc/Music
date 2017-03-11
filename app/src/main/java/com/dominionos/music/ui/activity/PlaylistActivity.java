@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.activity;
+package com.dominionos.music.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,9 +25,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.adapters.CheckableSongsAdapter;
-import com.dominionos.music.utils.adapters.PlaylistActivityAdapter;
-import com.dominionos.music.utils.items.CheckableSongListItem;
+import com.dominionos.music.adapters.CheckableSongsAdapter;
+import com.dominionos.music.adapters.PlaylistActivityAdapter;
+import com.dominionos.music.items.CheckableSong;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +67,7 @@ public class PlaylistActivity extends AppCompatActivity {
                 this, helper.getPlayListSongs(playlistId),
                 playlistId, darkMode));
 
-        List<CheckableSongListItem> songList = new ArrayList<>();
+        List<CheckableSong> songList = new ArrayList<>();
         Cursor musicCursor2;
         final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final String orderBy2 = MediaStore.Audio.Media.TITLE;
@@ -89,7 +89,7 @@ public class PlaylistActivity extends AppCompatActivity {
             int i2 = 0;
             do {
                 i2++;
-                songList.add(new CheckableSongListItem(musicCursor2.getLong(idColumn),
+                songList.add(new CheckableSong(musicCursor2.getLong(idColumn),
                         musicCursor2.getString(titleColumn),
                         musicCursor2.getString(artistColumn),
                         musicCursor2.getString(pathColumn),
@@ -120,7 +120,7 @@ public class PlaylistActivity extends AppCompatActivity {
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                ArrayList<CheckableSongListItem> checkedSongs = adapter.getCheckedItems();
+                                ArrayList<CheckableSong> checkedSongs = adapter.getCheckedItems();
                                 MySQLiteHelper helper = new MySQLiteHelper(PlaylistActivity.this);
                                 helper.addSongs(checkedSongs, playlistId);
                                 Intent i = new Intent(PlaylistActivity.this, PlaylistActivity.class);

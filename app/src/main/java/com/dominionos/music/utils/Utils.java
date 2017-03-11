@@ -10,9 +10,9 @@ import android.util.DisplayMetrics;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.adapters.DialogPlaylistAdapter;
-import com.dominionos.music.utils.items.Playlist;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.adapters.DialogPlaylistAdapter;
+import com.dominionos.music.items.Playlist;
+import com.dominionos.music.items.Song;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class Utils {
         return imagePath;
     }
 
-    public static void addToPlaylistDialog(Context context, SongListItem position) {
+    public static void addToPlaylistDialog(Context context, Song position) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);

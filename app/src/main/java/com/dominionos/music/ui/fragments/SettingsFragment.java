@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.fragments;
+package com.dominionos.music.ui.fragments;
 
 import android.app.ActivityManager;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.activity;
+package com.dominionos.music.ui.activity;
 
 import android.Manifest;
 import android.animation.ArgbEvaluator;
@@ -52,18 +52,19 @@ import com.afollestad.async.Action;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
+import com.dominionos.music.items.Song;
 import com.dominionos.music.service.MusicService;
-import com.dominionos.music.ui.layouts.fragments.AlbumsFragment;
-import com.dominionos.music.ui.layouts.fragments.ArtistsFragment;
-import com.dominionos.music.ui.layouts.fragments.PlaylistFragment;
-import com.dominionos.music.ui.layouts.fragments.SongsFragment;
+import com.dominionos.music.ui.fragments.AlbumsFragment;
+import com.dominionos.music.ui.fragments.ArtistsFragment;
+import com.dominionos.music.ui.fragments.PlaylistFragment;
+import com.dominionos.music.ui.fragments.SongsFragment;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
+import com.dominionos.music.utils.PlayPauseDrawable;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.adapters.PlayingSongAdapter;
-import com.dominionos.music.utils.adapters.ViewPagerAdapter;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.adapters.PlayingSongAdapter;
+import com.dominionos.music.adapters.ViewPagerAdapter;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -102,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout miniController;
     private int seekProgress;
     private SharedPreferences sharedPrefs;
-    private SongListItem currentSong;
+    private Song currentSong;
+    private PlayPauseDrawable playPauseDrawable;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                     updatePlayState(intent.getBooleanExtra("isPlaying", false));
                     break;
                 case Config.GET_PLAYING_DETAIL:
-                    currentSong = (SongListItem) intent.getSerializableExtra("song");
+                    currentSong = (Song) intent.getSerializableExtra("song");
                     if (currentSong != null) {
                         changePlayerDetails(currentSong.getName(), currentSong.getDesc(),
                                 intent.getIntExtra("songCurrTime", 0), intent.getIntExtra("songDuration", 0),
@@ -402,6 +404,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupPlayer() {
+        playPauseDrawable = new PlayPauseDrawable(this);
         currentTime = (TextView) findViewById(R.id.player_current_time);
         totalTime = (TextView) findViewById(R.id.player_total_time);
         seekBar = (SeekBar) findViewById(R.id.player_seekbar);
@@ -413,6 +416,7 @@ public class MainActivity extends AppCompatActivity {
         rv = (RecyclerView) findViewById(R.id.playing_list);
         holder = (CoordinatorLayout) findViewById(R.id.holder);
         play = (ImageView) findViewById(R.id.player_play);
+        play.setImageDrawable(playPauseDrawable);
         miniController = (RelativeLayout) findViewById(R.id.mini_controller);
         shuffleButton = (ImageView) findViewById(R.id.player_shuffle);
         ImageView rewind = (ImageView) findViewById(R.id.player_rewind);
@@ -639,11 +643,11 @@ public class MainActivity extends AppCompatActivity {
     private void updatePlayState(boolean isPlaying) {
         if (isPlaying) {
             playToolbar.setImageResource(R.drawable.ic_pause);
-            play.setImageResource(R.drawable.ic_pause_circle);
+            playPauseDrawable.setPause(true);
             musicStopped = false;
         } else {
             playToolbar.setImageResource(R.drawable.ic_play);
-            play.setImageResource(R.drawable.ic_play_circle);
+            playPauseDrawable.setPlay(true);
             musicStopped = true;
         }
     }

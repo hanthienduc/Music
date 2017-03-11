@@ -1,8 +1,8 @@
-package com.dominionos.music.utils.items;
+package com.dominionos.music.items;
 
 import java.io.Serializable;
 
-public class SongListItem implements Serializable {
+public class Song implements Serializable {
 
     private final long id;
     private final long albumId;
@@ -12,8 +12,8 @@ public class SongListItem implements Serializable {
     private final String albumName;
     private final Boolean fav;
 
-    public SongListItem(long id, String name, String desc, String path,
-                        Boolean fav, long albumId, String albumName) {
+    public Song(long id, String name, String desc, String path,
+                Boolean fav, long albumId, String albumName) {
         this.desc = desc;
         this.fav = fav;
         this.path = path;

@@ -30,11 +30,11 @@ import android.widget.Toast;
 
 import com.afollestad.async.Action;
 import com.dominionos.music.R;
-import com.dominionos.music.ui.layouts.activity.MainActivity;
+import com.dominionos.music.ui.activity.MainActivity;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.items.Song;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,13 +46,13 @@ public class MusicService extends Service {
 
     private boolean repeatOne = false, repeatAll = false, shuffle = false;
     private int currentPlaylistSongId = -1, pausedSongSeek;
-    private SongListItem pausedSong;
+    private Song pausedSong;
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSessionCompat mediaSession;
-    private ArrayList<SongListItem> songList, preShuffle, playingList;
+    private ArrayList<Song> songList, preShuffle, playingList;
     private NotificationManagerCompat notificationManager;
-    private SongListItem currentSong;
+    private Song currentSong;
     private SharedPreferences prefs;
 
     private final AudioManager.OnAudioFocusChangeListener afChangeListener =
@@ -86,7 +86,7 @@ public class MusicService extends Service {
     };
 
     private void handleBroadcastReceived(Context context, Intent intent) {
-        SongListItem song;
+        Song song;
         switch(intent.getAction()) {
             case Config.TOGGLE_PLAY:
                 if(mediaPlayer != null && mediaPlayer.isPlaying()) {
@@ -100,7 +100,7 @@ public class MusicService extends Service {
                 break;
             case Config.PLAY_SINGLE_SONG:
                 pausedSongSeek = 0;
-                song = (SongListItem) intent.getSerializableExtra("song");
+                song = (Song) intent.getSerializableExtra("song");
                 currentPlaylistSongId = 0;
                 playingList.clear();
                 playingList.add(song);
@@ -139,7 +139,7 @@ public class MusicService extends Service {
                     int albumNameColumn = musicCursor.getColumnIndex
                             (MediaStore.Audio.Media.ALBUM);
                     do {
-                        playList.addSong(new SongListItem(musicCursor.getLong(idColumn),
+                        playList.addSong(new Song(musicCursor.getLong(idColumn),
                                 musicCursor.getString(titleColumn),
                                 musicCursor.getString(artistColumn),
                                 musicCursor.getString(pathColumn), false,
@@ -191,7 +191,7 @@ public class MusicService extends Service {
                         preShuffle = playList.getCurrentPlayingList();
                         playList.shuffleRows();
                         updatePlaylist();
-                        ArrayList<SongListItem> songsList = playList.getCurrentPlayingList();
+                        ArrayList<Song> songsList = playList.getCurrentPlayingList();
                         for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
                             if (currentPlayingId.matches(songsList.get(num).getName())) {
                                 currentPlaylistSongId = (int) songsList.get(num).getId();
@@ -205,7 +205,7 @@ public class MusicService extends Service {
                             playList.clearPlayingList();
                             playList.addSongs(preShuffle);
                             updatePlaylist();
-                            ArrayList<SongListItem> songsList = playList.getCurrentPlayingList();
+                            ArrayList<Song> songsList = playList.getCurrentPlayingList();
                             for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
                                 if (currentPlayingId.matches(songsList.get(num).getName())) {
                                     currentPlaylistSongId = (int) songsList.get(num).getId();
@@ -220,14 +220,14 @@ public class MusicService extends Service {
                 break;
             case Config.PLAY_NEXT:
                 int insertPos = playingList.indexOf(currentSong) + 1;
-                song = (SongListItem) intent.getSerializableExtra("song");
+                song = (Song) intent.getSerializableExtra("song");
                 playingList.add(insertPos, song);
                 playList.clearPlayingList();
                 playList.addSongs(playingList);
                 updatePlaylist();
                 break;
             case Config.ADD_SONG_TO_PLAYLIST:
-                song = (SongListItem) intent.getSerializableExtra("song");
+                song = (Song) intent.getSerializableExtra("song");
                 if (playList.getPlaybackTableSize() != 0 && currentPlaylistSongId != -1) {
                     playingList.add(song);
                     playList.clearPlayingList();
@@ -240,7 +240,7 @@ public class MusicService extends Service {
                 break;
             case Config.PLAY_FROM_PLAYLIST:
                 pausedSongSeek = 0;
-                song = (SongListItem) intent.getSerializableExtra("song");
+                song = (Song) intent.getSerializableExtra("song");
                 playMusic(song);
                 updateCurrentPlaying();
                 requestSongDetails = new Intent();
@@ -250,7 +250,7 @@ public class MusicService extends Service {
             case Config.MENU_FROM_PLAYLIST:
                 String action = intent.getStringExtra("action");
                 if (action.matches(Config.MENU_PLAY_NEXT)) {
-                    SongListItem item = playList.getSong(intent.getIntExtra("count", -1));
+                    Song item = playList.getSong(intent.getIntExtra("count", -1));
                     playList.addSong(item);
                     updatePlaylist();
                 } else if (action.matches(Config.MENU_REMOVE_FROM_QUEUE)) {
@@ -265,7 +265,7 @@ public class MusicService extends Service {
                     startActivity(share);
                 } else if (action.matches(Config.MENU_DELETE)) {
                     int pos = intent.getIntExtra("count", -1);
-                    SongListItem song2 = playList.getSong(pos);
+                    Song song2 = playList.getSong(pos);
                     File file = new File(song2.getPath());
                     boolean deleted = file.delete();
                     if (deleted) {
@@ -376,13 +376,13 @@ public class MusicService extends Service {
         updateSession("state");
     }
 
-    private void playSingle(SongListItem song) {
+    private void playSingle(Song song) {
         playingList.clear();
         playingList.add(song);
         playMusic(song);
     }
 
-    private void playMusic(final SongListItem song) {
+    private void playMusic(final Song song) {
 
         int result = audioManager.requestAudioFocus(afChangeListener,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
@@ -408,7 +408,7 @@ public class MusicService extends Service {
                                 stopMusic();
                             } else {
                                 pausedSongSeek = 0;
-                                SongListItem song = playList.getNextSong(currentPlaylistSongId);
+                                Song song = playList.getNextSong(currentPlaylistSongId);
                                 playMusic(song);
                                 updateCurrentPlaying();
                             }
@@ -420,7 +420,7 @@ public class MusicService extends Service {
                                 updateCurrentPlaying();
                             } else if(playingList.size() != 1) {
                                 pausedSongSeek = 0;
-                                SongListItem song = playList.getNextSong(currentPlaylistSongId);
+                                Song song = playList.getNextSong(currentPlaylistSongId);
                                 playMusic(song);
                                 updateCurrentPlaying();
                             } else if(playingList.size() == playingList.indexOf(song)) {
@@ -523,14 +523,14 @@ public class MusicService extends Service {
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setActive(true);
 
-        ArrayList<SongListItem> databaseList = playList.getCurrentPlayingList();
+        ArrayList<Song> databaseList = playList.getCurrentPlayingList();
         if(databaseList.size() != 0) {
             playingList = databaseList;
         } else {
             playingList = new ArrayList<>();
         }
 
-        new Action<ArrayList<SongListItem>>() {
+        new Action<ArrayList<Song>>() {
 
             @NonNull
             @Override
@@ -540,7 +540,7 @@ public class MusicService extends Service {
 
             @Nullable
             @Override
-            protected ArrayList<SongListItem> run() throws InterruptedException {
+            protected ArrayList<Song> run() throws InterruptedException {
                 songList = new ArrayList<>();
                 Cursor musicCursor2;
                 final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
@@ -561,7 +561,7 @@ public class MusicService extends Service {
                     int albumColumn = musicCursor2.getColumnIndex
                             (MediaStore.Audio.Media.ALBUM);
                     do {
-                        songList.add(new SongListItem(musicCursor2.getLong(idColumn),
+                        songList.add(new Song(musicCursor2.getLong(idColumn),
                                 musicCursor2.getString(titleColumn),
                                 musicCursor2.getString(artistColumn),
                                 musicCursor2.getString(pathColumn), false,

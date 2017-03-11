@@ -1,6 +1,6 @@
-package com.dominionos.music.utils.items;
+package com.dominionos.music.items;
 
-public class CheckableSongListItem {
+public class CheckableSong {
 
 
     private final long id;
@@ -12,8 +12,8 @@ public class CheckableSongListItem {
     public Boolean isSelected;
     private final int count;
 
-    public CheckableSongListItem(long id, String name, String desc, String path,
-                        long albumId, String albumName, int count) {
+    public CheckableSong(long id, String name, String desc, String path,
+                         long albumId, String albumName, int count) {
         this.desc = desc;
         this.path = path;
         this.id = id;

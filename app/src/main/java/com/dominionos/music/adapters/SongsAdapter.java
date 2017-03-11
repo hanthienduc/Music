@@ -1,4 +1,4 @@
-package com.dominionos.music.utils.adapters;
+package com.dominionos.music.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.items.Song;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.io.File;
@@ -27,7 +27,7 @@ import java.util.List;
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemViewHolder>
         implements FastScrollRecyclerView.SectionedAdapter {
 
-    private final List<SongListItem> items;
+    private final List<Song> items;
     private final Context context;
     private final boolean darkMode;
     private final Intent i;
@@ -58,7 +58,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         }
     }
 
-    public SongsAdapter(Context context, List<SongListItem> items, boolean darkMode) {
+    public SongsAdapter(Context context, List<Song> items, boolean darkMode) {
         this.context = context;
         this.items = items;
         this.darkMode = darkMode;
@@ -144,7 +144,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     }
 
     private void addToPlaylist(int position) {
-        SongListItem item = items.get(position);
+        Song item = items.get(position);
         Utils.addToPlaylistDialog(context, item);
     }
 

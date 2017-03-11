@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.MediaStore;
 
-import com.dominionos.music.utils.items.CheckableSongListItem;
-import com.dominionos.music.utils.items.Playlist;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.items.CheckableSong;
+import com.dominionos.music.items.Playlist;
+import com.dominionos.music.items.Song;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -124,7 +124,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         return playlists;
     }
 
-    public void addSong(SongListItem song, int playlistId) {
+    public void addSong(Song song, int playlistId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.putNull(SONG_KEY_ID);
@@ -141,11 +141,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void addSongs(List<CheckableSongListItem> songList, int playlistId) {
+    public void addSongs(List<CheckableSong> songList, int playlistId) {
         int songListSize = songList.size();
         int currentItem = 0;
         while(currentItem < songListSize) {
-            CheckableSongListItem item = songList.get(currentItem);
+            CheckableSong item = songList.get(currentItem);
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.putNull(SONG_KEY_ID);
@@ -164,11 +164,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     }
 
     public void addSong(String songName, int playlistId) {
-        SongListItem song = getSong(songName);
+        Song song = getSong(songName);
         addSong(song, playlistId);
     }
 
-    private SongListItem getSong(String songName) {
+    private Song getSong(String songName) {
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1 AND " +
                 MediaStore.Audio.Media.TITLE + "='" + songName + "'";
         final String orderBy = MediaStore.Audio.Media.TITLE;
@@ -188,7 +188,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             int albumColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
             String temp = musicCursor.getString(titleColumn);
-            return new SongListItem(musicCursor.getLong(idColumn),
+            return new Song(musicCursor.getLong(idColumn),
                     temp,
                     musicCursor.getString(artistColumn),
                     musicCursor.getString(pathColumn), false,
@@ -201,18 +201,18 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public ArrayList<SongListItem> getPlayListSongs(int playlistId) {
-        ArrayList<SongListItem> songs = new ArrayList<>();
+    public ArrayList<Song> getPlayListSongs(int playlistId) {
+        ArrayList<Song> songs = new ArrayList<>();
         String query = "SELECT  * FROM " + TABLE_SONG_FOR_PLAYLIST + " WHERE "
                 + SONG_KEY_PLAYLISTID + "='" + playlistId + "'";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        SongListItem song;
+        Song song;
         if (cursor.moveToFirst()) {
             do {
                 boolean fav;
                 fav = !cursor.getString(4).matches("0");
-                song = new SongListItem(Long.valueOf(cursor.getString(1)),
+                song = new Song(Long.valueOf(cursor.getString(1)),
                         cursor.getString(7), cursor.getString(4),
                         cursor.getString(6), fav, Long.parseLong(cursor.getString(3)),
                         cursor.getString(9));

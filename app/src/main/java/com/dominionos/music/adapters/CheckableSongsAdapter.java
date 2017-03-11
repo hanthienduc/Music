@@ -1,4 +1,4 @@
-package com.dominionos.music.utils.adapters;
+package com.dominionos.music.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -11,14 +11,14 @@ import android.widget.TextView;
 
 import com.dominionos.music.R;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.items.CheckableSongListItem;
+import com.dominionos.music.items.CheckableSong;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAdapter.SimpleItemViewHolder> {
-    private final List<CheckableSongListItem> items;
-    private final List<CheckableSongListItem> checkedItems;
+    private final List<CheckableSong> items;
+    private final List<CheckableSong> checkedItems;
     private final boolean darkMode;
     private final Context context;
 
@@ -37,7 +37,7 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
         }
     }
 
-    public CheckableSongsAdapter(Context context, List<CheckableSongListItem> items, boolean darkMode) {
+    public CheckableSongsAdapter(Context context, List<CheckableSong> items, boolean darkMode) {
         this.context = context;
         this.items = items;
         checkedItems = new ArrayList<>();
@@ -97,7 +97,7 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
         return items.get(position).getId();
     }
 
-    public ArrayList<CheckableSongListItem> getCheckedItems() {
-        return (ArrayList<CheckableSongListItem>) checkedItems;
+    public ArrayList<CheckableSong> getCheckedItems() {
+        return (ArrayList<CheckableSong>) checkedItems;
     }
 }

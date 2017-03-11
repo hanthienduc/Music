@@ -6,6 +6,8 @@ public class Config {
     public static final float BUTTON_ACTIVE = 1.0f;
     public static final float BUTTON_INACTIVE = 0.5f;
 
+    public static final int ANIMATION_DURATION = 500; //milliseconds
+
     public static final String GET_PLAY_STATE = "get_play_state";
     public static final String GET_PLAYING_LIST = "get_playing_list";
     public static final String GET_PLAYING_DETAIL = "get_playing_detail";

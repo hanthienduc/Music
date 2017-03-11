@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.activity;
+package com.dominionos.music.ui.activity;
 
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
@@ -10,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.dominionos.music.R;
-import com.dominionos.music.ui.layouts.fragments.SettingsFragment;
+import com.dominionos.music.ui.fragments.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 

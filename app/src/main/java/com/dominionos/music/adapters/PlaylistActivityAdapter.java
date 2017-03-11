@@ -1,4 +1,4 @@
-package com.dominionos.music.utils.adapters;
+package com.dominionos.music.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +19,7 @@ import com.dominionos.music.R;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.items.Song;
 
 import java.io.File;
 import java.util.List;
@@ -28,11 +28,11 @@ import java.util.List;
 public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivityAdapter.MainViewHolder> {
 
     private final Context context;
-    private final List<SongListItem> data;
+    private final List<Song> data;
     private final int playlistId;
     private final boolean darkMode;
 
-    public PlaylistActivityAdapter(Context context, List<SongListItem> data, int playlistId, boolean darkMode) {
+    public PlaylistActivityAdapter(Context context, List<Song> data, int playlistId, boolean darkMode) {
         this.data = data;
         this.context = context;
         this.playlistId = playlistId;

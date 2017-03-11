@@ -1,4 +1,4 @@
-package com.dominionos.music.utils.items;
+package com.dominionos.music.items;
 
 public class Playlist {
 

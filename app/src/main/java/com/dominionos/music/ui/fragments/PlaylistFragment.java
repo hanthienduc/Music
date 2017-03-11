@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.fragments;
+package com.dominionos.music.ui.fragments;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 
 import com.dominionos.music.R;
 import com.dominionos.music.utils.MySQLiteHelper;
-import com.dominionos.music.utils.adapters.PlaylistAdapter;
-import com.dominionos.music.utils.items.Playlist;
+import com.dominionos.music.adapters.PlaylistAdapter;
+import com.dominionos.music.items.Playlist;
 
 import java.util.List;
 

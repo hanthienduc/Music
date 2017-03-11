@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.fragments;
+package com.dominionos.music.ui.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -21,8 +21,8 @@ import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.SpacesItemDecoration;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.adapters.AlbumsAdapter;
-import com.dominionos.music.utils.items.AlbumListItem;
+import com.dominionos.music.adapters.AlbumsAdapter;
+import com.dominionos.music.items.Album;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class AlbumsFragment extends Fragment {
     }
 
     private void getAlbumList() {
-        new Action<ArrayList<AlbumListItem>>() {
+        new Action<ArrayList<Album>>() {
 
             @NonNull
             @Override
@@ -69,8 +69,8 @@ public class AlbumsFragment extends Fragment {
 
             @Nullable
             @Override
-            protected ArrayList<AlbumListItem> run() throws InterruptedException {
-                final ArrayList<AlbumListItem> albumList = new ArrayList<>();
+            protected ArrayList<Album> run() throws InterruptedException {
+                final ArrayList<Album> albumList = new ArrayList<>();
                 final String orderBy = MediaStore.Audio.Albums.ALBUM;
                 Cursor musicCursor = context.getContentResolver().
                         query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, orderBy);
@@ -87,7 +87,7 @@ public class AlbumsFragment extends Fragment {
                     int albumArtColumn = musicCursor.getColumnIndex
                             (android.provider.MediaStore.Audio.Albums.ALBUM_ART);
                     do {
-                        albumList.add(new AlbumListItem(musicCursor.getLong(idColumn),
+                        albumList.add(new Album(musicCursor.getLong(idColumn),
                                 musicCursor.getString(titleColumn),
                                 musicCursor.getString(artistColumn),
                                 musicCursor.getString(albumArtColumn),
@@ -96,10 +96,10 @@ public class AlbumsFragment extends Fragment {
                     }
                     while (musicCursor.moveToNext());
                 }
-                Collections.sort(albumList, new Comparator<AlbumListItem>() {
+                Collections.sort(albumList, new Comparator<Album>() {
                     @Override
-                    public int compare(AlbumListItem albumListItem, AlbumListItem t1) {
-                        return albumListItem.getName().compareToIgnoreCase(t1.getName());
+                    public int compare(Album album, Album t1) {
+                        return album.getName().compareToIgnoreCase(t1.getName());
                     }
                 });
                 if (musicCursor != null) {
@@ -109,7 +109,7 @@ public class AlbumsFragment extends Fragment {
             }
 
             @Override
-            protected void done(ArrayList<AlbumListItem> albumList) {
+            protected void done(ArrayList<Album> albumList) {
                 if(albumList.size() != 0) {
                     gv.setAdapter(new AlbumsAdapter(context, albumList, Glide.with(context)));
                 } else {

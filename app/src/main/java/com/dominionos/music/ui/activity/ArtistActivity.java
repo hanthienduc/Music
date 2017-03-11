@@ -1,4 +1,4 @@
-package com.dominionos.music.ui.layouts.activity;
+package com.dominionos.music.ui.activity;
 
 
 import android.content.Context;
@@ -18,8 +18,8 @@ import android.view.MenuItem;
 
 import com.dominionos.music.R;
 import com.dominionos.music.utils.Utils;
-import com.dominionos.music.utils.adapters.SongsAdapter;
-import com.dominionos.music.utils.items.SongListItem;
+import com.dominionos.music.adapters.SongsAdapter;
+import com.dominionos.music.items.Song;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public class ArtistActivity extends AppCompatActivity {
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
 
-        final ArrayList<SongListItem> songList = new ArrayList<>();
+        final ArrayList<Song> songList = new ArrayList<>();
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final String orderBy = MediaStore.Audio.Media.TITLE;
         Cursor musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -74,7 +74,7 @@ public class ArtistActivity extends AppCompatActivity {
                     (MediaStore.Audio.Media.ALBUM);
             do {
                 if(artistName.equals(musicCursor.getString(artistColumn))) {
-                    songList.add(new SongListItem(musicCursor.getLong(idColumn),
+                    songList.add(new Song(musicCursor.getLong(idColumn),
                             musicCursor.getString(titleColumn),
                             musicCursor.getString(artistColumn),
                             musicCursor.getString(pathColumn), false,
@@ -83,10 +83,10 @@ public class ArtistActivity extends AppCompatActivity {
                 }
             }
             while (musicCursor.moveToNext());
-            Collections.sort(songList, new Comparator<SongListItem>() {
+            Collections.sort(songList, new Comparator<Song>() {
                 @Override
-                public int compare(SongListItem songListItem, SongListItem t1) {
-                    return songListItem.getName().compareTo(t1.getName());
+                public int compare(Song song, Song t1) {
+                    return song.getName().compareTo(t1.getName());
                 }
             });
 
