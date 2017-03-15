@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
+import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.SpacesItemDecoration;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.AlbumsAdapter;
@@ -43,7 +44,7 @@ public class AlbumsFragment extends Fragment {
         boolean darkMode = sharedPref.getBoolean("dark_theme", false);
 
         gv = (FastScrollRecyclerView) v.findViewById(R.id.album_grid);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, Utils.calculateNoOfColumns(context));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, Utils.calculateNoOfColumns(context, Config.ALBUM_CARD_WIDTH));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
@@ -111,7 +112,7 @@ public class AlbumsFragment extends Fragment {
             @Override
             protected void done(ArrayList<Album> albumList) {
                 if(albumList.size() != 0) {
-                    gv.setAdapter(new AlbumsAdapter(context, albumList, Glide.with(context)));
+                    gv.setAdapter(new AlbumsAdapter(context, albumList, Config.ALBUM_CARD_WIDTH, Glide.with(context)));
                 } else {
                     getActivity().findViewById(R.id.no_albums).setVisibility(View.VISIBLE);
                 }

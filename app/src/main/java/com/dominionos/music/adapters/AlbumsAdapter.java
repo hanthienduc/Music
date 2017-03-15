@@ -60,16 +60,16 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
 
             albumName = (TextView) view.findViewById(R.id.grid_name);
             albumDesc = (TextView) view.findViewById(R.id.grid_desc);
-            albumArt = (ImageView) view.findViewById(R.id.grid_art);
+            albumArt = (ImageView) view.findViewById(R.id.album_art);
             textHolder = view.findViewById(R.id.text_holder);
             background = view.findViewById(R.id.background);
         }
     }
 
-    public AlbumsAdapter(Context context, List<Album> items, RequestManager glide) {
+    public AlbumsAdapter(Context context, List<Album> items, int columnSize,  RequestManager glide) {
         this.context = context;
         this.items = items;
-        final int px = Utils.dpToPx(context, 180);
+        final int px = Utils.dpToPx(context, columnSize);
         this.glideRequest = glide
                 .fromString()
                 .asBitmap()
@@ -82,7 +82,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
     @Override
     public AlbumsAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.grid_item, parent, false);
+                inflate(R.layout.album, parent, false);
 
         return new SimpleItemViewHolder(itemView);
     }

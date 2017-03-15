@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -54,6 +55,7 @@ public class MusicService extends Service {
     private NotificationManagerCompat notificationManager;
     private Song currentSong;
     private SharedPreferences prefs;
+    private IBinder binder = new MyBinder();
 
     private final AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -359,6 +361,33 @@ public class MusicService extends Service {
         sendBroadcast(intent);
         if(mediaPlayer != null && currentSong != null) updateNotification();
         updateSession("state");
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+    public void togglePlay() {
+        if(mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        } else if(mediaPlayer != null && !mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
+        } else if(mediaPlayer == null && playingList.size() != 0) {
+            playMusic(playingList.get(0));
+        }
+        updatePlayState();
+        Toast.makeText(this, "Play toggled", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return true;
     }
 
     private void updatePlaylist() {
@@ -682,11 +711,6 @@ public class MusicService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         audioManager.abandonAudioFocus(afChangeListener);
@@ -699,5 +723,9 @@ public class MusicService extends Service {
         notificationManager.cancelAll();
         stopForeground(true);
     }
-
+    public class MyBinder extends Binder {
+        public MusicService getService() {
+            return MusicService.this;
+        }
+    }
 }

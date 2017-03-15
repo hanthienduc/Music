@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
 
@@ -23,10 +22,6 @@ public class Utils {
         Color.colorToHSV(baseColor, hsv);
         hsv[2] *= 0.8f;
         return Color.HSVToColor(hsv);
-    }
-
-    public static int getColor(Context context, int colourRes) {
-        return ContextCompat.getColor(context, colourRes);
     }
 
     public static String getAlbumArt(Context context, long albumId) {
@@ -62,9 +57,9 @@ public class Utils {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    public static int calculateNoOfColumns(Context context) {
+    public static int calculateNoOfColumns(Context context, int columnSize) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        return (int) (dpWidth / 180);
+        return (int) (dpWidth / columnSize);
     }
 }

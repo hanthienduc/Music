@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -54,7 +55,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
             view = itemView;
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
-            menu = (ImageView) itemView.findViewById(R.id.song_item_menu);
+            menu = (ImageView) itemView.findViewById(R.id.playing_bar_action);
         }
     }
 
@@ -68,7 +69,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     @Override
     public SongsAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.song_list_item, parent, false);
+                inflate(R.layout.song_list_item_art, parent, false);
         return new SimpleItemViewHolder(itemView);
     }
 
@@ -76,14 +77,14 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
 
         holder.title.setTextColor(darkMode
-                ? Utils.getColor(context, R.color.primaryTextDark)
-                : Utils.getColor(context, R.color.primaryTextLight));
+                ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                : ContextCompat.getColor(context, R.color.primaryTextLight));
         holder.desc.setTextColor(darkMode
-                ? Utils.getColor(context, R.color.secondaryTextDark)
-                : Utils.getColor(context, R.color.secondaryTextLight));
+                ? ContextCompat.getColor(context, R.color.secondaryTextDark)
+                : ContextCompat.getColor(context, R.color.secondaryTextLight));
         holder.menu.setColorFilter(darkMode
-                ? Utils.getColor(context, R.color.primaryTextDark)
-                : Utils.getColor(context, R.color.primaryTextLight));
+                ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                : ContextCompat.getColor(context, R.color.primaryTextLight));
         holder.title.setText(items.get(holder.getAdapterPosition()).getName());
         holder.desc.setText(items.get(holder.getAdapterPosition()).getDesc());
         holder.menu.setOnClickListener(new View.OnClickListener() {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.CountDownTimer;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,7 +19,6 @@ import android.widget.Toast;
 import com.dominionos.music.R;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MySQLiteHelper;
-import com.dominionos.music.utils.Utils;
 import com.dominionos.music.items.Song;
 
 import java.io.File;
@@ -42,7 +42,7 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
     @Override
     public MainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.song_list_item, parent, false);
+        View view = inflater.inflate(R.layout.song, parent, false);
         return new MainViewHolder(view);
     }
 
@@ -50,14 +50,14 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
     public void onBindViewHolder(final MainViewHolder holder, int position) {
         position = holder.getAdapterPosition();
         holder.songName.setTextColor(darkMode
-                ? Utils.getColor(context, R.color.primaryTextDark)
-                : Utils.getColor(context, R.color.primaryTextLight));
+                ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                : ContextCompat.getColor(context, R.color.primaryTextLight));
         holder.songDesc.setTextColor(darkMode
-                ? Utils.getColor(context, R.color.secondaryTextDark)
-                : Utils.getColor(context, R.color.secondaryTextLight));
+                ? ContextCompat.getColor(context, R.color.secondaryTextDark)
+                : ContextCompat.getColor(context, R.color.secondaryTextLight));
         holder.menu.setColorFilter(darkMode
-                ? Utils.getColor(context, R.color.primaryTextDark)
-                : Utils.getColor(context, R.color.primaryTextLight));
+                ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                : ContextCompat.getColor(context, R.color.primaryTextLight));
         holder.songName.setText(data.get(position).getName());
         holder.songDesc.setText(data.get(position).getDesc());
         final int finalPosition = position;
@@ -153,7 +153,7 @@ public class PlaylistActivityAdapter extends RecyclerView.Adapter<PlaylistActivi
             view = itemView;
             songName = (TextView) itemView.findViewById(R.id.song_item_name);
             songDesc = (TextView) itemView.findViewById(R.id.song_item_desc);
-            menu = (ImageView) itemView.findViewById(R.id.song_item_menu);
+            menu = (ImageView) itemView.findViewById(R.id.playing_bar_action);
         }
     }
 }

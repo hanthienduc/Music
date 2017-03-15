@@ -1,6 +1,7 @@
 package com.dominionos.music.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,11 +56,11 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
     public void onBindViewHolder(final CheckableSongsAdapter.SimpleItemViewHolder holder, int position) {
         position = holder.getAdapterPosition();
         holder.title.setTextColor(darkMode
-                ? Utils.getColor(context, R.color.primaryTextDark)
-                : Utils.getColor(context, R.color.primaryTextLight));
+                ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                : ContextCompat.getColor(context, R.color.primaryTextLight));
         holder.desc.setTextColor(darkMode
-                ? Utils.getColor(context, R.color.secondaryTextDark)
-                : Utils.getColor(context, R.color.secondaryTextLight));
+                ? ContextCompat.getColor(context, R.color.secondaryTextDark)
+                : ContextCompat.getColor(context, R.color.secondaryTextLight));
         holder.title.setText(items.get(position).getName());
         holder.desc.setText(items.get(position).getDesc());
         holder.checkBox.setOnCheckedChangeListener(null);

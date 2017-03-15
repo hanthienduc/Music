@@ -14,13 +14,12 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.Property;
-import android.view.animation.DecelerateInterpolator;
 
 import com.dominionos.music.R;
 
 public class PlayPauseDrawable extends Drawable {
-    private static final long PLAY_PAUSE_ANIMATION_DURATION = 250;
 
     private static final Property<PlayPauseDrawable, Float> PROGRESS =
             new Property<PlayPauseDrawable, Float>(Float.class, "progress") {
@@ -202,8 +201,8 @@ public class PlayPauseDrawable extends Drawable {
         }
 
         animator = getPausePlayAnimator();
-        animator.setInterpolator(new DecelerateInterpolator());
-        animator.setDuration(PLAY_PAUSE_ANIMATION_DURATION);
+        animator.setInterpolator(new FastOutSlowInInterpolator());
+        animator.setDuration(Config.ANIMATION_DURATION);
         animator.start();
     }
 }

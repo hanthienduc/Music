@@ -35,7 +35,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/song_item_menu"
+        android:id="@+id/playing_bar_action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

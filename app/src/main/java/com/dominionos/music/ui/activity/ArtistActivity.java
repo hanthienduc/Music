@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -91,8 +92,8 @@ public class ArtistActivity extends AppCompatActivity {
             });
 
             rv.setBackgroundColor(darkMode
-                    ? Utils.getColor(this, R.color.darkWindowBackground)
-                    : Utils.getColor(this, R.color.windowBackground));
+                    ? ContextCompat.getColor(this, R.color.darkWindowBackground)
+                    : ContextCompat.getColor(this, R.color.windowBackground));
             rv.setAdapter(new SongsAdapter(this, songList, darkMode));
         }
         if (musicCursor != null) {

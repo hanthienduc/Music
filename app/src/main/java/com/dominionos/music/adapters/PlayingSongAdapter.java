@@ -46,7 +46,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
             view = itemView;
-            menu = (ImageView) itemView.findViewById(R.id.song_item_menu);
+            menu = (ImageView) itemView.findViewById(R.id.playing_bar_action);
             art = (ImageView) itemView.findViewById(R.id.song_item_art);
         }
     }
