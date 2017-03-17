@@ -44,7 +44,7 @@
                 android:layout_width="56dp"
                 android:layout_height="56dp" />
             <ImageButton
-                android:id="@+id/rewind"
+                android:id="@+id/prev"
                 android:background="@drawable/unbounded_ripple"
                 android:src="@drawable/ic_skip_previous"
                 android:scaleType="fitCenter"
@@ -54,7 +54,7 @@
                 android:layout_width="72dp"
                 android:layout_height="72dp" />
             <ImageButton
-                android:id="@+id/forward"
+                android:id="@+id/next"
                 android:background="@drawable/unbounded_ripple"
                 android:src="@drawable/ic_skip_next"
                 android:scaleType="fitCenter"
@@ -69,7 +69,7 @@
                 android:src="@drawable/ic_shuffle"
                 android:scaleType="fitCenter"
                 android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/forward"
+                android:layout_toEndOf="@id/next"
                 android:padding="22dp"
                 android:layout_width="72dp"
                 android:layout_height="72dp" />
@@ -79,7 +79,7 @@
                 android:src="@drawable/ic_repeat_all"
                 android:scaleType="fitCenter"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/rewind"
+                android:layout_toStartOf="@id/prev"
                 android:padding="22dp"
                 android:layout_width="72dp"
                 android:layout_height="72dp" />

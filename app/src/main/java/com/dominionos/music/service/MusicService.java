@@ -82,130 +82,101 @@ public class MusicService extends Service {
     private final BroadcastReceiver musicPlayer = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            handleBroadcastReceived(context, intent);
-        }
-
-    };
-
-    private void handleBroadcastReceived(Context context, Intent intent) {
-        Song song;
-        switch(intent.getAction()) {
-            case Config.TOGGLE_PLAY:
-                if(mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                } else if(mediaPlayer != null && !mediaPlayer.isPlaying()) {
-                    mediaPlayer.start();
-                } else if(mediaPlayer == null) {
-                    playMusic(playingList.get(0));
-                }
-                updatePlayState();
-                break;
-            case Config.PLAY_SINGLE_SONG:
-                pausedSongSeek = 0;
-                song = (Song) intent.getSerializableExtra("song");
-                currentPlaylistSongId = 0;
-                playingList.clear();
-                playingList.add(song);
-                playList.clearPlayingList();
-                playList.addSongs(playingList);
-                playSingle(song);
-                Intent requestSongDetails = new Intent();
-                requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
-                sendBroadcast(requestSongDetails);
-                break;
-            case Config.CANCEL_NOTIFICATION:
-                stopNotification();
-                break;
-            case Config.PLAY_ALBUM:
-                pausedSongSeek = 0;
-                playList.clearPlayingList();
-                Cursor musicCursor;
-                String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
-                String whereVal[] = {intent.getLongExtra("albumId", 0) + ""};
-                String orderBy = MediaStore.Audio.Media._ID;
-
-                musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        null, where, whereVal, orderBy);
-                if (musicCursor != null && musicCursor.moveToFirst()) {
-                    //get columns
-                    int titleColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media.TITLE);
-                    int idColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media._ID);
-                    int artistColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media.ARTIST);
-                    int pathColumn = musicCursor.getColumnIndex
-                            (MediaStore.Audio.Media.DATA);
-                    int albumIdColumn = musicCursor.getColumnIndex
-                            (MediaStore.Audio.Media.ALBUM_ID);
-                    int albumNameColumn = musicCursor.getColumnIndex
-                            (MediaStore.Audio.Media.ALBUM);
-                    do {
-                        playList.addSong(new Song(musicCursor.getLong(idColumn),
-                                musicCursor.getString(titleColumn),
-                                musicCursor.getString(artistColumn),
-                                musicCursor.getString(pathColumn), false,
-                                musicCursor.getLong(albumIdColumn),
-                                musicCursor.getString(albumNameColumn)));
-                    }
-                    while (musicCursor.moveToNext());
-                }
-                if (musicCursor != null) {
-                    musicCursor.close();
-                }
-                playMusic(playingList.get(0));
-                requestSongDetails = new Intent();
-                requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
-                sendBroadcast(requestSongDetails);
-                break;
-            case Config.NEXT:
-                pausedSongSeek = 0;
-                playMusic(playList.getNextSong(currentPlaylistSongId));
-                updateCurrentPlaying();
-                break;
-            case Config.PREV:
-                if (mediaPlayer != null && mediaPlayer.getCurrentPosition() >= 5000) {
-                    mediaPlayer.seekTo(0);
-                } else {
+            Song song;
+            switch(intent.getAction()) {
+                case Config.TOGGLE_PLAY:
+                    togglePlay();
+                    break;
+                case Config.PLAY_SINGLE_SONG:
                     pausedSongSeek = 0;
-                    playMusic(playList.getPrevSong(currentPlaylistSongId));
-                }
-                updateCurrentPlaying();
-                break;
-            case Config.REQUEST_SONG_DETAILS:
-                updateCurrentPlaying();
-                updatePlaylist();
-                break;
-            case Config.SEEK_TO_SONG:
-                try {
-                    mediaPlayer.seekTo(intent.getIntExtra("changeSeek", 0));
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                    pausedSongSeek = intent.getIntExtra("changeSeek", 0);
-                    playMusic(pausedSong);
+                    song = (Song) intent.getSerializableExtra("song");
+                    currentPlaylistSongId = 0;
+                    playingList.clear();
+                    playingList.add(song);
+                    playList.clearPlayingList();
+                    playList.addSongs(playingList);
+                    playSingle(song);
+                    Intent requestSongDetails = new Intent();
+                    requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
+                    sendBroadcast(requestSongDetails);
+                    break;
+                case Config.CANCEL_NOTIFICATION:
+                    stopNotification();
+                    break;
+                case Config.PLAY_ALBUM:
                     pausedSongSeek = 0;
-                }
-                break;
-            case Config.SHUFFLE_PLAYLIST:
-                if(playList.getPlaybackTableSize() > 1) {
-                    if(!shuffle) {
-                        String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
-                        preShuffle = playList.getCurrentPlayingList();
-                        playList.shuffleRows();
-                        updatePlaylist();
-                        ArrayList<Song> songsList = playList.getCurrentPlayingList();
-                        for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
-                            if (currentPlayingId.matches(songsList.get(num).getName())) {
-                                currentPlaylistSongId = (int) songsList.get(num).getId();
-                                break;
-                            }
+                    playList.clearPlayingList();
+                    Cursor musicCursor;
+                    String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
+                    String whereVal[] = {intent.getLongExtra("albumId", 0) + ""};
+                    String orderBy = MediaStore.Audio.Media._ID;
+
+                    musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            null, where, whereVal, orderBy);
+                    if (musicCursor != null && musicCursor.moveToFirst()) {
+                        //get columns
+                        int titleColumn = musicCursor.getColumnIndex
+                                (android.provider.MediaStore.Audio.Media.TITLE);
+                        int idColumn = musicCursor.getColumnIndex
+                                (android.provider.MediaStore.Audio.Media._ID);
+                        int artistColumn = musicCursor.getColumnIndex
+                                (android.provider.MediaStore.Audio.Media.ARTIST);
+                        int pathColumn = musicCursor.getColumnIndex
+                                (MediaStore.Audio.Media.DATA);
+                        int albumIdColumn = musicCursor.getColumnIndex
+                                (MediaStore.Audio.Media.ALBUM_ID);
+                        int albumNameColumn = musicCursor.getColumnIndex
+                                (MediaStore.Audio.Media.ALBUM);
+                        do {
+                            playList.addSong(new Song(musicCursor.getLong(idColumn),
+                                    musicCursor.getString(titleColumn),
+                                    musicCursor.getString(artistColumn),
+                                    musicCursor.getString(pathColumn), false,
+                                    musicCursor.getLong(albumIdColumn),
+                                    musicCursor.getString(albumNameColumn)));
                         }
-                        shuffle = true;
+                        while (musicCursor.moveToNext());
+                    }
+                    if (musicCursor != null) {
+                        musicCursor.close();
+                    }
+                    playMusic(playingList.get(0));
+                    requestSongDetails = new Intent();
+                    requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
+                    sendBroadcast(requestSongDetails);
+                    break;
+                case Config.NEXT:
+                    next();
+                    break;
+                case Config.PREV:
+                    if (mediaPlayer != null && mediaPlayer.getCurrentPosition() >= 5000) {
+                        mediaPlayer.seekTo(0);
                     } else {
-                        if(preShuffle != null) {
+                        pausedSongSeek = 0;
+                        playMusic(playList.getPrevSong(currentPlaylistSongId));
+                    }
+                    updateCurrentPlaying();
+                    break;
+                case Config.REQUEST_SONG_DETAILS:
+                    updateCurrentPlaying();
+                    updatePlaylist();
+                    break;
+                case Config.SEEK_TO_SONG:
+                    try {
+                        mediaPlayer.seekTo(intent.getIntExtra("changeSeek", 0));
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        pausedSongSeek = intent.getIntExtra("changeSeek", 0);
+                        playMusic(pausedSong);
+                        pausedSongSeek = 0;
+                    }
+                    break;
+                case Config.SHUFFLE_PLAYLIST:
+                    if(playList.getPlaybackTableSize() > 1) {
+                        if(!shuffle) {
                             String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
-                            playList.clearPlayingList();
-                            playList.addSongs(preShuffle);
+                            preShuffle = playList.getCurrentPlayingList();
+                            playList.shuffleRows();
                             updatePlaylist();
                             ArrayList<Song> songsList = playList.getCurrentPlayingList();
                             for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
@@ -214,111 +185,128 @@ public class MusicService extends Service {
                                     break;
                                 }
                             }
+                            shuffle = true;
+                        } else {
+                            if(preShuffle != null) {
+                                String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
+                                playList.clearPlayingList();
+                                playList.addSongs(preShuffle);
+                                updatePlaylist();
+                                ArrayList<Song> songsList = playList.getCurrentPlayingList();
+                                for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
+                                    if (currentPlayingId.matches(songsList.get(num).getName())) {
+                                        currentPlaylistSongId = (int) songsList.get(num).getId();
+                                        break;
+                                    }
+                                }
+                            }
+                            shuffle = false;
                         }
-                        shuffle = false;
+                        updateShuffle();
                     }
-                    updateShuffle();
-                }
-                break;
-            case Config.PLAY_NEXT:
-                int insertPos = playingList.indexOf(currentSong) + 1;
-                song = (Song) intent.getSerializableExtra("song");
-                playingList.add(insertPos, song);
-                playList.clearPlayingList();
-                playList.addSongs(playingList);
-                updatePlaylist();
-                break;
-            case Config.ADD_SONG_TO_PLAYLIST:
-                song = (Song) intent.getSerializableExtra("song");
-                if (playList.getPlaybackTableSize() != 0 && currentPlaylistSongId != -1) {
-                    playingList.add(song);
+                    break;
+                case Config.PLAY_NEXT:
+                    int insertPos = playingList.indexOf(currentSong) + 1;
+                    song = (Song) intent.getSerializableExtra("song");
+                    playingList.add(insertPos, song);
                     playList.clearPlayingList();
                     playList.addSongs(playingList);
                     updatePlaylist();
-                } else {
-                    intent.setAction(Config.PLAY_SINGLE_SONG);
-                    sendBroadcast(intent);
-                }
-                break;
-            case Config.PLAY_FROM_PLAYLIST:
-                pausedSongSeek = 0;
-                song = (Song) intent.getSerializableExtra("song");
-                playMusic(song);
-                updateCurrentPlaying();
-                requestSongDetails = new Intent();
-                requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
-                sendBroadcast(requestSongDetails);
-                break;
-            case Config.MENU_FROM_PLAYLIST:
-                String action = intent.getStringExtra("action");
-                if (action.matches(Config.MENU_PLAY_NEXT)) {
-                    Song item = playList.getSong(intent.getIntExtra("count", -1));
-                    playList.addSong(item);
-                    updatePlaylist();
-                } else if (action.matches(Config.MENU_REMOVE_FROM_QUEUE)) {
-                    playList.removeSong(intent.getIntExtra("count", -1));
-                    updatePlaylist();
-                } else if (action.matches(Config.MENU_SHARE)) {
-                    Intent share = new Intent(Intent.ACTION_SEND);
-                    share.setType("audio/*");
-                    share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" +
-                            playList.getSong(intent.getIntExtra("count", -1)).getPath()));
-                    share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(share);
-                } else if (action.matches(Config.MENU_DELETE)) {
-                    int pos = intent.getIntExtra("count", -1);
-                    Song song2 = playList.getSong(pos);
-                    File file = new File(song2.getPath());
-                    boolean deleted = file.delete();
-                    if (deleted) {
-                        Toast.makeText(context, getString(R.string.song_delete_success), Toast.LENGTH_SHORT).show();
-                        context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                MediaStore.MediaColumns._ID + "='" + song2.getId() + "'", null);
-                        playList.removeSong(pos);
+                    break;
+                case Config.ADD_SONG_TO_PLAYLIST:
+                    song = (Song) intent.getSerializableExtra("song");
+                    if (playList.getPlaybackTableSize() != 0 && currentPlaylistSongId != -1) {
+                        playingList.add(song);
+                        playList.clearPlayingList();
+                        playList.addSongs(playingList);
                         updatePlaylist();
-                    } else
-                        Toast.makeText(context, getString(R.string.song_delete_fail), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case Config.PLAY_PLAYLIST:
-                MySQLiteHelper helper = new MySQLiteHelper(context);
-                playList.clearPlayingList();
-                playingList = helper.getPlayListSongs(intent.getIntExtra("playlistId", -1));
-                playList.addSongs(playingList);
-                playMusic(playList.getFirstSong());
-                requestSongDetails = new Intent();
-                requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
-                sendBroadcast(requestSongDetails);
-                break;
-            case Config.PLAY_ALL_SONGS:
-                if(songList != null) {
-                    playList.clearPlayingList();
-                    playList.addSongs(songList);
-                    playingList = songList;
+                    } else {
+                        intent.setAction(Config.PLAY_SINGLE_SONG);
+                        sendBroadcast(intent);
+                    }
+                    break;
+                case Config.PLAY_FROM_PLAYLIST:
                     pausedSongSeek = 0;
-                    playMusic(playingList.get(0));
+                    song = (Song) intent.getSerializableExtra("song");
+                    playMusic(song);
+                    updateCurrentPlaying();
                     requestSongDetails = new Intent();
                     requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
                     sendBroadcast(requestSongDetails);
-                } else {
-                    Toast.makeText(context, getString(R.string.service_generate_list_warning), Toast.LENGTH_LONG).show();
-                }
-                break;
-            case Config.REPEAT:
-                if(!repeatAll && !repeatOne) {
-                    repeatAll = true;
-                    repeatOne = false;
-                } else if(repeatAll) {
-                    repeatAll = false;
-                    repeatOne = true;
-                } else {
-                    repeatAll = false;
-                    repeatOne = false;
-                }
-                updateRepeat();
-                break;
+                    break;
+                case Config.MENU_FROM_PLAYLIST:
+                    String action = intent.getStringExtra("action");
+                    if (action.matches(Config.MENU_PLAY_NEXT)) {
+                        Song item = playList.getSong(intent.getIntExtra("count", -1));
+                        playList.addSong(item);
+                        updatePlaylist();
+                    } else if (action.matches(Config.MENU_REMOVE_FROM_QUEUE)) {
+                        playList.removeSong(intent.getIntExtra("count", -1));
+                        updatePlaylist();
+                    } else if (action.matches(Config.MENU_SHARE)) {
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("audio/*");
+                        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" +
+                                playList.getSong(intent.getIntExtra("count", -1)).getPath()));
+                        share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(share);
+                    } else if (action.matches(Config.MENU_DELETE)) {
+                        int pos = intent.getIntExtra("count", -1);
+                        Song song2 = playList.getSong(pos);
+                        File file = new File(song2.getPath());
+                        boolean deleted = file.delete();
+                        if (deleted) {
+                            Toast.makeText(context, getString(R.string.song_delete_success), Toast.LENGTH_SHORT).show();
+                            context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                                    MediaStore.MediaColumns._ID + "='" + song2.getId() + "'", null);
+                            playList.removeSong(pos);
+                            updatePlaylist();
+                        } else
+                            Toast.makeText(context, getString(R.string.song_delete_fail), Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case Config.PLAY_PLAYLIST:
+                    MySQLiteHelper helper = new MySQLiteHelper(context);
+                    playList.clearPlayingList();
+                    playingList = helper.getPlayListSongs(intent.getIntExtra("playlistId", -1));
+                    playList.addSongs(playingList);
+                    playMusic(playList.getFirstSong());
+                    requestSongDetails = new Intent();
+                    requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
+                    sendBroadcast(requestSongDetails);
+                    break;
+                case Config.PLAY_ALL_SONGS:
+                    if(songList != null) {
+                        playList.clearPlayingList();
+                        playList.addSongs(songList);
+                        playingList = songList;
+                        pausedSongSeek = 0;
+                        playMusic(playingList.get(0));
+                        requestSongDetails = new Intent();
+                        requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
+                        sendBroadcast(requestSongDetails);
+                    } else {
+                        Toast.makeText(context, getString(R.string.service_generate_list_warning), Toast.LENGTH_LONG).show();
+                    }
+                    break;
+                case Config.REPEAT:
+                    if(!repeatAll && !repeatOne) {
+                        repeatAll = true;
+                        repeatOne = false;
+                    } else if(repeatAll) {
+                        repeatAll = false;
+                        repeatOne = true;
+                    } else {
+                        repeatAll = false;
+                        repeatOne = false;
+                    }
+                    updateRepeat();
+                    break;
+            }
         }
-    }
+
+    };
+
 
     private void updateRepeat() {
         Intent intent = new Intent(Config.UPDATE_REPEAT);
@@ -368,16 +356,32 @@ public class MusicService extends Service {
         return binder;
     }
 
-    public void togglePlay() {
+    public boolean togglePlay() {
+        boolean isPlaying = false;
         if(mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
+            isPlaying = false;
         } else if(mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
+            isPlaying = true;
         } else if(mediaPlayer == null && playingList.size() != 0) {
             playMusic(playingList.get(0));
         }
         updatePlayState();
         Toast.makeText(this, "Play toggled", Toast.LENGTH_LONG).show();
+        return isPlaying;
+    }
+
+    public void next() {
+        playMusic(playingList.get(playingList.indexOf(currentSong) + 1));
+        updateCurrentPlaying();
+    }
+
+    public void prev() {
+        int currentPos = playingList.indexOf(currentSong);
+        if(currentPos != 0) {
+            playMusic(playingList.get(currentPos - 1));
+        }
     }
 
     @Override
