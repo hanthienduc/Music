@@ -24,10 +24,9 @@ import android.view.View;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
+import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.utils.MySQLiteHelper;
-import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.CheckableSongsAdapter;
-import com.dominionos.music.adapters.PlaylistActivityAdapter;
 import com.dominionos.music.items.CheckableSong;
 
 import java.util.ArrayList;
@@ -64,9 +63,8 @@ public class PlaylistActivity extends AppCompatActivity {
         rv.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(this, R.color.darkWindowBackground)
                 : ContextCompat.getColor(this, R.color.windowBackground));
-        rv.setAdapter(new PlaylistActivityAdapter(
-                this, helper.getPlayListSongs(playlistId),
-                playlistId, darkMode));
+        rv.setAdapter(new SongsAdapter(
+                this, helper.getPlayListSongs(playlistId), darkMode));
 
         List<CheckableSong> songList = new ArrayList<>();
         Cursor musicCursor2;
