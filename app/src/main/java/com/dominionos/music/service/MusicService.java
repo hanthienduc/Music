@@ -13,7 +13,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -37,9 +36,9 @@ import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.items.Song;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MusicService extends Service {
 
@@ -93,8 +92,7 @@ public class MusicService extends Service {
                     currentPlaylistSongId = 0;
                     playingList.clear();
                     playingList.add(song);
-                    playList.clearPlayingList();
-                    playList.addSongs(playingList);
+                    playList.overwriteStoredList(playingList);
                     playSingle(song);
                     Intent requestSongDetails = new Intent();
                     requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
@@ -105,7 +103,7 @@ public class MusicService extends Service {
                     break;
                 case Config.PLAY_ALBUM:
                     pausedSongSeek = 0;
-                    playList.clearPlayingList();
+                    playingList.clear();
                     Cursor musicCursor;
                     String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
                     String whereVal[] = {intent.getLongExtra("albumId", 0) + ""};
@@ -128,7 +126,7 @@ public class MusicService extends Service {
                         int albumNameColumn = musicCursor.getColumnIndex
                                 (MediaStore.Audio.Media.ALBUM);
                         do {
-                            playList.addSong(new Song(musicCursor.getLong(idColumn),
+                            playingList.add(new Song(musicCursor.getLong(idColumn),
                                     musicCursor.getString(titleColumn),
                                     musicCursor.getString(artistColumn),
                                     musicCursor.getString(pathColumn), false,
@@ -172,16 +170,14 @@ public class MusicService extends Service {
                     int insertPos = playingList.indexOf(currentSong) + 1;
                     song = (Song) intent.getSerializableExtra("song");
                     playingList.add(insertPos, song);
-                    playList.clearPlayingList();
-                    playList.addSongs(playingList);
+                    playList.overwriteStoredList(playingList);
                     updatePlaylist();
                     break;
                 case Config.ADD_SONG_TO_PLAYLIST:
                     song = (Song) intent.getSerializableExtra("song");
                     if (playList.getPlaybackTableSize() != 0 && currentPlaylistSongId != -1) {
                         playingList.add(song);
-                        playList.clearPlayingList();
-                        playList.addSongs(playingList);
+                        playList.overwriteStoredList(playingList);
                         updatePlaylist();
                     } else {
                         intent.setAction(Config.PLAY_SINGLE_SONG);
@@ -197,51 +193,18 @@ public class MusicService extends Service {
                     requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
                     sendBroadcast(requestSongDetails);
                     break;
-                case Config.MENU_FROM_PLAYLIST:
-                    String action = intent.getStringExtra("action");
-                    if (action.matches(Config.MENU_PLAY_NEXT)) {
-                        Song item = playList.getSong(intent.getIntExtra("count", -1));
-                        playList.addSong(item);
-                        updatePlaylist();
-                    } else if (action.matches(Config.MENU_REMOVE_FROM_QUEUE)) {
-                        playList.removeSong(intent.getIntExtra("count", -1));
-                        updatePlaylist();
-                    } else if (action.matches(Config.MENU_SHARE)) {
-                        Intent share = new Intent(Intent.ACTION_SEND);
-                        share.setType("audio/*");
-                        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" +
-                                playList.getSong(intent.getIntExtra("count", -1)).getPath()));
-                        share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(share);
-                    } else if (action.matches(Config.MENU_DELETE)) {
-                        int pos = intent.getIntExtra("count", -1);
-                        Song song2 = playList.getSong(pos);
-                        File file = new File(song2.getPath());
-                        boolean deleted = file.delete();
-                        if (deleted) {
-                            Toast.makeText(context, getString(R.string.song_delete_success), Toast.LENGTH_SHORT).show();
-                            context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                    MediaStore.MediaColumns._ID + "='" + song2.getId() + "'", null);
-                            playList.removeSong(pos);
-                            updatePlaylist();
-                        } else
-                            Toast.makeText(context, getString(R.string.song_delete_fail), Toast.LENGTH_SHORT).show();
-                    }
-                    break;
                 case Config.PLAY_PLAYLIST:
                     MySQLiteHelper helper = new MySQLiteHelper(context);
-                    playList.clearPlayingList();
                     playingList = helper.getPlayListSongs(intent.getIntExtra("playlistId", -1));
-                    playList.addSongs(playingList);
-                    playMusic(playList.getFirstSong());
+                    playList.overwriteStoredList(playingList);
+                    playMusic(playingList.get(0));
                     requestSongDetails = new Intent();
                     requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
                     sendBroadcast(requestSongDetails);
                     break;
                 case Config.PLAY_ALL_SONGS:
                     if(songList != null) {
-                        playList.clearPlayingList();
-                        playList.addSongs(songList);
+                        playList.overwriteStoredList(songList);
                         playingList = songList;
                         pausedSongSeek = 0;
                         playMusic(playingList.get(0));
@@ -260,6 +223,13 @@ public class MusicService extends Service {
 
     };
 
+    public ArrayList<Song> getPlayingList() {
+        return playingList;
+    }
+
+    public Song getCurrentSong() {
+        return currentSong;
+    }
 
     private void updateRepeat() {
         Intent intent = new Intent(Config.UPDATE_REPEAT);
@@ -321,31 +291,15 @@ public class MusicService extends Service {
     public boolean shuffle() {
         if(playList.getPlaybackTableSize() > 1) {
             if(!shuffle) {
-                String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
-                preShuffle = playList.getCurrentPlayingList();
-                playList.shuffleRows();
+                preShuffle = playingList;
+                Collections.shuffle(playingList);
                 updatePlaylist();
-                ArrayList<Song> songsList = playList.getCurrentPlayingList();
-                for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
-                    if (currentPlayingId.matches(songsList.get(num).getName())) {
-                        currentPlaylistSongId = (int) songsList.get(num).getId();
-                        break;
-                    }
-                }
                 shuffle = true;
             } else {
                 if(preShuffle != null) {
-                    String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
-                    playList.clearPlayingList();
-                    playList.addSongs(preShuffle);
+                    playingList = preShuffle;
+                    playList.overwriteStoredList(playingList);
                     updatePlaylist();
-                    ArrayList<Song> songsList = playList.getCurrentPlayingList();
-                    for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
-                        if (currentPlayingId.matches(songsList.get(num).getName())) {
-                            currentPlaylistSongId = (int) songsList.get(num).getId();
-                            break;
-                        }
-                    }
                 }
                 shuffle = false;
             }
@@ -436,7 +390,7 @@ public class MusicService extends Service {
                                 stopMusic();
                             } else {
                                 pausedSongSeek = 0;
-                                Song song = playList.getNextSong(currentPlaylistSongId);
+                                Song song = playingList.get(playingList.indexOf(currentSong) + 1);
                                 playMusic(song);
                                 updateCurrentPlaying();
                             }
@@ -448,7 +402,7 @@ public class MusicService extends Service {
                                 updateCurrentPlaying();
                             } else if(playingList.size() != 1) {
                                 pausedSongSeek = 0;
-                                Song song = playList.getNextSong(currentPlaylistSongId);
+                                Song song = playingList.get(playingList.indexOf(currentSong) + 1);
                                 playMusic(song);
                                 updateCurrentPlaying();
                             } else if(playingList.size() == playingList.indexOf(song)) {
@@ -551,7 +505,7 @@ public class MusicService extends Service {
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setActive(true);
 
-        ArrayList<Song> databaseList = playList.getCurrentPlayingList();
+        ArrayList<Song> databaseList = playList.getStoredList();
         if(databaseList.size() != 0) {
             playingList = databaseList;
         } else {

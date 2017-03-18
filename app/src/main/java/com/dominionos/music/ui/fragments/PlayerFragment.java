@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
@@ -22,7 +21,6 @@ import com.dominionos.music.items.Song;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.activity.MainActivity;
 import com.dominionos.music.utils.Config;
-import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.PlayPauseDrawable;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -66,7 +64,6 @@ public class PlayerFragment extends Fragment {
         service = activity.getService();
         setStyle();
         setControls();
-        setPlayingList();
         slidingUpPanelLayout = activity.getSlidingPanel();
         slidingUpPanelLayout.setScrollableView(playingListView);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -87,15 +84,17 @@ public class PlayerFragment extends Fragment {
         return view;
     }
 
-    private void setPlayingList() {
-        MusicPlayerDBHelper helper = new MusicPlayerDBHelper(context);
-        ArrayList<Song> playingList = helper.getCurrentPlayingList();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        layoutManager.scrollToPosition(0);
-        playingListView.setLayoutManager(layoutManager);
-        if(playingList.size() > 0) {
-            playingListView.setAdapter(new PlayingSongAdapter(context, playingList, darkMode, playingList.get(0), Glide.with(getContext())));
+    public void setPlayingList() {
+        if(service == null) service = activity.getService();
+        if(service != null) {
+            ArrayList<Song> playingList = service.getPlayingList();
+            LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            layoutManager.scrollToPosition(0);
+            playingListView.setLayoutManager(layoutManager);
+            if(playingList.size() > 0) {
+                playingListView.setAdapter(new PlayingSongAdapter(context, playingList, darkMode, service.getCurrentSong(), Glide.with(getContext())));
+            }
         }
     }
 
@@ -163,7 +162,6 @@ public class PlayerFragment extends Fragment {
                 if(service == null) service = activity.getService();
                 if(service != null) {
                     boolean isPlaying = service.togglePlay();
-                    Toast.makeText(service, "Play toggled", Toast.LENGTH_SHORT).show();
                     setPlayingState(isPlaying);
                 }
             }

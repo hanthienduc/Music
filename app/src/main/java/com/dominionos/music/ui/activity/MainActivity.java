@@ -73,17 +73,17 @@ public class MainActivity extends AppCompatActivity {
     private SearchView search;
     private Drawer drawer;
     private MusicService service;
+    private PlayerFragment player;
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             service = ((MusicService.MyBinder) binder).getService();
-            Toast.makeText(service, "Service bound", Toast.LENGTH_SHORT).show();
+            player.setPlayingList();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             service = null;
-            Toast.makeText(service, "Service disconnected", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         bindService(i, mServerConn, Context.BIND_AUTO_CREATE);
         startService(i);
 
-        setupViewPager(viewPager);
+        setupViewPager();
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
@@ -170,7 +170,8 @@ public class MainActivity extends AppCompatActivity {
         setSearch();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.player_holder, new PlayerFragment()).commit();
+        player = new PlayerFragment();
+        transaction.replace(R.id.player_holder, player).commit();
     }
 
     private void setSearch() {
@@ -217,22 +218,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupViewPager(final ViewPager viewPager) {
-        SongsFragment songs = new SongsFragment();
-        AlbumsFragment albums = new AlbumsFragment();
-        ArtistsFragment artists = new ArtistsFragment();
-        PlaylistFragment playlists = new PlaylistFragment();
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("dark_theme", darkMode);
-        songs.setArguments(bundle);
-        albums.setArguments(bundle);
-        artists.setArguments(bundle);
-        playlists.setArguments(bundle);
+    private void setupViewPager() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(songs, getResources().getString(R.string.songs));
-        adapter.addFrag(albums, getResources().getString(R.string.album));
-        adapter.addFrag(artists, getResources().getString(R.string.artist));
-        adapter.addFrag(playlists, getResources().getString(R.string.playlist));
+        adapter.addFrag(new SongsFragment(), getResources().getString(R.string.songs));
+        adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.album));
+        adapter.addFrag(new ArtistsFragment(), getResources().getString(R.string.artist));
+        adapter.addFrag(new PlaylistFragment(), getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
         viewPager.setOffscreenPageLimit(4);
