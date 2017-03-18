@@ -70,6 +70,7 @@
                 android:scaleType="fitCenter"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@id/next"
+                android:layout_alignParentEnd="true"
                 android:padding="22dp"
                 android:layout_width="72dp"
                 android:layout_height="72dp" />
@@ -80,6 +81,7 @@
                 android:scaleType="fitCenter"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/prev"
+                android:layout_alignParentStart="true"
                 android:padding="22dp"
                 android:layout_width="72dp"
                 android:layout_height="72dp" />

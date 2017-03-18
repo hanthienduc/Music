@@ -21,6 +21,7 @@ import com.dominionos.music.adapters.PlayingSongAdapter;
 import com.dominionos.music.items.Song;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.activity.MainActivity;
+import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.PlayPauseDrawable;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -40,6 +41,8 @@ public class PlayerFragment extends Fragment {
     @BindView(R.id.playing_list) RecyclerView playingListView;
     @BindView(R.id.next) ImageButton next;
     @BindView(R.id.prev) ImageButton prev;
+    @BindView(R.id.shuffle) ImageButton shuffle;
+    @BindView(R.id.repeat) ImageButton repeat;
 
     private Unbinder unbinder;
     private PlayPauseDrawable playPauseDrawable;
@@ -116,6 +119,27 @@ public class PlayerFragment extends Fragment {
             public void onClick(View v) {
                 if(service == null) service = activity.getService();
                 if(service != null) service.prev();
+            }
+        });
+        shuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(service == null) service = activity.getService();
+                if(service != null) {
+                    boolean shuffleState = service.shuffle();
+                    shuffle.setAlpha(shuffleState
+                            ? Config.BUTTON_ACTIVE
+                            : Config.BUTTON_INACTIVE);
+                }
+            }
+        });
+        repeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(service == null) service = activity.getService();
+                if(service != null) {
+                    service.repeat();
+                }
             }
         });
     }

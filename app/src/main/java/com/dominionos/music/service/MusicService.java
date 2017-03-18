@@ -149,13 +149,7 @@ public class MusicService extends Service {
                     next();
                     break;
                 case Config.PREV:
-                    if (mediaPlayer != null && mediaPlayer.getCurrentPosition() >= 5000) {
-                        mediaPlayer.seekTo(0);
-                    } else {
-                        pausedSongSeek = 0;
-                        playMusic(playList.getPrevSong(currentPlaylistSongId));
-                    }
-                    updateCurrentPlaying();
+                    prev();
                     break;
                 case Config.REQUEST_SONG_DETAILS:
                     updateCurrentPlaying();
@@ -172,38 +166,7 @@ public class MusicService extends Service {
                     }
                     break;
                 case Config.SHUFFLE_PLAYLIST:
-                    if(playList.getPlaybackTableSize() > 1) {
-                        if(!shuffle) {
-                            String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
-                            preShuffle = playList.getCurrentPlayingList();
-                            playList.shuffleRows();
-                            updatePlaylist();
-                            ArrayList<Song> songsList = playList.getCurrentPlayingList();
-                            for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
-                                if (currentPlayingId.matches(songsList.get(num).getName())) {
-                                    currentPlaylistSongId = (int) songsList.get(num).getId();
-                                    break;
-                                }
-                            }
-                            shuffle = true;
-                        } else {
-                            if(preShuffle != null) {
-                                String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
-                                playList.clearPlayingList();
-                                playList.addSongs(preShuffle);
-                                updatePlaylist();
-                                ArrayList<Song> songsList = playList.getCurrentPlayingList();
-                                for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
-                                    if (currentPlayingId.matches(songsList.get(num).getName())) {
-                                        currentPlaylistSongId = (int) songsList.get(num).getId();
-                                        break;
-                                    }
-                                }
-                            }
-                            shuffle = false;
-                        }
-                        updateShuffle();
-                    }
+                    shuffle();
                     break;
                 case Config.PLAY_NEXT:
                     int insertPos = playingList.indexOf(currentSong) + 1;
@@ -290,17 +253,7 @@ public class MusicService extends Service {
                     }
                     break;
                 case Config.REPEAT:
-                    if(!repeatAll && !repeatOne) {
-                        repeatAll = true;
-                        repeatOne = false;
-                    } else if(repeatAll) {
-                        repeatAll = false;
-                        repeatOne = true;
-                    } else {
-                        repeatAll = false;
-                        repeatOne = false;
-                    }
-                    updateRepeat();
+                    repeat();
                     break;
             }
         }
@@ -318,13 +271,6 @@ public class MusicService extends Service {
             intent.putExtra("repeat", "none");
         }
         sendBroadcast(intent);
-    }
-
-    private void updateShuffle() {
-        Intent intent = new Intent(Config.UPDATE_SHUFFLE);
-        intent.putExtra("shuffle", shuffle);
-        sendBroadcast(intent);
-        updatePlaylist();
     }
 
     private void updateCurrentPlaying() {
@@ -370,6 +316,55 @@ public class MusicService extends Service {
         updatePlayState();
         Toast.makeText(this, "Play toggled", Toast.LENGTH_LONG).show();
         return isPlaying;
+    }
+
+    public boolean shuffle() {
+        if(playList.getPlaybackTableSize() > 1) {
+            if(!shuffle) {
+                String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
+                preShuffle = playList.getCurrentPlayingList();
+                playList.shuffleRows();
+                updatePlaylist();
+                ArrayList<Song> songsList = playList.getCurrentPlayingList();
+                for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
+                    if (currentPlayingId.matches(songsList.get(num).getName())) {
+                        currentPlaylistSongId = (int) songsList.get(num).getId();
+                        break;
+                    }
+                }
+                shuffle = true;
+            } else {
+                if(preShuffle != null) {
+                    String currentPlayingId = playList.getSong(currentPlaylistSongId).getName();
+                    playList.clearPlayingList();
+                    playList.addSongs(preShuffle);
+                    updatePlaylist();
+                    ArrayList<Song> songsList = playList.getCurrentPlayingList();
+                    for (int num = 0; num < playList.getPlaybackTableSize(); num++) {
+                        if (currentPlayingId.matches(songsList.get(num).getName())) {
+                            currentPlaylistSongId = (int) songsList.get(num).getId();
+                            break;
+                        }
+                    }
+                }
+                shuffle = false;
+            }
+        }
+        return shuffle;
+    }
+
+    public void repeat() {
+        if(!repeatAll && !repeatOne) {
+            repeatAll = true;
+            repeatOne = false;
+        } else if(repeatAll) {
+            repeatAll = false;
+            repeatOne = true;
+        } else {
+            repeatAll = false;
+            repeatOne = false;
+        }
+        updateRepeat();
     }
 
     public void next() {
