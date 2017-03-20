@@ -3,9 +3,12 @@ package com.dominionos.music.ui.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.graphics.Palette;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,15 +16,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
+import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.ImageViewTarget;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.PlayingSongAdapter;
 import com.dominionos.music.items.Song;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.activity.MainActivity;
 import com.dominionos.music.utils.Config;
+import com.dominionos.music.utils.PaletteBitmap;
+import com.dominionos.music.utils.PaletteBitmapTranscoder;
 import com.dominionos.music.utils.PlayPauseDrawable;
+import com.dominionos.music.utils.Utils;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -41,6 +50,8 @@ public class PlayerFragment extends Fragment {
     @BindView(R.id.prev) ImageButton prev;
     @BindView(R.id.shuffle) ImageButton shuffle;
     @BindView(R.id.repeat) ImageButton repeat;
+    @BindView(R.id.art) ImageView playingArt;
+    @BindView(R.id.control_holder) View controlHolder;
 
     private Unbinder unbinder;
     private PlayPauseDrawable playPauseDrawable;
@@ -61,9 +72,7 @@ public class PlayerFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         activity = (MainActivity) getActivity();
         context = getContext();
-        service = activity.getService();
-        setStyle();
-        setControls();
+
         slidingUpPanelLayout = activity.getSlidingPanel();
         slidingUpPanelLayout.setScrollableView(playingListView);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -84,8 +93,19 @@ public class PlayerFragment extends Fragment {
         return view;
     }
 
-    public void setPlayingList() {
+    public void updatePlayer() {
         if(service == null) service = activity.getService();
+        if(service.getCurrentSong() != null) {
+            setStyle();
+            setControls();
+            setPlayingList();
+            setArt();
+        } else {
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }
+    }
+
+    public void setPlayingList() {
         if(service != null) {
             ArrayList<Song> playingList = service.getPlayingList();
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);
@@ -143,6 +163,54 @@ public class PlayerFragment extends Fragment {
         });
     }
 
+    private void setArt() {
+        new Action<String>() {
+
+            @NonNull
+            @Override
+            public String id() {
+                return "get-playing-art";
+            }
+
+            @Nullable
+            @Override
+            protected String run() throws InterruptedException {
+                if(service != null && service.getCurrentSong() != null) {
+                    long albumId = service.getCurrentSong().getAlbumId();
+                    return Utils.getAlbumArt(context, albumId);
+                }
+                return null;
+            }
+
+            @Override
+            protected void done(String result) {
+                Glide.with(context)
+                        .load(result)
+                        .asBitmap()
+                        .transcode(new PaletteBitmapTranscoder(activity), PaletteBitmap.class)
+                        .centerCrop()
+                        .error(R.drawable.default_art)
+                        .into(new ImageViewTarget<PaletteBitmap>(playingArt) {
+                            @Override
+                            protected void setResource(PaletteBitmap resource) {
+                                super.view.setImageBitmap(resource.bitmap);
+                                Palette palette = resource.palette;
+                                Palette.Swatch swatch;
+                                if(palette.getVibrantSwatch() != null) {
+                                    swatch = palette.getVibrantSwatch();
+                                    controlHolder.setBackgroundColor(swatch.getRgb());
+                                    play.setColorFilter(swatch.getRgb());
+                                } else if(palette.getDominantSwatch() != null) {
+                                    swatch = palette.getDominantSwatch();
+                                    controlHolder.setBackgroundColor(swatch.getRgb());
+                                    play.setColorFilter(swatch.getRgb());
+                                }
+                            }
+                        });
+            }
+        }.execute();
+    }
+
     private void setStyle() {
         playerView.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(context, R.color.darkContentColour)
@@ -151,7 +219,7 @@ public class PlayerFragment extends Fragment {
                 ? ContextCompat.getColor(context, R.color.primaryTextDark)
                 : ContextCompat.getColor(context, R.color.primaryTextLight));
         playingBar.setBackgroundColor(darkMode
-                ? ContextCompat.getColor(context, R.color.darkContentColour)
+                ? ContextCompat.getColor(context, R.color.darkWindowBackground)
                 : ContextCompat.getColor(context, R.color.windowBackground));
     }
 

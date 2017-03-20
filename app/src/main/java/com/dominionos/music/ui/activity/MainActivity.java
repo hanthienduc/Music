@@ -74,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
     private Drawer drawer;
     private MusicService service;
     private PlayerFragment player;
-    protected ServiceConnection mServerConn = new ServiceConnection() {
+    protected ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             service = ((MusicService.MyBinder) binder).getService();
-            player.setPlayingList();
+            player.updatePlayer();
         }
 
         @Override
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
 
         Intent i = new Intent(MainActivity.this, MusicService.class);
-        bindService(i, mServerConn, Context.BIND_AUTO_CREATE);
+        bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
         startService(i);
 
         setupViewPager();
@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         unbinder.unbind();
-        unbindService(mServerConn);
+        unbindService(serviceConnection);
     }
 
     @Override

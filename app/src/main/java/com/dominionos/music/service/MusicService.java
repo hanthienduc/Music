@@ -508,6 +508,7 @@ public class MusicService extends Service {
         ArrayList<Song> databaseList = playList.getStoredList();
         if(databaseList.size() != 0) {
             playingList = databaseList;
+            currentSong = playingList.get(0);
         } else {
             playingList = new ArrayList<>();
         }
@@ -676,6 +677,7 @@ public class MusicService extends Service {
         notificationManager.cancelAll();
         stopForeground(true);
     }
+
     public class MyBinder extends Binder {
         public MusicService getService() {
             return MusicService.this;
