@@ -52,7 +52,8 @@
                 android:layout_toStartOf="@id/play"
                 android:padding="22dp"
                 android:layout_width="72dp"
-                android:layout_height="72dp" />
+                android:layout_height="72dp"
+                 android:contentDescription="@string/previous"/>
             <ImageButton
                 android:id="@+id/next"
                 android:background="@drawable/unbounded_ripple"
@@ -62,7 +63,8 @@
                 android:layout_toEndOf="@id/play"
                 android:padding="22dp"
                 android:layout_width="72dp"
-                android:layout_height="72dp" />
+                android:layout_height="72dp"
+                android:contentDescription="@string/next" />
             <ImageButton
                 android:id="@+id/shuffle"
                 android:background="@drawable/unbounded_ripple"
@@ -73,7 +75,8 @@
                 android:layout_alignParentEnd="true"
                 android:padding="22dp"
                 android:layout_width="72dp"
-                android:layout_height="72dp" />
+                android:layout_height="72dp"
+                android:contentDescription="@string/shuffle" />
             <ImageButton
                 android:id="@+id/repeat"
                 android:background="@drawable/unbounded_ripple"
@@ -84,7 +87,8 @@
                 android:layout_alignParentStart="true"
                 android:padding="22dp"
                 android:layout_width="72dp"
-                android:layout_height="72dp" />
+                android:layout_height="72dp"
+                android:contentDescription="@string/repeat" />
         </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
@@ -119,7 +123,8 @@
             android:layout_centerVertical="true"
             android:background="@drawable/unbounded_ripple"
             android:layout_margin="-16dp"
-            android:padding="32dp" />
+            android:padding="32dp"
+            android:contentDescription="@string/play" />
 
         <LinearLayout
             android:layout_width="match_parent"

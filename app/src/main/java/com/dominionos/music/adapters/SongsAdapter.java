@@ -75,7 +75,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
-
         holder.title.setTextColor(darkMode
                 ? ContextCompat.getColor(context, R.color.primaryTextDark)
                 : ContextCompat.getColor(context, R.color.primaryTextLight));

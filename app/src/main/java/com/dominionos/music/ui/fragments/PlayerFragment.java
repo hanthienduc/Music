@@ -73,20 +73,23 @@ public class PlayerFragment extends Fragment {
         activity = (MainActivity) getActivity();
         context = getContext();
 
+        setControls();
+        setStyle();
+
         slidingUpPanelLayout = activity.getSlidingPanel();
         slidingUpPanelLayout.setScrollableView(playingListView);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                playingBar.setAlpha(1 - slideOffset);
+                if(playingBar != null) playingBar.setAlpha(1 - slideOffset);
             }
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
                 if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                    playingBar.setVisibility(View.GONE);
+                    if(playingBar != null) playingBar.setVisibility(View.GONE);
                 } else if(newState != SlidingUpPanelLayout.PanelState.EXPANDED) {
-                    playingBar.setVisibility(View.VISIBLE);
+                    if(playingBar != null) playingBar.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -96,16 +99,18 @@ public class PlayerFragment extends Fragment {
     public void updatePlayer() {
         if(service == null) service = activity.getService();
         if(service.getCurrentSong() != null) {
-            setStyle();
-            setControls();
             setPlayingList();
             setArt();
-        } else {
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            updatePlayState();
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
     }
 
-    public void setPlayingList() {
+    public void updatePlayState() {
+        setPlayingState(service.isPlaying());
+    }
+
+    private void setPlayingList() {
         if(service != null) {
             ArrayList<Song> playingList = service.getPlayingList();
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);
@@ -213,14 +218,14 @@ public class PlayerFragment extends Fragment {
 
     private void setStyle() {
         playerView.setBackgroundColor(darkMode
-                ? ContextCompat.getColor(context, R.color.darkContentColour)
-                : ContextCompat.getColor(context, R.color.contentColour));
+                ? ContextCompat.getColor(context, R.color.darkWindowBackground)
+                : ContextCompat.getColor(context, R.color.windowBackground));
         playingAction.setColorFilter(darkMode
                 ? ContextCompat.getColor(context, R.color.primaryTextDark)
                 : ContextCompat.getColor(context, R.color.primaryTextLight));
         playingBar.setBackgroundColor(darkMode
-                ? ContextCompat.getColor(context, R.color.darkWindowBackground)
-                : ContextCompat.getColor(context, R.color.windowBackground));
+                ? ContextCompat.getColor(context, R.color.darkContentColour)
+                : ContextCompat.getColor(context, R.color.contentColour));
     }
 
     private View.OnClickListener playPauseClick() {

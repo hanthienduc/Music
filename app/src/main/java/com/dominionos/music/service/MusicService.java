@@ -45,8 +45,6 @@ public class MusicService extends Service {
     private MediaPlayer mediaPlayer;
 
     private boolean repeatOne = false, repeatAll = false, shuffle = false;
-    private int currentPlaylistSongId = -1, pausedSongSeek;
-    private Song pausedSong;
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSessionCompat mediaSession;
@@ -55,6 +53,7 @@ public class MusicService extends Service {
     private Song currentSong;
     private SharedPreferences prefs;
     private IBinder binder = new MyBinder();
+    private MainActivity activity;
 
     private final AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -87,9 +86,7 @@ public class MusicService extends Service {
                     togglePlay();
                     break;
                 case Config.PLAY_SINGLE_SONG:
-                    pausedSongSeek = 0;
                     song = (Song) intent.getSerializableExtra("song");
-                    currentPlaylistSongId = 0;
                     playingList.clear();
                     playingList.add(song);
                     playList.overwriteStoredList(playingList);
@@ -102,7 +99,6 @@ public class MusicService extends Service {
                     stopNotification();
                     break;
                 case Config.PLAY_ALBUM:
-                    pausedSongSeek = 0;
                     playingList.clear();
                     Cursor musicCursor;
                     String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
@@ -158,9 +154,7 @@ public class MusicService extends Service {
                         mediaPlayer.seekTo(intent.getIntExtra("changeSeek", 0));
                     } catch (NullPointerException e) {
                         e.printStackTrace();
-                        pausedSongSeek = intent.getIntExtra("changeSeek", 0);
-                        playMusic(pausedSong);
-                        pausedSongSeek = 0;
+                        playMusic(currentSong);
                     }
                     break;
                 case Config.SHUFFLE_PLAYLIST:
@@ -175,7 +169,7 @@ public class MusicService extends Service {
                     break;
                 case Config.ADD_SONG_TO_PLAYLIST:
                     song = (Song) intent.getSerializableExtra("song");
-                    if (playList.getPlaybackTableSize() != 0 && currentPlaylistSongId != -1) {
+                    if (playList.getPlaybackTableSize() != 0) {
                         playingList.add(song);
                         playList.overwriteStoredList(playingList);
                         updatePlaylist();
@@ -185,7 +179,6 @@ public class MusicService extends Service {
                     }
                     break;
                 case Config.PLAY_FROM_PLAYLIST:
-                    pausedSongSeek = 0;
                     song = (Song) intent.getSerializableExtra("song");
                     playMusic(song);
                     updateCurrentPlaying();
@@ -206,7 +199,6 @@ public class MusicService extends Service {
                     if(songList != null) {
                         playList.overwriteStoredList(songList);
                         playingList = songList;
-                        pausedSongSeek = 0;
                         playMusic(playingList.get(0));
                         requestSongDetails = new Intent();
                         requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
@@ -282,9 +274,9 @@ public class MusicService extends Service {
             isPlaying = true;
         } else if(mediaPlayer == null && playingList.size() != 0) {
             playMusic(playingList.get(0));
+            isPlaying = true;
         }
         updatePlayState();
-        Toast.makeText(this, "Play toggled", Toast.LENGTH_LONG).show();
         return isPlaying;
     }
 
@@ -328,7 +320,9 @@ public class MusicService extends Service {
 
     public void prev() {
         int currentPos = playingList.indexOf(currentSong);
-        if(currentPos != 0) {
+        if(mediaPlayer.getCurrentPosition() < 5000) {
+            mediaPlayer.seekTo(0);
+        } else if(currentPos != 0) {
             playMusic(playingList.get(currentPos - 1));
         }
     }
@@ -358,6 +352,10 @@ public class MusicService extends Service {
         updateSession("state");
     }
 
+    public boolean isPlaying() {
+        return mediaPlayer != null && mediaPlayer.isPlaying();
+    }
+
     private void playSingle(Song song) {
         playingList.clear();
         playingList.add(song);
@@ -371,6 +369,7 @@ public class MusicService extends Service {
 
         if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             currentSong = song;
+            if(activity != null) activity.updatePlayer();
             try {
                 stopMusic();
                 mediaPlayer = new MediaPlayer();
@@ -378,18 +377,13 @@ public class MusicService extends Service {
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(song.getPath());
                 mediaPlayer.prepare();
-                currentPlaylistSongId =  (int) song.getId();
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         if(!repeatOne && !repeatAll) {
                             if(playingList.size() == 1) {
-                                currentPlaylistSongId = -1;
-                                pausedSong = song;
-                                pausedSongSeek = 0;
                                 stopMusic();
                             } else {
-                                pausedSongSeek = 0;
                                 Song song = playingList.get(playingList.indexOf(currentSong) + 1);
                                 playMusic(song);
                                 updateCurrentPlaying();
@@ -401,7 +395,6 @@ public class MusicService extends Service {
                                 playMusic(song);
                                 updateCurrentPlaying();
                             } else if(playingList.size() != 1) {
-                                pausedSongSeek = 0;
                                 Song song = playingList.get(playingList.indexOf(currentSong) + 1);
                                 playMusic(song);
                                 updateCurrentPlaying();
@@ -413,7 +406,6 @@ public class MusicService extends Service {
                     }
                 });
                 mediaPlayer.start();
-                mediaPlayer.seekTo(pausedSongSeek);
                 startForeground(NOTIFICATION_ID, createNotification());
                 updateSession("state");
                 updateSession("metadata");
@@ -573,6 +565,8 @@ public class MusicService extends Service {
         long playBackStateActions = PlaybackStateCompat.ACTION_PLAY |
                 PlaybackStateCompat.ACTION_PAUSE |
                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                PlaybackStateCompat.ACTION_REWIND |
+                PlaybackStateCompat.ACTION_FAST_FORWARD |
                 PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
         if(changed.equals("metadata")) {
             mediaSession.setMetadata(new MediaMetadataCompat.Builder()
@@ -584,7 +578,9 @@ public class MusicService extends Service {
         } else if(changed.equals("state")) {
             mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
                     .setActions(playBackStateActions)
-                    .setState(playState, mediaPlayer != null ? mediaPlayer.getCurrentPosition() : 0, 1.0f)
+                    .setState(playState, mediaPlayer != null
+                            ? mediaPlayer.getCurrentPosition()
+                            : 0, 1.0f)
                     .build());
         }
     }
@@ -679,7 +675,8 @@ public class MusicService extends Service {
     }
 
     public class MyBinder extends Binder {
-        public MusicService getService() {
+        public MusicService getService(MainActivity activity) {
+            MusicService.this.activity = activity;
             return MusicService.this;
         }
     }

@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
     protected ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
-            service = ((MusicService.MyBinder) binder).getService();
-            player.updatePlayer();
+            service = ((MusicService.MyBinder) binder).getService(MainActivity.this);
+            updatePlayer();
         }
 
         @Override
@@ -115,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
 
     public MusicService getService() {
         return service;
+    }
+
+    public void updatePlayer() {
+        player.updatePlayer();
     }
 
     @Override
@@ -188,7 +192,10 @@ public class MainActivity extends AppCompatActivity {
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                search(query);
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                intent.putExtra("dark_theme", darkMode);
+                intent.putExtra("query", query);
+                startActivity(intent);
                 return true;
             }
 
@@ -197,13 +204,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-    }
-
-    private void search(String text) {
-        Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-        intent.putExtra("dark_theme", darkMode);
-        intent.putExtra("query", text);
-        startActivity(intent);
     }
 
     private void setDynamicShortcuts() {
