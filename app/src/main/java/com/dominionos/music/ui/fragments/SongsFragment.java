@@ -7,7 +7,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import com.afollestad.async.Action;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
+import com.dominionos.music.utils.Utils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -51,9 +51,7 @@ public class SongsFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
-        if(darkMode) {
-            rv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
-        }
+        Utils.setWindowColor(rv, getContext(), darkMode);
     }
 
     private void setSongList() {

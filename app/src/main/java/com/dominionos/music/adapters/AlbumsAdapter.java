@@ -66,10 +66,10 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         }
     }
 
-    public AlbumsAdapter(Context context, List<Album> items, int columnSize,  RequestManager glide) {
+    public AlbumsAdapter(Context context, List<Album> items, RequestManager glide) {
         this.context = context;
         this.items = items;
-        final int px = Utils.dpToPx(context, columnSize);
+        final int px = Utils.dpToPx(context, com.dominionos.music.utils.Config.ALBUM_CARD_WIDTH);
         this.glideRequest = glide
                 .fromString()
                 .asBitmap()

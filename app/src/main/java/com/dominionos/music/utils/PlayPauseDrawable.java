@@ -171,8 +171,8 @@ public class PlayPauseDrawable extends Drawable {
         return a + (b - a) * t;
     }
 
-    public void setPlay(boolean animate) {
-        if (animate) {
+    public void setPlay() {
+        if (true) {
             if (!isPlaySet) {
                 togglePlayPause();
             }
@@ -183,8 +183,8 @@ public class PlayPauseDrawable extends Drawable {
         }
     }
 
-    public void setPause(boolean animate) {
-        if (animate) {
+    public void setPause() {
+        if (true) {
             if (isPlaySet) {
                 togglePlayPause();
             }
@@ -195,7 +195,7 @@ public class PlayPauseDrawable extends Drawable {
         }
     }
 
-    public void togglePlayPause() {
+    private void togglePlayPause() {
         if (animator != null) {
             animator.cancel();
         }

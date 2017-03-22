@@ -82,8 +82,4 @@
     <string name="dark_mode_enabled">Dark theme enabled</string>
     <string name="dark_mode_disabled">Dark theme disabled</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="expand">Expand</string>
-
 </resources>

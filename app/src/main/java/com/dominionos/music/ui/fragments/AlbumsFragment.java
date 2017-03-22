@@ -8,7 +8,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,7 +18,6 @@ import android.view.ViewGroup;
 import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.SpacesItemDecoration;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.AlbumsAdapter;
@@ -44,15 +42,13 @@ public class AlbumsFragment extends Fragment {
         boolean darkMode = sharedPref.getBoolean("dark_theme", false);
 
         gv = (FastScrollRecyclerView) v.findViewById(R.id.album_grid);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, Utils.calculateNoOfColumns(context, Config.ALBUM_CARD_WIDTH));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, Utils.calculateNoOfColumns(context));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
         gv.addItemDecoration(new SpacesItemDecoration());
         gv.setHasFixedSize(true);
-        if(darkMode) {
-            gv.setBackgroundColor(ContextCompat.getColor(context, R.color.darkWindowBackground));
-        }
+        Utils.setWindowColor(gv, context, darkMode);
 
         getAlbumList();
 
@@ -112,7 +108,7 @@ public class AlbumsFragment extends Fragment {
             @Override
             protected void done(ArrayList<Album> albumList) {
                 if(albumList.size() != 0) {
-                    gv.setAdapter(new AlbumsAdapter(context, albumList, Config.ALBUM_CARD_WIDTH, Glide.with(context)));
+                    gv.setAdapter(new AlbumsAdapter(context, albumList, Glide.with(context)));
                 } else {
                     getActivity().findViewById(R.id.no_albums).setVisibility(View.VISIBLE);
                 }

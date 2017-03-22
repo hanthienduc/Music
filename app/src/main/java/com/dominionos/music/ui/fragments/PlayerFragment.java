@@ -41,17 +41,17 @@ import butterknife.Unbinder;
 
 public class PlayerFragment extends Fragment {
 
-    @BindView(R.id.play) FloatingActionButton play;
-    @BindView(R.id.playing_bar_action) ImageButton playingAction;
-    @BindView(R.id.playing_bar) View playingBar;
-    @BindView(R.id.player_view) View playerView;
-    @BindView(R.id.playing_list) RecyclerView playingListView;
-    @BindView(R.id.next) ImageButton next;
-    @BindView(R.id.prev) ImageButton prev;
-    @BindView(R.id.shuffle) ImageButton shuffle;
-    @BindView(R.id.repeat) ImageButton repeat;
-    @BindView(R.id.art) ImageView playingArt;
-    @BindView(R.id.control_holder) View controlHolder;
+    @BindView(R.id.play) private FloatingActionButton play;
+    @BindView(R.id.playing_bar_action) private ImageButton playingAction;
+    @BindView(R.id.playing_bar) private View playingBar;
+    @BindView(R.id.player_view) private View playerView;
+    @BindView(R.id.playing_list) private RecyclerView playingListView;
+    @BindView(R.id.next) private ImageButton next;
+    @BindView(R.id.prev) private ImageButton prev;
+    @BindView(R.id.shuffle) private ImageButton shuffle;
+    @BindView(R.id.repeat) private ImageButton repeat;
+    @BindView(R.id.art) private ImageView playingArt;
+    @BindView(R.id.control_holder) private View controlHolder;
 
     private Unbinder unbinder;
     private PlayPauseDrawable playPauseDrawable;
@@ -106,7 +106,7 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-    public void updatePlayState() {
+    private void updatePlayState() {
         setPlayingState(service.isPlaying());
     }
 
@@ -217,15 +217,11 @@ public class PlayerFragment extends Fragment {
     }
 
     private void setStyle() {
-        playerView.setBackgroundColor(darkMode
-                ? ContextCompat.getColor(context, R.color.darkWindowBackground)
-                : ContextCompat.getColor(context, R.color.windowBackground));
+        Utils.setWindowColor(playerView, context, darkMode);
+        Utils.setContentColor(playingBar, context, darkMode);
         playingAction.setColorFilter(darkMode
                 ? ContextCompat.getColor(context, R.color.primaryTextDark)
                 : ContextCompat.getColor(context, R.color.primaryTextLight));
-        playingBar.setBackgroundColor(darkMode
-                ? ContextCompat.getColor(context, R.color.darkContentColour)
-                : ContextCompat.getColor(context, R.color.contentColour));
     }
 
     private View.OnClickListener playPauseClick() {
@@ -243,11 +239,11 @@ public class PlayerFragment extends Fragment {
 
     private void setPlayingState(boolean isPlaying) {
         if(isPlaying) {
-            playPauseDrawable.setPause(true);
-            miniPlayPauseDrawable.setPause(true);
+            playPauseDrawable.setPause();
+            miniPlayPauseDrawable.setPause();
         } else {
-            playPauseDrawable.setPlay(true);
-            miniPlayPauseDrawable.setPlay(true);
+            playPauseDrawable.setPlay();
+            miniPlayPauseDrawable.setPlay();
         }
     }
 

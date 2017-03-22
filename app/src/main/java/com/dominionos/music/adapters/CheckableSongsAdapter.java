@@ -11,7 +11,6 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.dominionos.music.R;
-import com.dominionos.music.utils.Utils;
 import com.dominionos.music.items.CheckableSong;
 
 import java.util.ArrayList;

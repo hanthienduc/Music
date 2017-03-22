@@ -4,8 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
@@ -16,6 +19,30 @@ import com.dominionos.music.items.Song;
 import java.util.List;
 
 public class Utils {
+
+    public static void setPrimaryTextColor(TextView view, Context context, boolean darkMode) {
+        view.setTextColor(darkMode
+                ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                : ContextCompat.getColor(context, R.color.primaryTextLight));
+    }
+
+    public static void setSecondaryTextColor(TextView view, Context context, boolean darkMode) {
+        view.setTextColor(darkMode
+                ? ContextCompat.getColor(context, R.color.secondaryTextDark)
+                : ContextCompat.getColor(context, R.color.secondaryTextLight));
+    }
+
+    public static void setWindowColor(View view, Context context, boolean darkMode) {
+        view.setBackgroundColor(darkMode
+                ? ContextCompat.getColor(context, R.color.darkWindowBackground)
+                : ContextCompat.getColor(context, R.color.windowBackground));
+    }
+
+    public static void setContentColor(View view, Context context, boolean darkMode) {
+        view.setBackgroundColor(darkMode
+                ? ContextCompat.getColor(context, R.color.darkContentColour)
+                : ContextCompat.getColor(context, R.color.contentColour));
+    }
 
     public static int getAutoStatColor(int baseColor) {
         float[] hsv = new float[3];
@@ -57,9 +84,9 @@ public class Utils {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    public static int calculateNoOfColumns(Context context, int columnSize) {
+    public static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        return (int) (dpWidth / columnSize);
+        return (int) (dpWidth / Config.ALBUM_CARD_WIDTH);
     }
 }

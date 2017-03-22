@@ -8,7 +8,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -20,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.ArtistAdapter;
 import com.dominionos.music.items.Artist;
+import com.dominionos.music.utils.Utils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -45,9 +45,7 @@ public class ArtistsFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
-        if(darkMode) {
-            rv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
-        }
+        Utils.setWindowColor(rv, context, darkMode);
 
         getArtistList();
 
@@ -75,8 +73,6 @@ public class ArtistsFragment extends Fragment {
                 if (musicCursor != null && musicCursor.moveToFirst()) {
                     int titleColumn = musicCursor.getColumnIndex
                             (MediaStore.Audio.Artists.ARTIST);
-                    int idColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Artists._ID);
                     int numOfAlbumsColumn = musicCursor.getColumnIndex
                             (MediaStore.Audio.Artists.NUMBER_OF_ALBUMS);
                     int numOfTracksColumn = musicCursor.getColumnIndex

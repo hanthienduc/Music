@@ -18,7 +18,6 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import com.dominionos.music.R;
-import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
 

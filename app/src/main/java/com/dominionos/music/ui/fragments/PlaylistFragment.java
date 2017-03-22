@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +15,7 @@ import com.dominionos.music.R;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.adapters.PlaylistAdapter;
 import com.dominionos.music.items.Playlist;
+import com.dominionos.music.utils.Utils;
 
 import java.util.List;
 
@@ -48,9 +48,7 @@ public class PlaylistFragment extends Fragment {
         rv.setLayoutManager(linearLayoutManager);
         rv.setHasFixedSize(true);
         rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList, darkMode));
-        if(darkMode) {
-            rv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.darkWindowBackground));
-        }
+        Utils.setWindowColor(rv, getContext(), darkMode);
     }
 
 }

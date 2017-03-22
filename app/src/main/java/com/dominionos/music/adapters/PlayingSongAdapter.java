@@ -68,7 +68,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     @Override
     public PlayingSongAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.song_list_item_art, parent, false);
+                inflate(R.layout.song, parent, false);
         return new SimpleItemViewHolder(itemView);
     }
 

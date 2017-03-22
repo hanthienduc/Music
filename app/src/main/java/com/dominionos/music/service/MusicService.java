@@ -52,7 +52,7 @@ public class MusicService extends Service {
     private NotificationManagerCompat notificationManager;
     private Song currentSong;
     private SharedPreferences prefs;
-    private IBinder binder = new MyBinder();
+    private final IBinder binder = new MyBinder();
     private MainActivity activity;
 
     private final AudioManager.OnAudioFocusChangeListener afChangeListener =
@@ -325,11 +325,6 @@ public class MusicService extends Service {
         } else if(currentPos != 0) {
             playMusic(playingList.get(currentPos - 1));
         }
-    }
-
-    @Override
-    public void onRebind(Intent intent) {
-        super.onRebind(intent);
     }
 
     @Override

@@ -61,10 +61,10 @@ import butterknife.Unbinder;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.main_toolbar) Toolbar toolbar;
-    @BindView(R.id.main_viewpager) ViewPager viewPager;
-    @BindView(R.id.fab) FloatingActionButton fab;
-    @BindView(R.id.sliding_layout) SlidingUpPanelLayout slidingUpPanelLayout;
+    @BindView(R.id.main_toolbar) private Toolbar toolbar;
+    @BindView(R.id.main_viewpager) private ViewPager viewPager;
+    @BindView(R.id.fab) private FloatingActionButton fab;
+    @BindView(R.id.sliding_layout) private SlidingUpPanelLayout slidingUpPanelLayout;
 
     private Unbinder unbinder;
     private AudioManager audioManager;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private Drawer drawer;
     private MusicService service;
     private PlayerFragment player;
-    protected ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             service = ((MusicService.MyBinder) binder).getService(MainActivity.this);
