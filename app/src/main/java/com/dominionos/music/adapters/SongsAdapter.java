@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +17,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.async.Action;
+import com.bumptech.glide.DrawableRequestBuilder;
+import com.bumptech.glide.RequestManager;
 import com.dominionos.music.R;
+import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.items.Song;
@@ -32,6 +37,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     private final Context context;
     private final boolean darkMode;
     private final Intent i;
+    private final DrawableRequestBuilder<String> glideRequest;
 
     @NonNull
     @Override
@@ -49,6 +55,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         final TextView desc;
         final View view;
         final ImageView menu;
+        final ImageView art;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
@@ -56,14 +63,22 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
             menu = (ImageView) itemView.findViewById(R.id.playing_bar_action);
+            art = (ImageView) itemView.findViewById(R.id.song_item_art);
         }
     }
 
-    public SongsAdapter(Context context, List<Song> items, boolean darkMode) {
+    public SongsAdapter(Context context, List<Song> items, boolean darkMode, RequestManager glide) {
         this.context = context;
         this.items = items;
         this.darkMode = darkMode;
         i = new Intent();
+        final int px = Utils.dpToPx(context, 48);
+        this.glideRequest = glide
+                .fromString()
+                .centerCrop()
+                .transform(new CircleTransform(context))
+                .override(px, px)
+                .crossFade();
     }
 
     @Override
@@ -141,6 +156,27 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                 context.sendBroadcast(a);
             }
         });
+        new Action<String>() {
+
+            @NonNull
+            @Override
+            public String id() {
+                return "set_song_art";
+            }
+
+            @Nullable
+            @Override
+            protected String run() throws InterruptedException {
+                return Utils.getAlbumArt(context, items.get(holder.getAdapterPosition()).getAlbumId());
+            }
+
+            @Override
+            protected void done(String result) {
+                glideRequest
+                        .load(result)
+                        .into(holder.art);
+            }
+        }.execute();
     }
 
     private void addToPlaylist(int position) {

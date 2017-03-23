@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
@@ -107,7 +108,7 @@ public class SearchActivity extends AppCompatActivity {
                         if (song.getName().toLowerCase().contains(query.toLowerCase())) {
                             searchResults.add(song);
                         }
-                        searchList.setAdapter(new SongsAdapter(SearchActivity.this, searchResults, darkMode));
+                        searchList.setAdapter(new SongsAdapter(SearchActivity.this, searchResults, darkMode, Glide.with(SearchActivity.this)));
                     }
                     return true;
                 }

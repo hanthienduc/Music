@@ -1,5 +1,6 @@
 package com.dominionos.music.ui.fragments;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.afollestad.async.Action;
+import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
@@ -29,10 +31,12 @@ public class SongsFragment extends Fragment {
     private View mainView;
     private FastScrollRecyclerView rv;
     private boolean darkMode = false;
+    private Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        context = getContext();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         darkMode = sharedPref.getBoolean("dark_theme", false);
 
         View v = inflater.inflate(R.layout.fragment_songs, container, false);
@@ -51,7 +55,7 @@ public class SongsFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
-        Utils.setWindowColor(rv, getContext(), darkMode);
+        Utils.setWindowColor(rv, context, darkMode);
     }
 
     private void setSongList() {
@@ -69,7 +73,7 @@ public class SongsFragment extends Fragment {
                 final ArrayList<Song> songList = new ArrayList<>();
                 final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
                 final String orderBy = MediaStore.Audio.Media.TITLE;
-                Cursor musicCursor = getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                Cursor musicCursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                         null, where, null, orderBy);
                 if (musicCursor != null && musicCursor.moveToFirst()) {
                     int titleColumn = musicCursor.getColumnIndex
@@ -110,7 +114,7 @@ public class SongsFragment extends Fragment {
             @Override
             protected void done(ArrayList<Song> songList) {
                 if(songList.size() != 0) {
-                    rv.setAdapter(new SongsAdapter(mainView.getContext(), songList, darkMode));
+                    rv.setAdapter(new SongsAdapter(mainView.getContext(), songList, darkMode, Glide.with(context)));
                 } else {
                     getActivity().findViewById(R.id.no_songs).setVisibility(View.VISIBLE);
                 }

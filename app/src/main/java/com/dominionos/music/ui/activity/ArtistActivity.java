@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 
+import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
@@ -93,7 +94,7 @@ public class ArtistActivity extends AppCompatActivity {
             rv.setBackgroundColor(darkMode
                     ? ContextCompat.getColor(this, R.color.darkWindowBackground)
                     : ContextCompat.getColor(this, R.color.windowBackground));
-            rv.setAdapter(new SongsAdapter(this, songList, darkMode));
+            rv.setAdapter(new SongsAdapter(this, songList, darkMode, Glide.with(this)));
         }
         if (musicCursor != null) {
             musicCursor.close();

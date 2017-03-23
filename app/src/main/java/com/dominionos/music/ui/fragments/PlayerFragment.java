@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
@@ -41,17 +42,21 @@ import butterknife.Unbinder;
 
 public class PlayerFragment extends Fragment {
 
-    @BindView(R.id.play) private FloatingActionButton play;
-    @BindView(R.id.playing_bar_action) private ImageButton playingAction;
-    @BindView(R.id.playing_bar) private View playingBar;
-    @BindView(R.id.player_view) private View playerView;
-    @BindView(R.id.playing_list) private RecyclerView playingListView;
-    @BindView(R.id.next) private ImageButton next;
-    @BindView(R.id.prev) private ImageButton prev;
-    @BindView(R.id.shuffle) private ImageButton shuffle;
-    @BindView(R.id.repeat) private ImageButton repeat;
-    @BindView(R.id.art) private ImageView playingArt;
-    @BindView(R.id.control_holder) private View controlHolder;
+    @BindView(R.id.play) FloatingActionButton play;
+    @BindView(R.id.playing_bar_action) ImageButton playingAction;
+    @BindView(R.id.player_view) View playerView;
+    @BindView(R.id.playing_list) RecyclerView playingListView;
+    @BindView(R.id.next) ImageButton next;
+    @BindView(R.id.prev) ImageButton prev;
+    @BindView(R.id.shuffle) ImageButton shuffle;
+    @BindView(R.id.repeat) ImageButton repeat;
+    @BindView(R.id.art) ImageView playingArt;
+    @BindView(R.id.control_holder) View controlHolder;
+
+    @BindView(R.id.playing_bar) View playingBar;
+    @BindView(R.id.playing_song_name) TextView currentSongName;
+    @BindView(R.id.playing_song_desc) TextView currentSongDesc;
+    @BindView(R.id.playing_art) ImageView playingSongArt;
 
     private Unbinder unbinder;
     private PlayPauseDrawable playPauseDrawable;
@@ -60,6 +65,7 @@ public class PlayerFragment extends Fragment {
     private MusicService service;
     private MainActivity activity;
     private Context context;
+    private Song currentPlaying;
 
     private boolean darkMode;
 
@@ -98,7 +104,8 @@ public class PlayerFragment extends Fragment {
 
     public void updatePlayer() {
         if(service == null) service = activity.getService();
-        if(service.getCurrentSong() != null) {
+        currentPlaying = service.getCurrentSong();
+        if(currentPlaying != null) {
             setPlayingList();
             setArt();
             updatePlayState();
@@ -111,16 +118,16 @@ public class PlayerFragment extends Fragment {
     }
 
     private void setPlayingList() {
-        if(service != null) {
-            ArrayList<Song> playingList = service.getPlayingList();
-            LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            layoutManager.scrollToPosition(0);
-            playingListView.setLayoutManager(layoutManager);
-            if(playingList.size() > 0) {
-                playingListView.setAdapter(new PlayingSongAdapter(context, playingList, darkMode, service.getCurrentSong(), Glide.with(getContext())));
-            }
+        ArrayList<Song> playingList = service.getPlayingList();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.scrollToPosition(0);
+        playingListView.setLayoutManager(layoutManager);
+        if(playingList.size() > 0) {
+            playingListView.setAdapter(new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(getContext())));
         }
+        currentSongName.setText(currentPlaying.getName());
+        currentSongDesc.setText(currentPlaying.getDesc());
     }
 
     private void setControls() {
@@ -212,6 +219,10 @@ public class PlayerFragment extends Fragment {
                                 }
                             }
                         });
+                Glide.with(context)
+                        .load(result)
+                        .error(R.drawable.default_art)
+                        .into(playingSongArt);
             }
         }.execute();
     }
@@ -219,6 +230,8 @@ public class PlayerFragment extends Fragment {
     private void setStyle() {
         Utils.setWindowColor(playerView, context, darkMode);
         Utils.setContentColor(playingBar, context, darkMode);
+        Utils.setPrimaryTextColor(currentSongName, context, darkMode);
+        Utils.setSecondaryTextColor(currentSongDesc, context, darkMode);
         playingAction.setColorFilter(darkMode
                 ? ContextCompat.getColor(context, R.color.primaryTextDark)
                 : ContextCompat.getColor(context, R.color.primaryTextLight));

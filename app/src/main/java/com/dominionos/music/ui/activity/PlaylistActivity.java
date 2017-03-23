@@ -23,6 +23,7 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.utils.MySQLiteHelper;
@@ -63,8 +64,7 @@ public class PlaylistActivity extends AppCompatActivity {
         rv.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(this, R.color.darkWindowBackground)
                 : ContextCompat.getColor(this, R.color.windowBackground));
-        rv.setAdapter(new SongsAdapter(
-                this, helper.getPlayListSongs(playlistId), darkMode));
+        rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), darkMode, Glide.with(this)));
 
         List<CheckableSong> songList = new ArrayList<>();
         Cursor musicCursor2;
