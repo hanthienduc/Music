@@ -39,6 +39,9 @@
     <string name="play_all">Play all</string>
     <string name="search">Search</string>
     <string name="add_playlist">Create playlist</string>
+    <string name="share_song">Share song</string>
+    <string name="song_delete_success">Song deleted</string>
+    <string name="song_delete_fail">Failed to delete song</string>
 
     <!-- Playlist strings -->
     <string name="rename_playlist">Rename playlist</string>
@@ -51,11 +54,6 @@
 
     <!-- PlaylistAdapter -->
     <string name="ok">OK</string>
-
-    <!-- PlaylistActivityAdapter -->
-    <string name="share_song">Share song</string>
-    <string name="song_delete_success">Song deleted</string>
-    <string name="song_delete_fail">Failed to delete song</string>
 
     <!-- About screen -->
     <string name="about_text">Music player based on an older version of @architjn\'s Auro, before everything got broken.</string>

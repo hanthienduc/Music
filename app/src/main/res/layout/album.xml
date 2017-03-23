@@ -16,10 +16,10 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <ImageView
-            android:id="@+id/grid_art"
+            android:id="@+id/album_art"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/grid_view_album_art_height"
-            android:scaleType="centerCrop"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
             android:src="@drawable/default_art"
             android:transitionName="albumArt"
             android:contentDescription="@string/album_art" />

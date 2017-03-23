@@ -16,7 +16,7 @@
         android:src="@drawable/default_art"/>
 
     <ImageView
-        android:id="@+id/song_item_menu"
+        android:id="@+id/playing_bar_action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -38,7 +38,7 @@
         android:paddingStart="72dp"
         android:paddingEnd="0dp"
         android:layout_toEndOf="@id/song_item_art"
-        android:layout_toStartOf="@id/song_item_menu"
+        android:layout_toStartOf="@id/playing_bar_action"
         tools:ignore="RelativeOverlap">
         <TextView
             android:id="@+id/song_item_name"

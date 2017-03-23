@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,8 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 
+import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
 
@@ -91,9 +92,9 @@ public class ArtistActivity extends AppCompatActivity {
             });
 
             rv.setBackgroundColor(darkMode
-                    ? Utils.getColor(this, R.color.darkWindowBackground)
-                    : Utils.getColor(this, R.color.windowBackground));
-            rv.setAdapter(new SongsAdapter(this, songList, darkMode));
+                    ? ContextCompat.getColor(this, R.color.darkWindowBackground)
+                    : ContextCompat.getColor(this, R.color.windowBackground));
+            rv.setAdapter(new SongsAdapter(this, songList, darkMode, Glide.with(this)));
         }
         if (musicCursor != null) {
             musicCursor.close();

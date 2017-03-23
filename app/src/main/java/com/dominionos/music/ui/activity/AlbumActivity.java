@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
@@ -120,8 +121,8 @@ public class AlbumActivity extends AppCompatActivity {
                                     vibrantRgb = altSwatch.getRgb();
                                     vibrantTitleText = altSwatch.getTitleTextColor();
                                 } else {
-                                    vibrantRgb = Utils.getColor(AlbumActivity.this, R.color.cardBackground);
-                                    vibrantTitleText = Utils.getColor(AlbumActivity.this, R.color.primaryTextDark);
+                                    vibrantRgb = ContextCompat.getColor(AlbumActivity.this, R.color.cardBackground);
+                                    vibrantTitleText = ContextCompat.getColor(AlbumActivity.this, R.color.primaryTextDark);
                                 }
                                 toolbarBackground.setBackgroundColor(vibrantRgb);
                                 collapsingToolbarLayout.setStatusBarScrimColor(Utils.getAutoStatColor(vibrantRgb));
@@ -188,10 +189,10 @@ public class AlbumActivity extends AppCompatActivity {
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
         rv.setBackgroundColor(darkMode
-                ? Utils.getColor(this, R.color.darkWindowBackground)
-                : Utils.getColor(this, R.color.windowBackground));
+                ? ContextCompat.getColor(this, R.color.darkWindowBackground)
+                : ContextCompat.getColor(this, R.color.windowBackground));
 
-        rv.setAdapter(new SongsAdapter(AlbumActivity.this, songList, darkMode));
+        rv.setAdapter(new SongsAdapter(AlbumActivity.this, songList, darkMode, Glide.with(this)));
     }
 
     @Override

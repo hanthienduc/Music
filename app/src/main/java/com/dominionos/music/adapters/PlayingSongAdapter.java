@@ -46,7 +46,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
             view = itemView;
-            menu = (ImageView) itemView.findViewById(R.id.song_item_menu);
+            menu = (ImageView) itemView.findViewById(R.id.playing_bar_action);
             art = (ImageView) itemView.findViewById(R.id.song_item_art);
         }
     }
@@ -68,7 +68,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     @Override
     public PlayingSongAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.song_list_item_art, parent, false);
+                inflate(R.layout.song, parent, false);
         return new SimpleItemViewHolder(itemView);
     }
 
@@ -115,7 +115,8 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                                 notifyItemRemoved(adapterPosition);
                                 return true;
                             case R.id.menu_add_playlist:
-                                addToPlaylist(adapterPosition);
+                                Song song = songs.get(adapterPosition);
+                                Utils.addToPlaylistDialog(context, song);
                                 return true;
                             case R.id.menu_share:
                                 Intent c = new Intent();
@@ -158,17 +159,18 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
 
                 @Override
                 protected void done(String result) {
+                    holder.art.clearColorFilter();
                     glideRequest
                             .load(result)
                             .into(holder.art);
                 }
             }.execute();
+        } else {
+            holder.art.setImageResource(R.drawable.ic_audiotrack);
+            holder.art.setColorFilter(darkMode
+                    ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                    : ContextCompat.getColor(context, R.color.primaryTextLight));
         }
-    }
-
-    private void addToPlaylist(int position) {
-        Song item = songs.get(position);
-        Utils.addToPlaylistDialog(context, item);
     }
 
     @Override

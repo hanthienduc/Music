@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -22,11 +23,11 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
+import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.utils.MySQLiteHelper;
-import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.CheckableSongsAdapter;
-import com.dominionos.music.adapters.PlaylistActivityAdapter;
 import com.dominionos.music.items.CheckableSong;
 
 import java.util.ArrayList;
@@ -61,11 +62,9 @@ public class PlaylistActivity extends AppCompatActivity {
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setItemAnimator(new DefaultItemAnimator());
         rv.setBackgroundColor(darkMode
-                ? Utils.getColor(this, R.color.darkWindowBackground)
-                : Utils.getColor(this, R.color.windowBackground));
-        rv.setAdapter(new PlaylistActivityAdapter(
-                this, helper.getPlayListSongs(playlistId),
-                playlistId, darkMode));
+                ? ContextCompat.getColor(this, R.color.darkWindowBackground)
+                : ContextCompat.getColor(this, R.color.windowBackground));
+        rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), darkMode, Glide.with(this)));
 
         List<CheckableSong> songList = new ArrayList<>();
         Cursor musicCursor2;
