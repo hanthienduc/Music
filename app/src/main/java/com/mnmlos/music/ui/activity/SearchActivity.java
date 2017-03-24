@@ -108,7 +108,7 @@ public class SearchActivity extends AppCompatActivity {
                         if (song.getName().toLowerCase().contains(query.toLowerCase())) {
                             searchResults.add(song);
                         }
-                        searchList.setAdapter(new SongsAdapter(SearchActivity.this, searchResults, darkMode, Glide.with(SearchActivity.this)));
+                        searchList.setAdapter(new SongsAdapter(SearchActivity.this, searchResults, darkMode, Glide.with(SearchActivity.this), true));
                     }
                     return true;
                 }

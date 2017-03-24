@@ -64,7 +64,7 @@ public class PlaylistActivity extends AppCompatActivity {
         rv.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(this, R.color.darkWindowBackground)
                 : ContextCompat.getColor(this, R.color.windowBackground));
-        rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), darkMode, Glide.with(this)));
+        rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), darkMode, Glide.with(this), true));
 
         List<CheckableSong> songList = new ArrayList<>();
         Cursor musicCursor2;

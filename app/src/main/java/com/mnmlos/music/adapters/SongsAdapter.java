@@ -35,7 +35,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     private final List<Song> items;
     private final Context context;
-    private final boolean darkMode;
+    private final boolean darkMode, shouldHaveArt;
     private final Intent i;
     private final DrawableRequestBuilder<String> glideRequest;
 
@@ -56,6 +56,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         final View view;
         final ImageView menu;
         final ImageView art;
+        final View textHolder;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
@@ -64,10 +65,11 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
             menu = (ImageView) itemView.findViewById(R.id.playing_bar_action);
             art = (ImageView) itemView.findViewById(R.id.song_item_art);
+            textHolder = itemView.findViewById(R.id.song_text_holder);
         }
     }
 
-    public SongsAdapter(Context context, List<Song> items, boolean darkMode, RequestManager glide) {
+    public SongsAdapter(Context context, List<Song> items, boolean darkMode, RequestManager glide, boolean shouldHaveArt) {
         this.context = context;
         this.items = items;
         this.darkMode = darkMode;
@@ -79,6 +81,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                 .transform(new CircleTransform(context))
                 .override(px, px)
                 .crossFade();
+        this.shouldHaveArt = shouldHaveArt;
     }
 
     @Override
@@ -156,27 +159,32 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                 context.sendBroadcast(a);
             }
         });
-        new Action<String>() {
+        if(shouldHaveArt) {
+            new Action<String>() {
 
-            @NonNull
-            @Override
-            public String id() {
-                return "set_song_art";
-            }
+                @NonNull
+                @Override
+                public String id() {
+                    return "set_song_art";
+                }
 
-            @Nullable
-            @Override
-            protected String run() throws InterruptedException {
-                return Utils.getAlbumArt(context, items.get(holder.getAdapterPosition()).getAlbumId());
-            }
+                @Nullable
+                @Override
+                protected String run() throws InterruptedException {
+                    return Utils.getAlbumArt(context, items.get(holder.getAdapterPosition()).getAlbumId());
+                }
 
-            @Override
-            protected void done(String result) {
-                glideRequest
-                        .load(result)
-                        .into(holder.art);
-            }
-        }.execute();
+                @Override
+                protected void done(String result) {
+                    glideRequest
+                            .load(result)
+                            .into(holder.art);
+                }
+            }.execute();
+        } else {
+            holder.art.setVisibility(View.GONE);
+            holder.textHolder.setPaddingRelative(Utils.dpToPx(context, 16), 0, 0, 0);
+        }
     }
 
     private void addToPlaylist(int position) {

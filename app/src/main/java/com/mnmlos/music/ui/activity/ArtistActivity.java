@@ -94,7 +94,7 @@ public class ArtistActivity extends AppCompatActivity {
             rv.setBackgroundColor(darkMode
                     ? ContextCompat.getColor(this, R.color.darkWindowBackground)
                     : ContextCompat.getColor(this, R.color.windowBackground));
-            rv.setAdapter(new SongsAdapter(this, songList, darkMode, Glide.with(this)));
+            rv.setAdapter(new SongsAdapter(this, songList, darkMode, Glide.with(this), false));
         }
         if (musicCursor != null) {
             musicCursor.close();

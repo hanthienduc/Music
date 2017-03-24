@@ -114,7 +114,7 @@ public class SongsFragment extends Fragment {
             @Override
             protected void done(ArrayList<Song> songList) {
                 if(songList.size() != 0) {
-                    rv.setAdapter(new SongsAdapter(mainView.getContext(), songList, darkMode, Glide.with(context)));
+                    rv.setAdapter(new SongsAdapter(mainView.getContext(), songList, darkMode, Glide.with(context), true));
                 } else {
                     getActivity().findViewById(R.id.no_songs).setVisibility(View.VISIBLE);
                 }
