@@ -109,6 +109,8 @@ public class PlayerFragment extends Fragment {
             setPlayingList();
             setArt();
             updatePlayState();
+            setShuffleState(service.getShuffleState());
+            setRepeatState(service.getRepeatState());
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
     }
@@ -157,22 +159,42 @@ public class PlayerFragment extends Fragment {
             public void onClick(View v) {
                 if(service == null) service = activity.getService();
                 if(service != null) {
-                    boolean shuffleState = service.shuffle();
-                    shuffle.setAlpha(shuffleState
-                            ? Config.BUTTON_ACTIVE
-                            : Config.BUTTON_INACTIVE);
+                    setShuffleState(service.shuffle());
+                    setPlayingList();
                 }
             }
         });
         repeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(service == null) service = activity.getService();
                 if(service != null) {
-                    service.repeat();
+                    setRepeatState(service.repeat());
                 }
             }
         });
+    }
+
+    private void setShuffleState(boolean shuffleState) {
+        shuffle.setAlpha(shuffleState
+                ? Config.BUTTON_ACTIVE
+                : Config.BUTTON_INACTIVE);
+    }
+
+    private void setRepeatState(int repeatState) {
+        switch (repeatState) {
+            case 0:
+                repeat.setImageResource(R.drawable.ic_repeat_all);
+                repeat.setAlpha(Config.BUTTON_INACTIVE);
+                break;
+            case 1:
+                repeat.setImageResource(R.drawable.ic_repeat_one);
+                repeat.setAlpha(Config.BUTTON_ACTIVE);
+                break;
+            case 2:
+                repeat.setImageResource(R.drawable.ic_repeat_all);
+                repeat.setAlpha(Config.BUTTON_ACTIVE);
+                break;
+        }
     }
 
     private void setArt() {

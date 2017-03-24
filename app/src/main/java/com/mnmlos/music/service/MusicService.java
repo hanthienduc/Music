@@ -223,16 +223,19 @@ public class MusicService extends Service {
         return currentSong;
     }
 
-    private void updateRepeat() {
-        Intent intent = new Intent(Config.UPDATE_REPEAT);
-        if(repeatAll) {
-            intent.putExtra("repeat", "all");
-        } else if (repeatOne) {
-            intent.putExtra("repeat", "one");
-        } else {
-            intent.putExtra("repeat", "none");
+    public boolean getShuffleState() {
+        return shuffle;
+    }
+
+    public int getRepeatState() {
+        if(!repeatAll && !repeatOne) {
+            return 0;
+        } else if(repeatAll && !repeatOne) {
+            return 2;
+        } else if(!repeatAll) {
+            return 1;
         }
-        sendBroadcast(intent);
+        return 0;
     }
 
     private void updateCurrentPlaying() {
@@ -299,18 +302,22 @@ public class MusicService extends Service {
         return shuffle;
     }
 
-    public void repeat() {
+    public int repeat() {
+        int repeatState;
         if(!repeatAll && !repeatOne) {
             repeatAll = true;
             repeatOne = false;
+            repeatState = 2;
         } else if(repeatAll) {
             repeatAll = false;
             repeatOne = true;
+            repeatState = 1;
         } else {
             repeatAll = false;
             repeatOne = false;
+            repeatState = 0;
         }
-        updateRepeat();
+        return repeatState;
     }
 
     public void next() {
