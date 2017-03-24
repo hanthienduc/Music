@@ -54,6 +54,7 @@ public class MusicService extends Service {
     private SharedPreferences prefs;
     private final IBinder binder = new MyBinder();
     private MainActivity activity;
+    private SharedPreferences sharedPrefs;
 
     private final AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -147,7 +148,6 @@ public class MusicService extends Service {
                     break;
                 case Config.REQUEST_SONG_DETAILS:
                     updateCurrentPlaying();
-                    updatePlaylist();
                     break;
                 case Config.SEEK_TO_SONG:
                     try {
@@ -165,14 +165,12 @@ public class MusicService extends Service {
                     song = (Song) intent.getSerializableExtra("song");
                     playingList.add(insertPos, song);
                     playList.overwriteStoredList(playingList);
-                    updatePlaylist();
                     break;
                 case Config.ADD_SONG_TO_PLAYLIST:
                     song = (Song) intent.getSerializableExtra("song");
                     if (playList.getPlaybackTableSize() != 0) {
                         playingList.add(song);
                         playList.overwriteStoredList(playingList);
-                        updatePlaylist();
                     } else {
                         intent.setAction(Config.PLAY_SINGLE_SONG);
                         sendBroadcast(intent);
@@ -273,6 +271,8 @@ public class MusicService extends Service {
             mediaPlayer.pause();
             isPlaying = false;
         } else if(mediaPlayer != null && !mediaPlayer.isPlaying()) {
+            Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+            mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
             mediaPlayer.start();
             isPlaying = true;
         } else if(mediaPlayer == null && playingList.size() != 0) {
@@ -288,13 +288,11 @@ public class MusicService extends Service {
             if(!shuffle) {
                 preShuffle = playingList;
                 Collections.shuffle(playingList);
-                updatePlaylist();
                 shuffle = true;
             } else {
                 if(preShuffle != null) {
                     playingList = preShuffle;
                     playList.overwriteStoredList(playingList);
-                    updatePlaylist();
                 }
                 shuffle = false;
             }
@@ -339,11 +337,6 @@ public class MusicService extends Service {
         return true;
     }
 
-    private void updatePlaylist() {
-        Intent playlistIntent = new Intent(Config.GET_PLAYING_LIST);
-        sendBroadcast(playlistIntent);
-    }
-
     private void stopMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
@@ -378,6 +371,8 @@ public class MusicService extends Service {
                 notificationManager = NotificationManagerCompat.from(this);
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(song.getPath());
+                Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+                mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
                 mediaPlayer.prepare();
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -425,6 +420,7 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
+        sharedPrefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
         playList = new MusicPlayerDBHelper(this);
         IntentFilter commandFilter = new IntentFilter();
         commandFilter.addAction(Config.TOGGLE_PLAY);
@@ -582,7 +578,7 @@ public class MusicService extends Service {
                     .setActions(playBackStateActions)
                     .setState(playState, mediaPlayer != null
                             ? mediaPlayer.getCurrentPosition()
-                            : 0, 1.0f)
+                            : 0, mediaPlayer.getPlaybackParams().getSpeed())
                     .build());
         }
     }

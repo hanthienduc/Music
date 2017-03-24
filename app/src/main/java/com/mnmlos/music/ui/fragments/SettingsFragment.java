@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -17,10 +18,24 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.pref_general);
 
+        configurePlaybackSettings();
         configureAppearanceSettings();
         configureAdvancedSettings();
     }
 
+    private void configurePlaybackSettings() {
+        Preference playbackSpeed = findPreference("playback_speed");
+        playbackSpeed.setSummary(playbackSpeed.getSharedPreferences().getString("playback_speed", "1.0x"));
+        playbackSpeed.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String valueString = newValue.toString().replace("x", "");
+                preference.getSharedPreferences().edit().putFloat("playback_speed_float", Float.valueOf(valueString)).apply();
+                preference.setSummary(newValue.toString());
+                return true;
+            }
+        });
+    }
     private void configureAppearanceSettings() {
         final String darkModeEnabled = getString(R.string.dark_mode_enabled);
         final String darkModeDisabled = getString(R.string.dark_mode_disabled);
