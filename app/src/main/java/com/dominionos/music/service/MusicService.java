@@ -578,7 +578,9 @@ public class MusicService extends Service {
                     .setActions(playBackStateActions)
                     .setState(playState, mediaPlayer != null
                             ? mediaPlayer.getCurrentPosition()
-                            : 0, mediaPlayer.getPlaybackParams().getSpeed())
+                            : 0, mediaPlayer != null
+                            ? mediaPlayer.getPlaybackParams().getSpeed()
+                            : 1.0f)
                     .build());
         }
     }
