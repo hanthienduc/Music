@@ -11,9 +11,12 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -271,8 +274,27 @@ public class MusicService extends Service {
             mediaPlayer.pause();
             isPlaying = false;
         } else if(mediaPlayer != null && !mediaPlayer.isPlaying()) {
-            Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
-            mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
+            final float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
+            } else {
+                final SoundPool soundPool = new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+                        .setMaxStreams(4).build();
+
+                final int soundId = mediaPlayer.getAudioSessionId();
+                AudioManager mgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                final float volume = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+                soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener()
+                {
+                    @Override
+                    public void onLoadComplete(SoundPool arg0, int arg1, int arg2)
+                    {
+                        soundPool.play(soundId, volume, volume, 1, 0, playbackSpeed);
+                    }
+                });
+            }
             mediaPlayer.start();
             isPlaying = true;
         } else if(mediaPlayer == null && playingList.size() != 0) {
@@ -371,8 +393,27 @@ public class MusicService extends Service {
                 notificationManager = NotificationManagerCompat.from(this);
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(song.getPath());
-                Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
-                mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
+                final Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
+                } else {
+                    final SoundPool soundPool = new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+                            .setMaxStreams(4).build();
+
+                    final int soundId = mediaPlayer.getAudioSessionId();
+                    AudioManager mgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                    final float volume = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+                    soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener()
+                    {
+                        @Override
+                        public void onLoadComplete(SoundPool arg0, int arg1, int arg2)
+                        {
+                            soundPool.play(soundId, volume, volume, 1, 0, playbackSpeed);
+                        }
+                    });
+                }
                 mediaPlayer.prepare();
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -574,13 +615,17 @@ public class MusicService extends Service {
                             ? getAlbumArt() : null)
                     .build());
         } else if(changed.equals("state")) {
+            float playbackSpeed = 1.0f;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if(mediaPlayer != null)  playbackSpeed = mediaPlayer.getPlaybackParams().getSpeed();
+            } else {
+                playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+            }
             mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
                     .setActions(playBackStateActions)
                     .setState(playState, mediaPlayer != null
                             ? mediaPlayer.getCurrentPosition()
-                            : 0, mediaPlayer != null
-                            ? mediaPlayer.getPlaybackParams().getSpeed()
-                            : 1.0f)
+                            : 0, playbackSpeed)
                     .build());
         }
     }
