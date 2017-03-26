@@ -10,7 +10,8 @@
         android:id="@+id/song_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:buttonTint="@android:color/primary_text_light"
+        android:colorControlNormal="@color/colorAccent"
+        android:colorControlActivated="@color/colorAccent"
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"/>
 

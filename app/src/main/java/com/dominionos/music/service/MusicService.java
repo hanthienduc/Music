@@ -106,7 +106,7 @@ public class MusicService extends Service {
                     playingList.clear();
                     Cursor musicCursor;
                     String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
-                    String whereVal[] = {intent.getLongExtra("albumId", 0) + ""};
+                    String whereVal[] = {String.valueOf(intent.getLongExtra("albumId", 0))};
                     String orderBy = MediaStore.Audio.Media._ID;
 
                     musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,

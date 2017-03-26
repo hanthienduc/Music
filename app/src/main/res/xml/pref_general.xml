@@ -9,7 +9,9 @@
             android:key="playback_speed"
             android:defaultValue="1.0x"
             android:summary="Set the players speed"
-            android:title="Playback speed" />
+            android:title="Playback speed"
+            android:colorControlNormal="@color/colorAccent"
+            android:colorControlActivated="@color/colorAccent"/>
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory
