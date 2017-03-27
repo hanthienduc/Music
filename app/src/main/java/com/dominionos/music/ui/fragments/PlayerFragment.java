@@ -32,6 +32,8 @@ import com.dominionos.music.utils.PaletteBitmap;
 import com.dominionos.music.utils.PaletteBitmapTranscoder;
 import com.dominionos.music.utils.PlayPauseDrawable;
 import com.dominionos.music.utils.Utils;
+import com.h6ah4i.android.widget.advrecyclerview.animator.DraggableItemAnimator;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -66,6 +68,8 @@ public class PlayerFragment extends Fragment {
     private MainActivity activity;
     private Context context;
     private Song currentPlaying;
+    private RecyclerViewDragDropManager recyclerViewDragDropManager;
+    private PlayingSongAdapter adapter;
 
     private boolean darkMode;
 
@@ -81,6 +85,16 @@ public class PlayerFragment extends Fragment {
 
         setControls();
         setStyle();
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.scrollToPosition(0);
+        playingListView.setLayoutManager(layoutManager);
+        playingListView.setItemAnimator(new DraggableItemAnimator());
+
+        recyclerViewDragDropManager = new RecyclerViewDragDropManager();
+        recyclerViewDragDropManager.setInitiateOnLongPress(true);
+        recyclerViewDragDropManager.setInitiateOnMove(false);
 
         slidingUpPanelLayout = activity.getSlidingPanel();
         slidingUpPanelLayout.setScrollableView(playingListView);
@@ -106,7 +120,7 @@ public class PlayerFragment extends Fragment {
         if(service == null) service = activity.getService();
         currentPlaying = service.getCurrentSong();
         if(currentPlaying != null) {
-            setPlayingList();
+            updatePlayingList();
             setArt();
             updatePlayState();
             setShuffleState(service.getShuffleState());
@@ -119,14 +133,17 @@ public class PlayerFragment extends Fragment {
         setPlayingState(service.isPlaying());
     }
 
-    private void setPlayingList() {
+    private void updatePlayingList() {
         ArrayList<Song> playingList = service.getPlayingList();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        layoutManager.scrollToPosition(0);
-        playingListView.setLayoutManager(layoutManager);
         if(playingList.size() > 0) {
-            playingListView.setAdapter(new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(getContext())));
+            if(adapter == null) {
+                adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(getContext()));
+                RecyclerView.Adapter wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(adapter);
+                playingListView.setAdapter(wrappedAdapter);
+                recyclerViewDragDropManager.attachRecyclerView(playingListView);
+            } else {
+                adapter.updateData(playingList, currentPlaying);
+            }
         }
         currentSongName.setText(currentPlaying.getName());
         currentSongDesc.setText(currentPlaying.getDesc());
@@ -160,7 +177,7 @@ public class PlayerFragment extends Fragment {
                 if(service == null) service = activity.getService();
                 if(service != null) {
                     setShuffleState(service.shuffle());
-                    setPlayingList();
+                    updatePlayingList();
                 }
             }
         });

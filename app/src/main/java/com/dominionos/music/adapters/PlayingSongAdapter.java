@@ -22,26 +22,58 @@ import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.items.Song;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemConstants;
+import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange;
+import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.SimpleItemViewHolder> {
+public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.ViewHolder>
+        implements DraggableItemAdapter<PlayingSongAdapter.ViewHolder>{
 
-    private final List<Song> songs;
+    private List<Song> songs;
     private final Context context;
     private final boolean darkMode;
-    private final Song currentSong;
+    private Song currentSong;
     private final DrawableRequestBuilder<String> glideRequest;
 
-    final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public boolean onCheckCanStartDrag(ViewHolder holder, int position, int x, int y) {
+        return true;
+    }
+
+    @Override
+    public ItemDraggableRange onGetItemDraggableRange(ViewHolder holder, int position) {
+        return null;
+    }
+
+    @Override
+    public void onMoveItem(int fromPosition, int toPosition) {
+        if (fromPosition == toPosition) {
+            return;
+        }
+        Song movedSong = songs.get(fromPosition);
+        songs.remove(movedSong);
+        songs.add(toPosition, movedSong);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public boolean onCheckCanDrop(int draggingPosition, int dropPosition) {
+        return true;
+    }
+
+    final static class ViewHolder extends AbstractDraggableItemViewHolder {
         final TextView title;
         final TextView desc;
         public final View view;
         public final ImageView menu;
         final ImageView art;
 
-        SimpleItemViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
@@ -49,6 +81,12 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
             menu = (ImageView) itemView.findViewById(R.id.playing_bar_action);
             art = (ImageView) itemView.findViewById(R.id.song_item_art);
         }
+    }
+
+    public void updateData(ArrayList<Song> newSongList, Song currentSong) {
+        songs = newSongList;
+        this.currentSong = currentSong;
+        notifyDataSetChanged();
     }
 
     public PlayingSongAdapter(Context context, List<Song> songs, boolean darkMode, Song currentSong, RequestManager glide) {
@@ -63,25 +101,57 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                 .crossFade()
                 .transform(new CircleTransform(context))
                 .override(px, px);
+        setHasStableIds(true);
     }
 
     @Override
-    public PlayingSongAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.song, parent, false);
-        return new SimpleItemViewHolder(itemView);
+        return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(final SimpleItemViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         final int adapterPosition = holder.getAdapterPosition();
         if(darkMode) {
             holder.title.setTextColor(ContextCompat.getColor(context, R.color.primaryTextDark));
             holder.desc.setTextColor(ContextCompat.getColor(context, R.color.secondaryTextDark));
             holder.menu.setColorFilter(ContextCompat.getColor(context, R.color.primaryTextDark));
         }
-        holder.title.setText(songs.get(adapterPosition).getName());
-        holder.desc.setText(songs.get(adapterPosition).getDesc());
+        if(adapterPosition != -1) {
+            holder.title.setText(songs.get(adapterPosition).getName());
+            holder.desc.setText(songs.get(adapterPosition).getDesc());
+            if(songs.get(adapterPosition) != currentSong) {
+                new Action<String>() {
+
+                    @NonNull
+                    @Override
+                    public String id() {
+                        return "song_art";
+                    }
+
+                    @Nullable
+                    @Override
+                    protected String run() throws InterruptedException {
+                        return Utils.getAlbumArt(context, songs.get(adapterPosition).getAlbumId());
+                    }
+
+                    @Override
+                    protected void done(String result) {
+                        holder.art.clearColorFilter();
+                        glideRequest
+                                .load(result)
+                                .into(holder.art);
+                    }
+                }.execute();
+            } else {
+                holder.art.setImageResource(R.drawable.ic_audiotrack);
+                holder.art.setColorFilter(darkMode
+                        ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                        : ContextCompat.getColor(context, R.color.primaryTextLight));
+            }
+        }
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,36 +211,6 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                 popupMenu.show();
             }
         });
-
-        if(songs.get(adapterPosition) != currentSong) {
-            new Action<String>() {
-
-                @NonNull
-                @Override
-                public String id() {
-                    return "song_art";
-                }
-
-                @Nullable
-                @Override
-                protected String run() throws InterruptedException {
-                    return Utils.getAlbumArt(context, songs.get(adapterPosition).getAlbumId());
-                }
-
-                @Override
-                protected void done(String result) {
-                    holder.art.clearColorFilter();
-                    glideRequest
-                            .load(result)
-                            .into(holder.art);
-                }
-            }.execute();
-        } else {
-            holder.art.setImageResource(R.drawable.ic_audiotrack);
-            holder.art.setColorFilter(darkMode
-                    ? ContextCompat.getColor(context, R.color.primaryTextDark)
-                    : ContextCompat.getColor(context, R.color.primaryTextLight));
-        }
     }
 
     @Override

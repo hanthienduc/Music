@@ -201,9 +201,8 @@ public class MusicService extends Service {
                         playList.overwriteStoredList(songList);
                         playingList = songList;
                         playMusic(playingList.get(0));
-                        requestSongDetails = new Intent();
-                        requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
-                        sendBroadcast(requestSongDetails);
+                        updateNotification();
+                        if(activity != null) activity.updatePlayer();
                     } else {
                         Toast.makeText(context, getString(R.string.service_generate_list_warning), Toast.LENGTH_LONG).show();
                     }
