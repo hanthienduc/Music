@@ -180,9 +180,6 @@ public class MusicService extends Service {
                     song = (Song) intent.getSerializableExtra("song");
                     playMusic(song);
                     updateCurrentPlaying();
-                    requestSongDetails = new Intent();
-                    requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
-                    sendBroadcast(requestSongDetails);
                     break;
                 case Config.PLAY_PLAYLIST:
                     MySQLiteHelper helper = new MySQLiteHelper(context);
@@ -233,18 +230,8 @@ public class MusicService extends Service {
     }
 
     private void updateCurrentPlaying() {
-        Intent intent = new Intent(Config.GET_PLAYING_DETAIL);
-        if(currentSong != null) {
-            intent.putExtra("song", currentSong);
-        } else if(playingList.size() > 0){
-            intent.putExtra("song", playingList.get(0));
-        }
-        if(mediaPlayer != null) {
-            intent.putExtra("songDuration", mediaPlayer.getDuration());
-            intent.putExtra("songCurrTime", mediaPlayer.getCurrentPosition());
-        }
-        sendBroadcast(intent);
         updatePlayState();
+        activity.updatePlayingList();
         if(currentSong != null) updateSession("metadata");
     }
 
@@ -253,9 +240,7 @@ public class MusicService extends Service {
     }
 
     private void updatePlayState() {
-        Intent intent = new Intent(Config.GET_PLAY_STATE);
-        intent.putExtra("isPlaying", mediaPlayer != null && mediaPlayer.isPlaying());
-        sendBroadcast(intent);
+        activity.updatePlayerPlayState();
         if(mediaPlayer != null && currentSong != null) updateNotification();
         updateSession("state");
     }
@@ -338,15 +323,17 @@ public class MusicService extends Service {
     }
 
     public void next() {
-        playMusic(playingList.get(playingList.indexOf(currentSong) + 1));
-        updateCurrentPlaying();
+        if(playingList.size() > 0) {
+            playMusic(playingList.get(playingList.indexOf(currentSong) + 1));
+            updateCurrentPlaying();
+        }
     }
 
     public void prev() {
         int currentPos = playingList.indexOf(currentSong);
         if(mediaPlayer.getCurrentPosition() < 5000) {
             mediaPlayer.seekTo(0);
-        } else if(currentPos != 0) {
+        } else if(currentPos != 0 && playingList.size() > 0) {
             playMusic(playingList.get(currentPos - 1));
         }
     }

@@ -89,8 +89,10 @@ public class PlayerFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
+        DraggableItemAnimator animator = new DraggableItemAnimator();
+        animator.setSupportsChangeAnimations(false);
         playingListView.setLayoutManager(layoutManager);
-        playingListView.setItemAnimator(new DraggableItemAnimator());
+        playingListView.setItemAnimator(animator);
 
         recyclerViewDragDropManager = new RecyclerViewDragDropManager();
         recyclerViewDragDropManager.setInitiateOnLongPress(true);
@@ -130,11 +132,11 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-    private void updatePlayState() {
+    public void updatePlayState() {
         setPlayingState(service.isPlaying());
     }
 
-    private void updatePlayingList() {
+    public void updatePlayingList() {
         ArrayList<Song> playingList = service.getPlayingList();
         if(playingList.size() > 0) {
             if(adapter == null) {
@@ -148,6 +150,7 @@ public class PlayerFragment extends Fragment {
         }
         currentSongName.setText(currentPlaying.getName());
         currentSongDesc.setText(currentPlaying.getDesc());
+        setArt();
     }
 
     private void setControls() {

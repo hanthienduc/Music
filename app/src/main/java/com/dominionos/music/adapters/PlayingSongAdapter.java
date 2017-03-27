@@ -31,7 +31,7 @@ import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemView
 import java.util.ArrayList;
 
 public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.ViewHolder>
-        implements DraggableItemAdapter<PlayingSongAdapter.ViewHolder>{
+        implements DraggableItemAdapter<PlayingSongAdapter.ViewHolder> {
 
     private ArrayList<Song> songs;
     private final Context context;
