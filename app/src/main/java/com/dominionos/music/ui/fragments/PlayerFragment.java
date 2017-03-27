@@ -125,7 +125,8 @@ public class PlayerFragment extends Fragment {
             updatePlayState();
             setShuffleState(service.getShuffleState());
             setRepeatState(service.getRepeatState());
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            if(slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
     }
 
@@ -137,7 +138,7 @@ public class PlayerFragment extends Fragment {
         ArrayList<Song> playingList = service.getPlayingList();
         if(playingList.size() > 0) {
             if(adapter == null) {
-                adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(getContext()));
+                adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(getContext()), activity);
                 RecyclerView.Adapter wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(adapter);
                 playingListView.setAdapter(wrappedAdapter);
                 recyclerViewDragDropManager.attachRecyclerView(playingListView);

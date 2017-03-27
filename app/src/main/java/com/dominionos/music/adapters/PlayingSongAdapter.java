@@ -18,27 +18,28 @@ import com.afollestad.async.Action;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.dominionos.music.R;
+import com.dominionos.music.service.MusicService;
+import com.dominionos.music.ui.activity.MainActivity;
 import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.items.Song;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter;
-import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemConstants;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder;
 
 import java.util.ArrayList;
-import java.util.List;
-
 
 public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.ViewHolder>
         implements DraggableItemAdapter<PlayingSongAdapter.ViewHolder>{
 
-    private List<Song> songs;
+    private ArrayList<Song> songs;
     private final Context context;
     private final boolean darkMode;
     private Song currentSong;
     private final DrawableRequestBuilder<String> glideRequest;
+    private final MainActivity activity;
+    private MusicService service;
 
     @Override
     public boolean onCheckCanStartDrag(ViewHolder holder, int position, int x, int y) {
@@ -58,6 +59,8 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         Song movedSong = songs.get(fromPosition);
         songs.remove(movedSong);
         songs.add(toPosition, movedSong);
+        if(service == null) service = activity.getService();
+        service.changePlayingList(songs);
         notifyItemMoved(fromPosition, toPosition);
     }
 
@@ -89,7 +92,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         notifyDataSetChanged();
     }
 
-    public PlayingSongAdapter(Context context, List<Song> songs, boolean darkMode, Song currentSong, RequestManager glide) {
+    public PlayingSongAdapter(Context context, ArrayList<Song> songs, boolean darkMode, Song currentSong, RequestManager glide, MainActivity activity) {
         this.context = context;
         this.songs = songs;
         this.darkMode = darkMode;
@@ -101,6 +104,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                 .crossFade()
                 .transform(new CircleTransform(context))
                 .override(px, px);
+        this.activity = activity;
         setHasStableIds(true);
     }
 

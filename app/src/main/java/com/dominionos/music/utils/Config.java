@@ -11,9 +11,7 @@ public class Config {
     public static final int ALBUM_CARD_WIDTH = 180;
 
     public static final String GET_PLAY_STATE = "get_play_state";
-    public static final String GET_PLAYING_LIST = "get_playing_list";
     public static final String GET_PLAYING_DETAIL = "get_playing_detail";
-    public static final String UPDATE_REPEAT = "update_repeat";
     public static final String PREV = "prev";
     public static final String NEXT = "next";
     public static final String TOGGLE_PLAY = "toggle_play";
@@ -29,8 +27,6 @@ public class Config {
     public static final String REQUEST_SONG_DETAILS = "request_song_details";
     public static final String SEEK_TO_SONG = "seek_to_song";
     public static final String SEEK_GET_SONG = "seek_get_song";
-    public static final String SHUFFLE_PLAYLIST = "shuffle_playlist";
-    public static final String REPEAT = "repeat";
 
     public static final String MENU_PLAY_NEXT = "menu_play_next";
     public static final String MENU_REMOVE_FROM_QUEUE = "menu_remove_from_queue";

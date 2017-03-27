@@ -160,9 +160,6 @@ public class MusicService extends Service {
                         playMusic(currentSong);
                     }
                     break;
-                case Config.SHUFFLE_PLAYLIST:
-                    shuffle();
-                    break;
                 case Config.PLAY_NEXT:
                     int insertPos = playingList.indexOf(currentSong) + 1;
                     song = (Song) intent.getSerializableExtra("song");
@@ -207,9 +204,6 @@ public class MusicService extends Service {
                         Toast.makeText(context, getString(R.string.service_generate_list_warning), Toast.LENGTH_LONG).show();
                     }
                     break;
-                case Config.REPEAT:
-                    repeat();
-                    break;
             }
         }
 
@@ -252,6 +246,10 @@ public class MusicService extends Service {
         sendBroadcast(intent);
         updatePlayState();
         if(currentSong != null) updateSession("metadata");
+    }
+
+    public void changePlayingList(ArrayList<Song> changedList) {
+        playingList = changedList;
     }
 
     private void updatePlayState() {
@@ -478,8 +476,6 @@ public class MusicService extends Service {
         commandFilter.addAction(Config.PLAY_PLAYLIST);
         commandFilter.addAction(Config.PREV);
         commandFilter.addAction(Config.PLAY_ALBUM);
-        commandFilter.addAction(Config.SHUFFLE_PLAYLIST);
-        commandFilter.addAction(Config.REPEAT);
         registerReceiver(musicPlayer, commandFilter);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -702,6 +698,7 @@ public class MusicService extends Service {
         stopMusic();
         notificationManager.cancelAll();
         stopForeground(true);
+        activity.updatePlayer();
     }
 
     @Override
