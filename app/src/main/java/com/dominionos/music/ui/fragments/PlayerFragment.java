@@ -2,6 +2,8 @@ package com.dominionos.music.ui.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.async.Action;
@@ -37,6 +40,8 @@ import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropM
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +59,7 @@ public class PlayerFragment extends Fragment {
     @BindView(R.id.repeat) ImageButton repeat;
     @BindView(R.id.art) ImageView playingArt;
     @BindView(R.id.control_holder) View controlHolder;
+    @BindView(R.id.player_seekbar) SeekBar playerSeekBar;
 
     @BindView(R.id.playing_bar) View playingBar;
     @BindView(R.id.playing_song_name) TextView currentSongName;
@@ -70,6 +76,7 @@ public class PlayerFragment extends Fragment {
     private Song currentPlaying;
     private RecyclerViewDragDropManager recyclerViewDragDropManager;
     private PlayingSongAdapter adapter;
+    private MediaPlayer mediaPlayer;
 
     private boolean darkMode;
 
@@ -123,10 +130,10 @@ public class PlayerFragment extends Fragment {
         currentPlaying = service.getCurrentSong();
         if(currentPlaying != null) {
             updatePlayingList();
-            setArt();
             updatePlayState();
             setShuffleState(service.getShuffleState());
             setRepeatState(service.getRepeatState());
+            updateSeekBar();
             if(slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
                 slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
@@ -193,6 +200,19 @@ public class PlayerFragment extends Fragment {
                 }
             }
         });
+        playerSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
+                if(fromUser && mediaPlayer != null) mediaPlayer.seekTo(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
     }
 
     private void setShuffleState(boolean shuffleState) {
@@ -216,6 +236,35 @@ public class PlayerFragment extends Fragment {
                 repeat.setAlpha(Config.BUTTON_ACTIVE);
                 break;
         }
+    }
+
+    public void updateSeekBar() {
+        mediaPlayer = service.getMediaPlayer();
+        if(mediaPlayer != null) {
+            playerSeekBar.setMax(mediaPlayer.getDuration());
+        }
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
+                        if(mediaPlayer != null
+                                && playerSeekBar != null
+                                && mediaPlayer.isPlaying()) {
+                            int seekProgress = mediaPlayer.getCurrentPosition();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                playerSeekBar.setProgress(seekProgress, true);
+                            } else {
+                                playerSeekBar.setProgress(seekProgress);
+                            }
+                        }
+                    }
+                });
+            }
+        }, 0, 100);
     }
 
     private void setArt() {

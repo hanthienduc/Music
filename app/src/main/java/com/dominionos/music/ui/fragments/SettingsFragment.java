@@ -1,6 +1,7 @@
 package com.dominionos.music.ui.fragments;
 
 import android.app.ActivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.Preference;
@@ -15,10 +16,15 @@ import static android.content.Context.ACTIVITY_SERVICE;
 public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        addPreferencesFromResource(R.xml.pref_general);
-
-        configurePlaybackSettings();
+        addPreferencesFromResource(R.xml.prefs_appearance);
         configureAppearanceSettings();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            addPreferencesFromResource(R.xml.prefs_playback);
+            configurePlaybackSettings();
+        }
+
+        addPreferencesFromResource(R.xml.pref_general);
         configureAdvancedSettings();
     }
 

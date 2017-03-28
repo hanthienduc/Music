@@ -24,72 +24,86 @@
                 android:src="@drawable/default_art"/>
         </android.support.percent.PercentRelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:id="@+id/control_holder"
             android:background="@color/colorAccent">
-            <android.support.design.widget.FloatingActionButton
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/play"
+                    app:backgroundTint="@color/contentColour"
+                    app:fabSize="normal"
+                    app:pressedTranslationZ="2dp"
+                    app:elevation="4dp" />
+                <Space
+                    android:id="@+id/play_space"
+                    android:layout_centerInParent="true"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp" />
+                <ImageButton
+                    android:id="@+id/prev"
+                    android:background="@drawable/unbounded_ripple"
+                    android:src="@drawable/ic_skip_previous"
+                    android:scaleType="fitCenter"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/play"
+                    android:padding="22dp"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:contentDescription="@string/previous"/>
+                <ImageButton
+                    android:id="@+id/next"
+                    android:background="@drawable/unbounded_ripple"
+                    android:src="@drawable/ic_skip_next"
+                    android:scaleType="fitCenter"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/play"
+                    android:padding="22dp"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:contentDescription="@string/next" />
+                <ImageButton
+                    android:id="@+id/shuffle"
+                    android:background="@drawable/unbounded_ripple"
+                    android:src="@drawable/ic_shuffle"
+                    android:scaleType="fitCenter"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/next"
+                    android:layout_alignParentEnd="true"
+                    android:padding="22dp"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:contentDescription="@string/shuffle" />
+                <ImageButton
+                    android:id="@+id/repeat"
+                    android:background="@drawable/unbounded_ripple"
+                    android:src="@drawable/ic_repeat_all"
+                    android:scaleType="fitCenter"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/prev"
+                    android:layout_alignParentStart="true"
+                    android:padding="22dp"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:contentDescription="@string/repeat" />
+            </RelativeLayout>
+            <SeekBar
+                android:id="@+id/player_seekbar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_centerInParent="true"
-                android:id="@+id/play"
-                app:backgroundTint="@color/contentColour"
-                app:fabSize="normal"
-                app:pressedTranslationZ="2dp"
-                app:elevation="4dp" />
-            <Space
-                android:id="@+id/play_space"
-                android:layout_centerInParent="true"
-                android:layout_width="56dp"
-                android:layout_height="56dp" />
-            <ImageButton
-                android:id="@+id/prev"
-                android:background="@drawable/unbounded_ripple"
-                android:src="@drawable/ic_skip_previous"
-                android:scaleType="fitCenter"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/play"
-                android:padding="22dp"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                 android:contentDescription="@string/previous"/>
-            <ImageButton
-                android:id="@+id/next"
-                android:background="@drawable/unbounded_ripple"
-                android:src="@drawable/ic_skip_next"
-                android:scaleType="fitCenter"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/play"
-                android:padding="22dp"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:contentDescription="@string/next" />
-            <ImageButton
-                android:id="@+id/shuffle"
-                android:background="@drawable/unbounded_ripple"
-                android:src="@drawable/ic_shuffle"
-                android:scaleType="fitCenter"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/next"
-                android:layout_alignParentEnd="true"
-                android:padding="22dp"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:contentDescription="@string/shuffle" />
-            <ImageButton
-                android:id="@+id/repeat"
-                android:background="@drawable/unbounded_ripple"
-                android:src="@drawable/ic_repeat_all"
-                android:scaleType="fitCenter"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/prev"
-                android:layout_alignParentStart="true"
-                android:padding="22dp"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:contentDescription="@string/repeat" />
-        </RelativeLayout>
+                android:paddingBottom="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:progressTint="@color/contentColour"
+                android:thumbTint="@color/contentColour"/>
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/playing_list"

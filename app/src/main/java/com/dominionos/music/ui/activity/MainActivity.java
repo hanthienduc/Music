@@ -121,6 +121,10 @@ public class MainActivity extends AppCompatActivity {
         player.updatePlayer();
     }
 
+    public void updatePlayerSeekBar() {
+        player.updateSeekBar();
+    }
+
     public void updatePlayingList() {
         player.updatePlayingList();
     }
