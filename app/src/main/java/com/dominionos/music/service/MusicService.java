@@ -18,8 +18,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -29,7 +27,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
-import com.afollestad.async.Action;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.activity.MainActivity;
 import com.dominionos.music.utils.Config;
@@ -49,7 +46,7 @@ public class MusicService extends Service {
     private MusicPlayerDBHelper playList;
     private AudioManager audioManager;
     private MediaSessionCompat mediaSession;
-    private ArrayList<Song> songList, preShuffle, playingList;
+    private ArrayList<Song> preShuffle, playingList;
     private NotificationManagerCompat notificationManager;
     private Song currentSong;
     private SharedPreferences prefs;
@@ -189,15 +186,7 @@ public class MusicService extends Service {
                     sendBroadcast(requestSongDetails);
                     break;
                 case Config.PLAY_ALL_SONGS:
-                    if(songList != null) {
-                        playList.overwriteStoredList(songList);
-                        playingList = songList;
-                        playMusic(playingList.get(0));
-                        updateNotification();
-                        if(activity != null) activity.updatePlayer();
-                    } else {
-                        Toast.makeText(context, getString(R.string.service_generate_list_warning), Toast.LENGTH_LONG).show();
-                    }
+                    Toast.makeText(context, "This is being reworked", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -494,53 +483,6 @@ public class MusicService extends Service {
         } else {
             playingList = new ArrayList<>();
         }
-
-        new Action<ArrayList<Song>>() {
-
-            @NonNull
-            @Override
-            public String id() {
-                return "get_all_songs";
-            }
-
-            @Nullable
-            @Override
-            protected ArrayList<Song> run() throws InterruptedException {
-                songList = new ArrayList<>();
-                Cursor musicCursor2;
-                final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
-                final String orderBy2 = MediaStore.Audio.Media.TITLE;
-                musicCursor2 = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        null, where2, null, orderBy2);
-                if (musicCursor2 != null && musicCursor2.moveToFirst()) {
-                    int titleColumn = musicCursor2.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media.TITLE);
-                    int idColumn = musicCursor2.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media._ID);
-                    int artistColumn = musicCursor2.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media.ARTIST);
-                    int pathColumn = musicCursor2.getColumnIndex
-                            (MediaStore.Audio.Media.DATA);
-                    int albumIdColumn = musicCursor2.getColumnIndex
-                            (MediaStore.Audio.Media.ALBUM_ID);
-                    int albumColumn = musicCursor2.getColumnIndex
-                            (MediaStore.Audio.Media.ALBUM);
-                    do {
-                        songList.add(new Song(musicCursor2.getLong(idColumn),
-                                musicCursor2.getString(titleColumn),
-                                musicCursor2.getString(artistColumn),
-                                musicCursor2.getString(pathColumn), false,
-                                musicCursor2.getLong(albumIdColumn),
-                                musicCursor2.getString(albumColumn)));
-                    }
-                    while (musicCursor2.moveToNext());
-                }
-                if (musicCursor2 != null) {
-                    musicCursor2.close();
-                }
-                return songList;
-            }
-        }.execute();
         return START_STICKY;
     }
 

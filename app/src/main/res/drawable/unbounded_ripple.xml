@@ -5,4 +5,7 @@
             <solid android:color="@android:color/transparent" />
         </shape>
     </item>
+    <item>
+        <ripple android:color="#b7b7b7" />
+    </item>
 </layer-list>

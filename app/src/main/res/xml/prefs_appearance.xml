@@ -7,6 +7,12 @@
             android:key="dark_theme"
             android:title="@string/dark_mode"
             android:defaultValue="false" />
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="lock_screen_art"
+            android:title="@string/lock_screen_art"
+            android:summary="@string/lock_screen_art_summary"
+            android:defaultValue="true" />
     </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

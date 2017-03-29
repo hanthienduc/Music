@@ -11,7 +11,6 @@ public class Config {
     public static final int ALBUM_CARD_WIDTH = 180;
 
     public static final String GET_PLAY_STATE = "get_play_state";
-    public static final String GET_PLAYING_DETAIL = "get_playing_detail";
     public static final String PREV = "prev";
     public static final String NEXT = "next";
     public static final String TOGGLE_PLAY = "toggle_play";

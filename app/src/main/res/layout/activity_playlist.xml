@@ -34,5 +34,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/ic_add" />
 </android.support.design.widget.CoordinatorLayout>

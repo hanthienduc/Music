@@ -1,17 +1,11 @@
 package com.dominionos.music.ui.fragments;
 
-import android.app.ActivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
-
-import static android.content.Context.ACTIVITY_SERVICE;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
@@ -23,9 +17,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             addPreferencesFromResource(R.xml.prefs_playback);
             configurePlaybackSettings();
         }
-
-        addPreferencesFromResource(R.xml.pref_general);
-        configureAdvancedSettings();
     }
 
     private void configurePlaybackSettings() {
@@ -53,29 +44,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 preference.setSummary(newValue.equals(true)
                         ? darkModeEnabled : darkModeDisabled);
                 getActivity().recreate();
-                return true;
-            }
-        });
-    }
-
-    private void configureAdvancedSettings() {
-        Preference reset = findPreference("reset_app");
-        reset.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                new MaterialDialog.Builder(getContext())
-                        .title(R.string.reset_app)
-                        .content(R.string.reset_app_summary)
-                        .positiveText("Yes")
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                ((ActivityManager)getActivity().getSystemService(ACTIVITY_SERVICE))
-                                        .clearApplicationUserData();
-                            }
-                        })
-                        .negativeText("Cancel")
-                        .show();
                 return true;
             }
         });
