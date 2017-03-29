@@ -53,7 +53,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.Collections;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -221,12 +221,14 @@ public class MainActivity extends AppCompatActivity {
     private void setDynamicShortcuts() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
             ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+            ArrayList<ShortcutInfo> shortcuts = new ArrayList<>();
             ShortcutInfo searchShortcut = new ShortcutInfo.Builder(this, "search")
                     .setShortLabel(getString(R.string.search))
                     .setIcon(Icon.createWithResource(MainActivity.this, R.drawable.ic_shortcut_search))
                     .setIntent(new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, SearchActivity.class))
                     .build();
-            shortcutManager.setDynamicShortcuts(Collections.singletonList(searchShortcut));
+            shortcuts.add(searchShortcut);
+            shortcutManager.setDynamicShortcuts(shortcuts);
         }
     }
 

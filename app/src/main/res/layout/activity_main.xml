@@ -8,7 +8,6 @@
     android:id="@+id/sliding_layout"
     app:umanoScrollableView="@+id/playing_list"
     app:umanoDragView="@+id/album_art_holder"
-    app:umanoParallaxOffset="100dp"
     app:umanoPanelHeight="72dp"
     app:umanoInitialState="hidden">
 

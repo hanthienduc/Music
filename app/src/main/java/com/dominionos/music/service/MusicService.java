@@ -218,7 +218,7 @@ public class MusicService extends Service {
 
     private void updateCurrentPlaying() {
         updatePlayState();
-        activity.updatePlayingList();
+        if(activity != null) activity.updatePlayingList();
         if(currentSong != null) updateSession("metadata");
     }
 
@@ -227,7 +227,7 @@ public class MusicService extends Service {
     }
 
     private void updatePlayState() {
-        activity.updatePlayerPlayState();
+        if(activity != null) activity.updatePlayerPlayState();
         if(mediaPlayer != null && currentSong != null) updateNotification();
         updateSession("state");
     }
@@ -596,7 +596,7 @@ public class MusicService extends Service {
         stopMusic();
         notificationManager.cancelAll();
         stopForeground(true);
-        activity.updatePlayer();
+        if(activity != null) activity.updatePlayer();
     }
 
     @Override

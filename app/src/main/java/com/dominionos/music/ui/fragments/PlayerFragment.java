@@ -117,7 +117,7 @@ public class PlayerFragment extends Fragment {
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
                 if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
                     if(playingBar != null) playingBar.setVisibility(View.GONE);
-                } else if(newState != SlidingUpPanelLayout.PanelState.EXPANDED) {
+                } else {
                     if(playingBar != null) playingBar.setVisibility(View.VISIBLE);
                 }
             }
@@ -356,6 +356,7 @@ public class PlayerFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        recyclerViewDragDropManager.release();
     }
 
 }
