@@ -155,8 +155,8 @@ public class PlayerFragment extends Fragment {
                 adapter.updateData(playingList, currentPlaying);
             }
         }
-        currentSongName.setText(currentPlaying.getName());
-        currentSongDesc.setText(currentPlaying.getDesc());
+        if(currentSongName != null) currentSongName.setText(currentPlaying.getName());
+        if(currentSongDesc != null) currentSongDesc.setText(currentPlaying.getDesc());
         setArt();
     }
 
@@ -288,33 +288,39 @@ public class PlayerFragment extends Fragment {
 
             @Override
             protected void done(String result) {
-                Glide.with(context)
-                        .load(result)
-                        .asBitmap()
-                        .transcode(new PaletteBitmapTranscoder(activity), PaletteBitmap.class)
-                        .centerCrop()
-                        .error(R.drawable.default_art)
-                        .into(new ImageViewTarget<PaletteBitmap>(playingArt) {
-                            @Override
-                            protected void setResource(PaletteBitmap resource) {
-                                super.view.setImageBitmap(resource.bitmap);
-                                Palette palette = resource.palette;
-                                Palette.Swatch swatch;
-                                if(palette.getVibrantSwatch() != null) {
-                                    swatch = palette.getVibrantSwatch();
-                                    controlHolder.setBackgroundColor(swatch.getRgb());
-                                    play.setColorFilter(swatch.getRgb());
-                                } else if(palette.getDominantSwatch() != null) {
-                                    swatch = palette.getDominantSwatch();
-                                    controlHolder.setBackgroundColor(swatch.getRgb());
-                                    play.setColorFilter(swatch.getRgb());
+                try {
+                    Glide.with(context)
+                            .load(result)
+                            .asBitmap()
+                            .transcode(new PaletteBitmapTranscoder(activity), PaletteBitmap.class)
+                            .centerCrop()
+                            .error(R.drawable.default_art)
+                            .into(new ImageViewTarget<PaletteBitmap>(playingArt) {
+                                @Override
+                                protected void setResource(PaletteBitmap resource) {
+                                    super.view.setImageBitmap(resource.bitmap);
+                                    Palette palette = resource.palette;
+                                    Palette.Swatch swatch;
+                                    if(palette.getVibrantSwatch() != null) {
+                                        swatch = palette.getVibrantSwatch();
+                                        controlHolder.setBackgroundColor(swatch.getRgb());
+                                        play.setColorFilter(swatch.getRgb());
+                                    } else if(palette.getDominantSwatch() != null) {
+                                        swatch = palette.getDominantSwatch();
+                                        controlHolder.setBackgroundColor(swatch.getRgb());
+                                        play.setColorFilter(swatch.getRgb());
+                                    }
                                 }
-                            }
-                        });
-                Glide.with(context)
-                        .load(result)
-                        .error(R.drawable.default_art)
-                        .into(playingSongArt);
+                            });
+                    Glide.with(context)
+                            .load(result)
+                            .error(R.drawable.default_art)
+                            .into(playingSongArt);
+                } catch(IllegalArgumentException e) {
+                    e.printStackTrace();
+                    if(playingSongArt != null) playingSongArt.setImageResource(R.drawable.default_art);
+                    if(playingArt != null) playingArt.setImageResource(R.drawable.default_art);
+                }
             }
         }.execute();
     }
