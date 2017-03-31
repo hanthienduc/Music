@@ -144,20 +144,22 @@ public class PlayerFragment extends Fragment {
     }
 
     public void updatePlayingList() {
-        ArrayList<Song> playingList = service.getPlayingList();
-        if(playingList.size() > 0) {
-            if(adapter == null) {
-                adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(getContext()), activity);
-                RecyclerView.Adapter wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(adapter);
-                playingListView.setAdapter(wrappedAdapter);
-                recyclerViewDragDropManager.attachRecyclerView(playingListView);
-            } else {
-                adapter.updateData(playingList, currentPlaying);
+        if(currentPlaying != null) {
+            ArrayList<Song> playingList = service.getPlayingList();
+            if(playingList.size() > 0) {
+                if(adapter == null) {
+                    adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(getContext()), activity);
+                    RecyclerView.Adapter wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(adapter);
+                    playingListView.setAdapter(wrappedAdapter);
+                    recyclerViewDragDropManager.attachRecyclerView(playingListView);
+                } else {
+                    adapter.updateData(playingList, currentPlaying);
+                }
             }
+            if(currentSongName != null) currentSongName.setText(currentPlaying.getName());
+            if(currentSongDesc != null) currentSongDesc.setText(currentPlaying.getDesc());
+            setArt();
         }
-        if(currentSongName != null) currentSongName.setText(currentPlaying.getName());
-        if(currentSongDesc != null) currentSongDesc.setText(currentPlaying.getDesc());
-        setArt();
     }
 
     private void setControls() {
