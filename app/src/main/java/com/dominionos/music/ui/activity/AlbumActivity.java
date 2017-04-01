@@ -24,7 +24,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -40,9 +39,15 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public class AlbumActivity extends AppCompatActivity {
 
-    private FloatingActionButton fab;
+    @BindView(R.id.fab_album) FloatingActionButton fab;
+
+    private Unbinder unbinder;
     private final ArrayList<Song> songList = new ArrayList<>();
     private AudioManager audioManager;
     private boolean darkMode = false;
@@ -57,6 +62,7 @@ public class AlbumActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
+        unbinder = ButterKnife.bind(this);
         overridePendingTransition(0, 0);
         final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
                 findViewById(R.id.collapsing_toolbar_album);
@@ -78,16 +84,6 @@ public class AlbumActivity extends AppCompatActivity {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         final View toolbarBackground = findViewById(R.id.title_background);
-        fab = (FloatingActionButton) findViewById(R.id.fab_album);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent bro = new Intent();
-                bro.setAction(Config.PLAY_ALBUM);
-                bro.putExtra("albumId", getIntent().getLongExtra("albumId", 0));
-                sendBroadcast(bro);
-            }
-        });
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
@@ -144,6 +140,16 @@ public class AlbumActivity extends AppCompatActivity {
         if (cursor != null) cursor.close();
 
         setSongList();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent bro = new Intent();
+                bro.setAction(Config.PLAY_ALBUM);
+                bro.putExtra("albumId", getIntent().getLongExtra("albumId", 0));
+                sendBroadcast(bro);
+            }
+        });
     }
 
     private void setSongList() {
@@ -196,23 +202,6 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                fab.setVisibility(View.GONE);
-                super.onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        fab.setVisibility(View.GONE);
-        super.onBackPressed();
-    }
-
-    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch(keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
@@ -227,5 +216,12 @@ public class AlbumActivity extends AppCompatActivity {
                 }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onDestroy() {
+        fab.hide();
+        super.onDestroy();
+        unbinder.unbind();
     }
 }

@@ -157,8 +157,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(Config.REQUEST_SONG_DETAILS);
-        sendBroadcast(intent);
+        if(service != null) player.updatePlayer();
     }
 
     @Override
