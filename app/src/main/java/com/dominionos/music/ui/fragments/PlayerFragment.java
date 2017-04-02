@@ -253,15 +253,19 @@ public class PlayerFragment extends Fragment {
                     @Override
                     public void run() {
                         if(mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
-                        if(mediaPlayer != null
-                                && playerSeekBar != null
-                                && mediaPlayer.isPlaying()) {
-                            int seekProgress = mediaPlayer.getCurrentPosition();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                playerSeekBar.setProgress(seekProgress, true);
-                            } else {
-                                playerSeekBar.setProgress(seekProgress);
+                        try {
+                            if(mediaPlayer != null
+                                    && playerSeekBar != null
+                                    && mediaPlayer.isPlaying()) {
+                                int seekProgress = mediaPlayer.getCurrentPosition();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    playerSeekBar.setProgress(seekProgress, true);
+                                } else {
+                                    playerSeekBar.setProgress(seekProgress);
+                                }
                             }
+                        } catch(IllegalStateException e) {
+                            e.printStackTrace();
                         }
                     }
                 });
@@ -343,8 +347,7 @@ public class PlayerFragment extends Fragment {
             public void onClick(View v) {
                 if(service == null) service = activity.getService();
                 if(service != null) {
-                    boolean isPlaying = service.togglePlay();
-                    setPlayingState(isPlaying);
+                    setPlayingState(service.togglePlay());
                 }
             }
         };

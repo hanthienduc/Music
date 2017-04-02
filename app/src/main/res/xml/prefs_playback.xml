@@ -1,17 +1,15 @@
 <android.support.v7.preference.PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.preference.PreferenceCategory
         android:title="Playback">
-        <android.support.v7.preference.ListPreference
-            android:entries="@array/playback_speed"
-            android:entryValues="@array/playback_speed"
+        <SeekBarPreference
             android:key="playback_speed"
-            android:defaultValue="1.0x"
-            android:summary="Set the players speed"
-            android:title="Playback speed"
-            android:colorControlNormal="@color/colorAccent"
-            android:colorControlActivated="@color/colorAccent"/>
+            android:title="@string/playback_speed"
+            android:max="15"
+            android:defaultValue="10"
+            app:min="5"/>
     </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

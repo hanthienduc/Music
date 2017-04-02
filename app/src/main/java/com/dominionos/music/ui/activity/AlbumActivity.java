@@ -1,6 +1,5 @@
 package com.dominionos.music.ui.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -9,8 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -23,7 +20,6 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -49,7 +45,6 @@ public class AlbumActivity extends AppCompatActivity {
 
     private Unbinder unbinder;
     private final ArrayList<Song> songList = new ArrayList<>();
-    private AudioManager audioManager;
     private boolean darkMode = false;
 
     @Override
@@ -80,8 +75,6 @@ public class AlbumActivity extends AppCompatActivity {
             getSupportActionBar().setHomeAsUpIndicator(upButton);
         }
         ImageView albumArt = (ImageView) findViewById(R.id.album_art);
-
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         final View toolbarBackground = findViewById(R.id.title_background);
 
@@ -199,23 +192,6 @@ public class AlbumActivity extends AppCompatActivity {
                 : ContextCompat.getColor(this, R.color.windowBackground));
 
         rv.setAdapter(new SongsAdapter(AlbumActivity.this, songList, darkMode, Glide.with(this), false));
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch(keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-                break;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
-                break;
-            case KeyEvent.KEYCODE_VOLUME_MUTE:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
-                }
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override

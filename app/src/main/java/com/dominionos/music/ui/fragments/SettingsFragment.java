@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.SeekBarPreference;
 
 import com.dominionos.music.R;
 
@@ -20,14 +21,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void configurePlaybackSettings() {
-        Preference playbackSpeed = findPreference("playback_speed");
-        playbackSpeed.setSummary(playbackSpeed.getSharedPreferences().getString("playback_speed", "1.0x"));
+        final SeekBarPreference playbackSpeed = (SeekBarPreference) findPreference("playback_speed");
+        playbackSpeed.setSummary((playbackSpeed.getValue() / 10.0f) + "x");
         playbackSpeed.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String valueString = newValue.toString().replace("x", "");
-                preference.getSharedPreferences().edit().putFloat("playback_speed_float", Float.valueOf(valueString)).apply();
-                preference.setSummary(newValue.toString());
+                float value = ((int) newValue) / 10.0f;
+                preference.getSharedPreferences().edit().putFloat("playback_speed_float", value).apply();
+                preference.setSummary(value + "x");
                 return true;
             }
         });

@@ -72,6 +72,7 @@
     <string name="dark_mode">Dark theme</string>
     <string name="dark_mode_enabled">Dark theme enabled</string>
     <string name="dark_mode_disabled">Dark theme disabled</string>
+    <string name="playback_speed">Playback speed</string>
 
     <string-array name="playback_speed">
         <item>0.5x</item>

@@ -1,6 +1,7 @@
 package com.dominionos.music.ui.activity;
 
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -14,10 +15,12 @@ import com.dominionos.music.ui.fragments.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    private SharedPreferences sharedPrefs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean darkMode = sharedPref.getBoolean("dark_theme", false);
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
         setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);

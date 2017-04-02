@@ -53,18 +53,25 @@ public class MusicService extends Service {
     private final IBinder binder = new MyBinder();
     private MainActivity activity;
     private SharedPreferences sharedPrefs;
+    private boolean isPlaying = false, pausedByFocus = false;
 
     private final AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
                 public void onAudioFocusChange(int focusChange) {
                     if(mediaPlayer != null) {
                         if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-                            if(mediaPlayer.isPlaying()) {
+                            if (isPlaying) {
                                 mediaPlayer.pause();
+                                pausedByFocus = true;
                             }
+                        } else if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                            if(isPlaying) playerDuck(true);
                         } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                            if(!mediaPlayer.isPlaying()) {
+                            if(!isPlaying && pausedByFocus) {
                                 mediaPlayer.start();
+                                pausedByFocus = false;
+                            } else if(isPlaying && !pausedByFocus) {
+                                playerDuck(false);
                             }
                         } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                             audioManager.abandonAudioFocus(afChangeListener);
@@ -73,6 +80,11 @@ public class MusicService extends Service {
                     }
                 }
             };
+
+    public synchronized void playerDuck(boolean duck) {
+        // Reduce the volume by half when ducking - otherwise play at full volume.
+        mediaPlayer.setVolume(duck ? 0.5f : 1.0f, duck ? 0.5f : 1.0f);
+    }
 
     private static final int NOTIFICATION_ID = 596;
 
@@ -185,9 +197,6 @@ public class MusicService extends Service {
                     requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
                     sendBroadcast(requestSongDetails);
                     break;
-                case Config.PLAY_ALL_SONGS:
-                    Toast.makeText(context, "This is being reworked", Toast.LENGTH_SHORT).show();
-                    break;
             }
         }
 
@@ -219,7 +228,7 @@ public class MusicService extends Service {
     private void updateCurrentPlaying() {
         updatePlayState();
         if(activity != null) activity.updatePlayingList();
-        if(currentSong != null) updateSession("metadata");
+        if(currentSong != null) updateSessionMetadata();
     }
 
     public void changePlayingList(ArrayList<Song> changedList) {
@@ -229,7 +238,7 @@ public class MusicService extends Service {
     private void updatePlayState() {
         if(activity != null) activity.updatePlayerPlayState();
         if(mediaPlayer != null && currentSong != null) updateNotification();
-        updateSession("state");
+        updateSessionState();
     }
 
     @Override
@@ -242,7 +251,7 @@ public class MusicService extends Service {
     }
 
     public boolean togglePlay() {
-        boolean isPlaying = false;
+        isPlaying = false;
         if(mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             isPlaying = false;
@@ -324,7 +333,7 @@ public class MusicService extends Service {
             mediaPlayer = null;
         }
         updateCurrentPlaying();
-        updateSession("state");
+        updateSessionState();
     }
 
     public boolean isPlaying() {
@@ -340,7 +349,7 @@ public class MusicService extends Service {
     private void playMusic(final Song song) {
 
         int result = audioManager.requestAudioFocus(afChangeListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
 
         if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             currentSong = song;
@@ -355,7 +364,16 @@ public class MusicService extends Service {
                     final Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
                     mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
                 }
-                mediaPlayer.prepare();
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mediaPlayer.start();
+                        activity.updatePlayer();
+                        startForeground(NOTIFICATION_ID, createNotification());
+                        updateSessionState();
+                        updateSessionMetadata();
+                    }
+                });
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
@@ -381,14 +399,11 @@ public class MusicService extends Service {
                                 playMusic(playingList.get(0));
                             }
                         }
-                        updateSession("metadata");
+                        updateSessionMetadata();
+                        updateSessionState();
                     }
                 });
-                mediaPlayer.start();
-                activity.updatePlayerSeekBar();
-                startForeground(NOTIFICATION_ID, createNotification());
-                updateSession("state");
-                updateSession("metadata");
+                mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT).show();
             }
@@ -409,7 +424,6 @@ public class MusicService extends Service {
         commandFilter.addAction(Config.TOGGLE_PLAY);
         commandFilter.addAction(Config.CANCEL_NOTIFICATION);
         commandFilter.addAction(Config.PLAY_SINGLE_SONG);
-        commandFilter.addAction(Config.PLAY_ALL_SONGS);
         commandFilter.addAction(Config.ADD_SONG_TO_PLAYLIST);
         commandFilter.addAction(Config.REQUEST_SONG_DETAILS);
         commandFilter.addAction(Config.SEEK_TO_SONG);
@@ -428,19 +442,17 @@ public class MusicService extends Service {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         mediaSession = new MediaSessionCompat(this, "MusicService");
-        updateSession("state");
+        updateSessionState();
         MediaButtonReceiver.handleIntent(mediaSession, intent);
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onPlay() {
-                Intent intent = new Intent(Config.TOGGLE_PLAY);
-                sendBroadcast(intent);
+                togglePlay();
                 super.onPlay();
             }
             @Override
             public void onPause() {
-                Intent intent = new Intent(Config.TOGGLE_PLAY);
-                sendBroadcast(intent);
+                togglePlay();
                 super.onPause();
             }
             @Override
@@ -450,46 +462,36 @@ public class MusicService extends Service {
             }
             @Override
             public void onFastForward() {
-                Intent intent = new Intent(Config.NEXT);
-                sendBroadcast(intent);
+                next();
                 super.onFastForward();
             }
             @Override
             public void onRewind() {
-                Intent intent = new Intent(Config.PREV);
-                sendBroadcast(intent);
+                prev();
                 super.onRewind();
             }
             @Override
             public void onSkipToNext() {
-                Intent intent = new Intent(Config.NEXT);
-                sendBroadcast(intent);
+                next();
                 super.onSkipToNext();
             }
             @Override
             public void onSkipToPrevious() {
-                Intent intent = new Intent(Config.PREV);
-                sendBroadcast(intent);
+                prev();
                 super.onSkipToPrevious();
             }
         });
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setActive(true);
 
-        ArrayList<Song> databaseList = playList.getStoredList();
-        if(databaseList.size() != 0) {
-            playingList = databaseList;
+        playingList = playList.getStoredList();
+        if(!playingList.isEmpty()) {
             currentSong = playingList.get(0);
-        } else {
-            playingList = new ArrayList<>();
         }
         return START_STICKY;
     }
 
-    private void updateSession(String changed) {
-
-        boolean showAlbumArtOnLockscreen = prefs.getBoolean("lock_screen_art", true);
-
+    private void updateSessionState() {
         int playState = mediaPlayer != null && mediaPlayer.isPlaying()
                 ? PlaybackStateCompat.STATE_PLAYING
                 : PlaybackStateCompat.STATE_PAUSED;
@@ -500,27 +502,65 @@ public class MusicService extends Service {
                 PlaybackStateCompat.ACTION_REWIND |
                 PlaybackStateCompat.ACTION_FAST_FORWARD |
                 PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
-        if(changed.equals("metadata")) {
-            mediaSession.setMetadata(new MediaMetadataCompat.Builder()
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, currentSong.getAlbumName())
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentSong.getName())
-                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, showAlbumArtOnLockscreen
-                            ? getAlbumArt() : null)
-                    .build());
-        } else if(changed.equals("state")) {
-            float playbackSpeed = 1.0f;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if(mediaPlayer != null)  playbackSpeed = mediaPlayer.getPlaybackParams().getSpeed();
-            } else {
-                playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
-            }
-            mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
-                    .setActions(playBackStateActions)
-                    .setState(playState, mediaPlayer != null
-                            ? mediaPlayer.getCurrentPosition()
-                            : 0, playbackSpeed)
-                    .build());
+
+        float playbackSpeed = 1.0f;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(mediaPlayer != null)  playbackSpeed = mediaPlayer.getPlaybackParams().getSpeed();
         }
+        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
+                .setActions(playBackStateActions)
+                .setState(playState, mediaPlayer != null
+                        ? mediaPlayer.getCurrentPosition()
+                        : 0, playbackSpeed)
+                .build());
+    }
+    private void updateSessionMetadata() {
+
+        boolean showAlbumArtOnLockscreen = prefs.getBoolean("lock_screen_art", true);
+
+        mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, currentSong.getAlbumName())
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentSong.getName())
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, showAlbumArtOnLockscreen
+                        ? getAlbumArt() : null)
+                .build());
+
+    }
+
+    public void playAllSongs() {
+        final ArrayList<Song> songList = new ArrayList<>();
+        final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
+        final String orderBy = MediaStore.Audio.Media.TITLE;
+        Cursor musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                null, where, null, orderBy);
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            int titleColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.ARTIST);
+            int pathColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.DATA);
+            int albumIdColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM_ID);
+            int albumColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM);
+            do {
+                songList.add(new Song(musicCursor.getLong(idColumn),
+                        musicCursor.getString(titleColumn),
+                        musicCursor.getString(artistColumn),
+                        musicCursor.getString(pathColumn), false,
+                        musicCursor.getLong(albumIdColumn),
+                        musicCursor.getString(albumColumn)));
+            }
+            while (musicCursor.moveToNext());
+        }
+        if (musicCursor != null) {
+            musicCursor.close();
+        }
+        playingList = songList;
+        if(!playingList.isEmpty()) playMusic(playingList.get(0));
     }
 
     private Bitmap getAlbumArt() {

@@ -24,7 +24,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.sliding_layout) SlidingUpPanelLayout slidingUpPanelLayout;
 
     private Unbinder unbinder;
-    private AudioManager audioManager;
     private SharedPreferences sharedPrefs;
     private boolean darkMode = false;
     private SearchView search;
@@ -92,10 +90,11 @@ public class MainActivity extends AppCompatActivity {
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
         setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
+
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
@@ -121,10 +120,6 @@ public class MainActivity extends AppCompatActivity {
         player.updatePlayer();
     }
 
-    public void updatePlayerSeekBar() {
-        player.updateSeekBar();
-    }
-
     public void updatePlayingList() {
         player.updatePlayingList();
     }
@@ -144,8 +139,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.play_all:
-                Intent i = new Intent(Config.PLAY_ALL_SONGS);
-                sendBroadcast(i);
+                if(service != null) service.playAllSongs();
                 return true;
             case R.id.search_item:
                 search.open(true, item);
@@ -168,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         Intent i = new Intent(MainActivity.this, MusicService.class);
         bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -370,23 +365,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unbinder.unbind();
         unbindService(serviceConnection);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-                break;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
-                break;
-            case KeyEvent.KEYCODE_VOLUME_MUTE:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
-                }
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
 }

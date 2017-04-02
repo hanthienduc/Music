@@ -1,11 +1,8 @@
 package com.dominionos.music.ui.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -17,7 +14,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -34,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistActivity extends AppCompatActivity {
-    private AudioManager audioManager;
     private int playlistId;
     private CheckableSongsAdapter adapter;
     private String title;
@@ -45,6 +40,7 @@ public class PlaylistActivity extends AppCompatActivity {
         boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
         setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
         setSupportActionBar((Toolbar) findViewById(R.id.playlist_toolbar));
@@ -132,7 +128,6 @@ public class PlaylistActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     }
 
     @Override
@@ -143,23 +138,6 @@ public class PlaylistActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch(keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-                break;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
-                break;
-            case KeyEvent.KEYCODE_VOLUME_MUTE:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
-                }
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
 }
