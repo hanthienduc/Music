@@ -73,19 +73,6 @@
     <string name="dark_mode_enabled">Dark theme enabled</string>
     <string name="dark_mode_disabled">Dark theme disabled</string>
     <string name="playback_speed">Playback speed</string>
-
-    <string-array name="playback_speed">
-        <item>0.5x</item>
-        <item>0.6x</item>
-        <item>0.7x</item>
-        <item>0.8x</item>
-        <item>0.9x</item>
-        <item>1.0x</item>
-        <item>1.1x</item>
-        <item>1.2x</item>
-        <item>1.3x</item>
-        <item>1.4x</item>
-        <item>1.5x</item>
-    </string-array>
+    <string name="primary_color">Primary color</string>
 
 </resources>

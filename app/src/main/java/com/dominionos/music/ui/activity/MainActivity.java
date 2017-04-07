@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -20,7 +21,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -39,7 +39,9 @@ import com.dominionos.music.ui.fragments.PlaylistFragment;
 import com.dominionos.music.ui.fragments.SongsFragment;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MySQLiteHelper;
+import com.kabouzeid.appthemehelper.ATH;
 import com.kabouzeid.appthemehelper.ThemeStore;
+import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -57,7 +59,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ATHToolbarActivity {
 
     @BindView(R.id.main_toolbar) Toolbar toolbar;
     @BindView(R.id.main_viewpager) ViewPager viewPager;
@@ -95,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
                     .coloredNavigationBar(false)
                     .commit();
         }
+
+
+        ATH.setActivityToolbarColorAuto(this, getATHToolbar());
+        ATH.setStatusbarColorAuto(this);
         int primaryColor = ThemeStore.primaryColor(this);
         int accentColor = ThemeStore.accentColor(this);
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -108,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setBackgroundColor(primaryColor);
         tabLayout.setSelectedTabIndicatorColor(accentColor);
         setSupportActionBar(toolbar);
+
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {

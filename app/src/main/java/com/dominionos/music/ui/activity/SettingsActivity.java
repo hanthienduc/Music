@@ -1,30 +1,32 @@
 package com.dominionos.music.ui.activity;
 
-import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.fragments.SettingsFragment;
+import com.kabouzeid.appthemehelper.ATH;
+import com.kabouzeid.appthemehelper.ThemeStore;
+import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 
-public class SettingsActivity extends AppCompatActivity {
-
-    private SharedPreferences sharedPrefs;
+public class SettingsActivity extends ATHToolbarActivity implements ColorChooserDialog.ColorCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
-        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
+
+        ATH.setActivityToolbarColorAuto(this, getATHToolbar());
+        ATH.setStatusbarColorAuto(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -41,5 +43,18 @@ public class SettingsActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onColorSelection(@NonNull ColorChooserDialog colorChooserDialog, int i) {
+        if(!colorChooserDialog.isAccentMode()) {
+            ThemeStore.editTheme(this).primaryColor(i).commit();
+            recreate();
+        }
+    }
+
+    @Override
+    public void onColorChooserDismissed(@NonNull ColorChooserDialog colorChooserDialog) {
+
     }
 }

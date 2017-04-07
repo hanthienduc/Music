@@ -53,6 +53,7 @@ dependencies {
     compile 'com.lapism:searchview:4.0'
     compile 'com.jakewharton:butterknife:8.5.1'
     compile 'com.afollestad.material-dialogs:core:0.9.4.2'
+    compile 'com.afollestad.material-dialogs:commons:0.9.4.2'
     compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.5@aar') {
         transitive = true
     }

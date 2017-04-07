@@ -2,13 +2,17 @@ package com.dominionos.music.ui.fragments;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SeekBarPreference;
 
+import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.dominionos.music.R;
+import com.dominionos.music.ui.activity.SettingsActivity;
 import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ThemeStore;
+import com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEColorPreference;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
@@ -50,5 +54,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         boolean isSubstratumInstalled = Utils.isSubsInstalled(getContext());
         findPreference("substratum_theme").setEnabled(isSubstratumInstalled);
+
+        ATEColorPreference colorPrimaryPref = (ATEColorPreference) findPreference("primary_color");
+        colorPrimaryPref.setColor(ThemeStore.primaryColor(getActivity()), ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        colorPrimaryPref.setOnPreferenceClickListener(preference -> {
+            new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.primary_color)
+                    .preselect(ThemeStore.primaryColor(getActivity()))
+                    .show();
+            return true;
+        });
     }
 }

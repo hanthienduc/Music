@@ -1,5 +1,5 @@
-<android.support.v7.preference.PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.preference.PreferenceCategory
         android:title="@string/appearance">
@@ -18,6 +18,16 @@
             android:key="substratum_theme"
             android:title="Follow substratum theme"
             android:defaultValue="false" />
+
+        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEColorPreference
+            android:key="primary_color"
+            android:persistent="false"
+            android:title="Primary color" />
+
+        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEColorPreference
+            android:key="accent_color"
+            android:persistent="false"
+            android:title="Accent color" />
     </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

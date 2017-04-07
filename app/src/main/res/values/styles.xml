@@ -16,6 +16,8 @@
         <item name="drawerArrowStyle">@style/DrawerArrowStyle.Light</item>
         <item name="colorControlNormal">@android:color/primary_text_dark</item>
         <item name="material_drawer_selected_text">@color/colorAccent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.Dark" parent="MaterialDrawerTheme">
@@ -33,10 +35,8 @@
         <item name="drawerArrowStyle">@style/DrawerArrowStyle.Dark</item>
         <item name="colorControlNormal">@android:color/primary_text_dark</item>
         <item name="material_drawer_selected_text">@color/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.Search" parent="AppTheme.Light">
-        <item name="android:windowActionBarOverlay">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="DrawerArrowStyle.Light" parent="Widget.AppCompat.DrawerArrowToggle">
