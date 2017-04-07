@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
-import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -39,9 +38,11 @@ import com.dominionos.music.ui.fragments.PlaylistFragment;
 import com.dominionos.music.ui.fragments.SongsFragment;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MySQLiteHelper;
+import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ATH;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
+import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -97,15 +98,12 @@ public class MainActivity extends ATHToolbarActivity {
                     .coloredNavigationBar(false)
                     .commit();
         }
-
-
-        ATH.setActivityToolbarColorAuto(this, getATHToolbar());
-        ATH.setStatusbarColorAuto(this);
         int primaryColor = ThemeStore.primaryColor(this);
         int accentColor = ThemeStore.accentColor(this);
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
-
+        ATH.setStatusbarColor(this, Utils.getAutoStatColor(primaryColor));
+        ATH.setLightStatusbarAuto(this, Utils.getAutoStatColor(primaryColor));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
@@ -199,6 +197,9 @@ public class MainActivity extends ATHToolbarActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         player = new PlayerFragment();
         transaction.replace(R.id.player_holder, player).commit();
+
+        MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
+
     }
 
     private void setSearch() {
@@ -278,6 +279,7 @@ public class MainActivity extends ATHToolbarActivity {
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withCloseOnClick(true)
+                .withTranslucentStatusBar(true)
                 .addStickyDrawerItems(settings, about)
                 .addDrawerItems(
                         songs,
@@ -318,6 +320,7 @@ public class MainActivity extends ATHToolbarActivity {
                     return true;
                 })
                 .build();
+        drawer.getDrawerLayout().setStatusBarBackgroundColor(Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
