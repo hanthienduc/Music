@@ -16,7 +16,6 @@ public class Config {
     public static final String TOGGLE_PLAY = "toggle_play";
     public static final String CANCEL_NOTIFICATION = "cancel_notification";
     public static final String PLAY_ALBUM = "play_album";
-    public static final String PLAY_ALL_SONGS = "play_all_songs";
     public static final String MENU_FROM_PLAYLIST = "menu_from_playlist";
     public static final String PLAY_FROM_PLAYLIST = "play_from_playlist";
     public static final String PLAY_PLAYLIST = "play_playlist";

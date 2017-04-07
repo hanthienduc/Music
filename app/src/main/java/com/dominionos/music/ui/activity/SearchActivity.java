@@ -2,6 +2,7 @@ package com.dominionos.music.ui.activity;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -49,7 +50,7 @@ public class SearchActivity extends AppCompatActivity {
         layoutManager.scrollToPosition(0);
         searchList.setLayoutManager(layoutManager);
         searchList.setBackgroundColor(darkMode ?
-                ContextCompat.getColor(this, R.color.darkWindowBackground) : ContextCompat.getColor(this, R.color.windowBackground));
+                ContextCompat.getColor(this, R.color.darkWindowBackground) : ContextCompat.getColor(this, R.color.lightWindowBackground));
 
 
         final ArrayList<Song> songs = new ArrayList<>();
@@ -59,11 +60,11 @@ public class SearchActivity extends AppCompatActivity {
                 null, where, null, orderBy);
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.TITLE);
+                    (MediaStore.Audio.Media.TITLE);
             int idColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media._ID);
+                    (MediaStore.Audio.Media._ID);
             int artistColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.ARTIST);
+                    (MediaStore.Audio.Media.ARTIST);
             int pathColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.DATA);
             int albumIdColumn = musicCursor.getColumnIndex
@@ -79,12 +80,11 @@ public class SearchActivity extends AppCompatActivity {
                         musicCursor.getString(albumColumn)));
             }
             while (musicCursor.moveToNext());
-            Collections.sort(songs, new Comparator<Song>() {
-                @Override
-                public int compare(Song song, Song t1) {
-                    return song.getName().compareTo(t1.getName());
-                }
-            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                songs.sort(Comparator.comparing(Song::getName));
+            } else {
+                Collections.sort(songs, (song, t1) -> song.getName().compareTo(t1.getName()));
+            }
             musicCursor.close();
             final List<Song> searchResults = new ArrayList<>();
             SearchView search = (SearchView) findViewById(R.id.searchView);
@@ -95,12 +95,7 @@ public class SearchActivity extends AppCompatActivity {
             }
             search.setVersion(SearchView.VERSION_TOOLBAR);
             search.setArrowOnly(false);
-            search.setOnMenuClickListener(new SearchView.OnMenuClickListener() {
-                @Override
-                public void onMenuClick() {
-                    finish();
-                }
-            });
+            search.setOnMenuClickListener(this::finish);
             search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {

@@ -48,15 +48,15 @@
         <activity
             android:name="com.dominionos.music.ui.activity.AlbumActivity"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.Main" />
+            android:theme="@style/AppTheme.Light" />
         <activity
             android:name="com.dominionos.music.ui.activity.PlaylistActivity"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.Main" />
+            android:theme="@style/AppTheme.Light" />
         <activity
             android:name="com.dominionos.music.ui.activity.ArtistActivity"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.Main" />
+            android:theme="@style/AppTheme.Light" />
 
         <service
             android:name="com.dominionos.music.service.MusicService"

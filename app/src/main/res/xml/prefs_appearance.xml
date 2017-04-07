@@ -13,6 +13,11 @@
             android:key="dark_theme"
             android:title="@string/dark_mode"
             android:defaultValue="false" />
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="substratum_theme"
+            android:title="Follow substratum theme"
+            android:defaultValue="false" />
     </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

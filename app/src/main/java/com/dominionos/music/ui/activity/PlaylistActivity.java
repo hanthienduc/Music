@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
@@ -39,7 +36,7 @@ public class PlaylistActivity extends AppCompatActivity {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
-        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
+        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
@@ -59,7 +56,7 @@ public class PlaylistActivity extends AppCompatActivity {
         rv.setItemAnimator(new DefaultItemAnimator());
         rv.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(this, R.color.darkWindowBackground)
-                : ContextCompat.getColor(this, R.color.windowBackground));
+                : ContextCompat.getColor(this, R.color.lightWindowBackground));
         rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), darkMode, Glide.with(this), true));
 
         List<CheckableSong> songList = new ArrayList<>();
@@ -104,29 +101,23 @@ public class PlaylistActivity extends AppCompatActivity {
         layoutManager.scrollToPosition(0);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.playlist_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MaterialDialog dialog = new MaterialDialog.Builder(PlaylistActivity.this)
-                        .title(getString(R.string.add_to_playlist))
-                        .positiveText(getString(R.string.add))
-                        .negativeText(getString(R.string.cancel))
-                        .adapter(adapter, layoutManager)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                ArrayList<CheckableSong> checkedSongs = adapter.getCheckedItems();
-                                MySQLiteHelper helper = new MySQLiteHelper(PlaylistActivity.this);
-                                helper.addSongs(checkedSongs, playlistId);
-                                Intent i = new Intent(PlaylistActivity.this, PlaylistActivity.class);
-                                i.putExtra("playlistId", playlistId);
-                                i.putExtra("title", title);
-                                finish();
-                                startActivity(i);
-                            }
-                        }).build();
-                dialog.show();
-            }
+        fab.setOnClickListener(view -> {
+            MaterialDialog dialog = new MaterialDialog.Builder(PlaylistActivity.this)
+                    .title(getString(R.string.add_to_playlist))
+                    .positiveText(getString(R.string.add))
+                    .negativeText(getString(R.string.cancel))
+                    .adapter(adapter, layoutManager)
+                    .onPositive((dialog1, which) -> {
+                        ArrayList<CheckableSong> checkedSongs = adapter.getCheckedItems();
+                        MySQLiteHelper helper1 = new MySQLiteHelper(PlaylistActivity.this);
+                        helper1.addSongs(checkedSongs, playlistId);
+                        Intent i = new Intent(PlaylistActivity.this, PlaylistActivity.class);
+                        i.putExtra("playlistId", playlistId);
+                        i.putExtra("title", title);
+                        finish();
+                        startActivity(i);
+                    }).build();
+            dialog.show();
         });
     }
 

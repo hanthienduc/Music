@@ -3,6 +3,7 @@ package com.dominionos.music.ui.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -26,7 +27,6 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class AlbumsFragment extends Fragment {
 
@@ -74,15 +74,15 @@ public class AlbumsFragment extends Fragment {
 
                 if (musicCursor != null && musicCursor.moveToFirst()) {
                     int titleColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Albums.ALBUM);
+                            (MediaStore.Audio.Albums.ALBUM);
                     int idColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Albums._ID);
+                            (MediaStore.Audio.Albums._ID);
                     int artistColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Albums.ARTIST);
+                            (MediaStore.Audio.Albums.ARTIST);
                     int numOfSongsColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Albums.NUMBER_OF_SONGS);
+                            (MediaStore.Audio.Albums.NUMBER_OF_SONGS);
                     int albumArtColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Albums.ALBUM_ART);
+                            (MediaStore.Audio.Albums.ALBUM_ART);
                     do {
                         albumList.add(new Album(musicCursor.getLong(idColumn),
                                 musicCursor.getString(titleColumn),
@@ -93,12 +93,11 @@ public class AlbumsFragment extends Fragment {
                     }
                     while (musicCursor.moveToNext());
                 }
-                Collections.sort(albumList, new Comparator<Album>() {
-                    @Override
-                    public int compare(Album album, Album t1) {
-                        return album.getName().compareToIgnoreCase(t1.getName());
-                    }
-                });
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    albumList.sort((album, t1) -> album.getName().compareToIgnoreCase(t1.getName()));
+                } else {
+                    Collections.sort(albumList, (album, t1) -> album.getName().compareToIgnoreCase(t1.getName()));
+                }
                 if (musicCursor != null) {
                     musicCursor.close();
                 }

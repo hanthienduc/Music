@@ -124,18 +124,15 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
                             }
                         }
                     });
-        holder.background.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, AlbumActivity.class);
-                intent.putExtra("albumName", items.get(adapterPosition).getName());
-                intent.putExtra("albumId", items.get(adapterPosition).getId());
-                String transitionName = "albumArt";
-                Pair albumArt = new Pair<View, String>(holder.albumArt, transitionName);
-                ActivityOptionsCompat options =
-                        ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, albumArt);
-                ActivityCompat.startActivity(context, intent, options.toBundle());
-            }
+        holder.background.setOnClickListener(v -> {
+            Intent intent = new Intent(context, AlbumActivity.class);
+            intent.putExtra("albumName", items.get(adapterPosition).getName());
+            intent.putExtra("albumId", items.get(adapterPosition).getId());
+            String transitionName = "albumArt";
+            Pair albumArt = new Pair<View, String>(holder.albumArt, transitionName);
+            ActivityOptionsCompat options =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, albumArt);
+            ActivityCompat.startActivity(context, intent, options.toBundle());
         });
     }
 

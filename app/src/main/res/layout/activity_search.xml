@@ -8,14 +8,12 @@
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/windowBackground">
+        android:layout_height="wrap_content">
         <android.support.v7.widget.Toolbar
             android:id="@+id/search_toolbar"
             android:layout_width="match_parent"
             app:layout_scrollFlags="enterAlways"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/windowBackground"/>
+            android:layout_height="?attr/actionBarSize"/>
     </android.support.design.widget.AppBarLayout>
 
     <com.lapism.searchview.SearchView

@@ -53,7 +53,7 @@ public class AlbumActivity extends AppCompatActivity {
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
         getWindow().setStatusBarColor(Color.TRANSPARENT);
-        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
+        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
@@ -134,14 +134,11 @@ public class AlbumActivity extends AppCompatActivity {
 
         setSongList();
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent bro = new Intent();
-                bro.setAction(Config.PLAY_ALBUM);
-                bro.putExtra("albumId", getIntent().getLongExtra("albumId", 0));
-                sendBroadcast(bro);
-            }
+        fab.setOnClickListener(v -> {
+            Intent bro = new Intent();
+            bro.setAction(Config.PLAY_ALBUM);
+            bro.putExtra("albumId", getIntent().getLongExtra("albumId", 0));
+            sendBroadcast(bro);
         });
     }
 
@@ -189,7 +186,7 @@ public class AlbumActivity extends AppCompatActivity {
         rv.setHasFixedSize(true);
         rv.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(this, R.color.darkWindowBackground)
-                : ContextCompat.getColor(this, R.color.windowBackground));
+                : ContextCompat.getColor(this, R.color.lightWindowBackground));
 
         rv.setAdapter(new SongsAdapter(AlbumActivity.this, songList, darkMode, Glide.with(this), false));
     }

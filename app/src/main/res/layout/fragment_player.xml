@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_centerInParent="true"
                     android:id="@+id/play"
-                    app:backgroundTint="@color/contentColour"
+                    app:backgroundTint="@color/lightContentColor"
                     app:fabSize="normal"
                     app:pressedTranslationZ="2dp"
                     app:elevation="4dp" />
@@ -101,8 +101,8 @@
                 android:paddingBottom="16dp"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:progressTint="@color/contentColour"
-                android:thumbTint="@color/contentColour"/>
+                android:progressTint="@color/lightContentColor"
+                android:thumbTint="@color/lightContentColor"/>
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView

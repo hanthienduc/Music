@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme.Main" parent="MaterialDrawerTheme.Light">
+    <style name="AppTheme.Light" parent="MaterialDrawerTheme.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -9,11 +9,11 @@
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowNoTitle">true</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="android:windowBackground">@color/windowBackground</item>
-        <item name="android:colorBackground">@color/windowBackground</item>
+        <item name="android:windowBackground">@color/lightWindowBackground</item>
+        <item name="android:colorBackground">@color/lightWindowBackground</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle.Light</item>
         <item name="colorControlNormal">@android:color/primary_text_dark</item>
         <item name="material_drawer_selected_text">@color/colorAccent</item>
     </style>
@@ -30,20 +30,23 @@
         <item name="android:colorBackground">@color/darkWindowBackground</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle.Dark</item>
         <item name="colorControlNormal">@android:color/primary_text_dark</item>
         <item name="material_drawer_selected_text">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.Search" parent="AppTheme.Main">
+    <style name="AppTheme.Search" parent="AppTheme.Light">
         <item name="android:windowActionBarOverlay">false</item>
     </style>
 
-    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
-        <item name="color">@android:color/white</item>
+    <style name="DrawerArrowStyle.Light" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/primaryTextDark</item>
+    </style>
+    <style name="DrawerArrowStyle.Dark" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/primaryTextLight</item>
     </style>
 
-    <style name="AppTheme.BrandedLaunch" parent="AppTheme.Main">
+    <style name="AppTheme.BrandedLaunch" parent="AppTheme.Light">
         <item name="android:windowBackground">@drawable/branded_logo</item>
     </style>
 

@@ -364,44 +364,38 @@ public class MusicService extends Service {
                     final Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
                     mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
                 }
-                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mediaPlayer.start();
-                        activity.updatePlayer();
-                        startForeground(NOTIFICATION_ID, createNotification());
-                        updateSessionState();
-                        updateSessionMetadata();
-                    }
+                mediaPlayer.setOnPreparedListener(mp -> {
+                    mediaPlayer.start();
+                    activity.updatePlayer();
+                    startForeground(NOTIFICATION_ID, createNotification());
+                    updateSessionState();
+                    updateSessionMetadata();
                 });
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        if(!repeatOne && !repeatAll) {
-                            if(playingList.size() == 1) {
-                                stopMusic();
-                            } else {
-                                Song song = playingList.get(playingList.indexOf(currentSong) + 1);
-                                playMusic(song);
-                                updateCurrentPlaying();
-                            }
-                        } else if(repeatOne) {
-                            playMusic(song);
+                mediaPlayer.setOnCompletionListener(mp -> {
+                    if(!repeatOne && !repeatAll) {
+                        if(playingList.size() == 1) {
+                            stopMusic();
                         } else {
-                            if(playingList.size() == 1) {
-                                playMusic(song);
-                                updateCurrentPlaying();
-                            } else if(playingList.size() != 1) {
-                                Song song = playingList.get(playingList.indexOf(currentSong) + 1);
-                                playMusic(song);
-                                updateCurrentPlaying();
-                            } else if(playingList.size() == playingList.indexOf(song)) {
-                                playMusic(playingList.get(0));
-                            }
+                            Song song1 = playingList.get(playingList.indexOf(currentSong) + 1);
+                            playMusic(song1);
+                            updateCurrentPlaying();
                         }
-                        updateSessionMetadata();
-                        updateSessionState();
+                    } else if(repeatOne) {
+                        playMusic(song);
+                    } else {
+                        if(playingList.size() == 1) {
+                            playMusic(song);
+                            updateCurrentPlaying();
+                        } else if(playingList.size() != 1) {
+                            Song song1 = playingList.get(playingList.indexOf(currentSong) + 1);
+                            playMusic(song1);
+                            updateCurrentPlaying();
+                        } else if(playingList.size() == playingList.indexOf(song)) {
+                            playMusic(playingList.get(0));
+                        }
                     }
+                    updateSessionMetadata();
+                    updateSessionState();
                 });
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {

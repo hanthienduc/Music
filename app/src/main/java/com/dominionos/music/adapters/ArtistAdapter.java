@@ -103,13 +103,10 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         }
         holder.artistDesc.setText(artistItemsCount);
 
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(context, ArtistActivity.class);
-                i.putExtra("artistName", items.get(adapterPosition).getName());
-                context.startActivity(i);
-            }
+        holder.view.setOnClickListener(view -> {
+            Intent i = new Intent(context, ArtistActivity.class);
+            i.putExtra("artistName", items.get(adapterPosition).getName());
+            context.startActivity(i);
         });
     }
 
@@ -118,12 +115,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
             @Override
             public void onDownloadComplete(final String url) {
                 if (url != null)
-                    ((Activity) context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            setImageToView(url, holder);
-                        }
-                    });
+                    ((Activity) context).runOnUiThread(() -> setImageToView(url, holder));
             }
         };
         String path = imgHandler.getArtistImgFromDB("name");

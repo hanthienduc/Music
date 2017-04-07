@@ -26,7 +26,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -40,6 +39,7 @@ import com.dominionos.music.ui.fragments.PlaylistFragment;
 import com.dominionos.music.ui.fragments.SongsFragment;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MySQLiteHelper;
+import com.kabouzeid.appthemehelper.ThemeStore;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -49,7 +49,6 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -64,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.main_viewpager) ViewPager viewPager;
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.sliding_layout) SlidingUpPanelLayout slidingUpPanelLayout;
+    @BindView(R.id.main_tab_layout) TabLayout tabLayout;
 
     private Unbinder unbinder;
     private SharedPreferences sharedPrefs;
@@ -87,15 +87,26 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (!ThemeStore.isConfigured(this, 2)) {
+            ThemeStore.editTheme(this)
+                    .activityTheme(R.style.AppTheme_Light)
+                    .primaryColorRes(R.color.colorPrimary)
+                    .accentColorRes(R.color.colorAccent)
+                    .coloredNavigationBar(false)
+                    .commit();
+        }
+        int primaryColor = ThemeStore.primaryColor(this);
+        int accentColor = ThemeStore.accentColor(this);
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
-        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
 
-        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        toolbar.setBackgroundColor(primaryColor);
+        tabLayout.setBackgroundColor(primaryColor);
+        tabLayout.setSelectedTabIndicatorColor(accentColor);
         setSupportActionBar(toolbar);
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -169,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
         startService(i);
 
         setupViewPager();
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -187,12 +197,7 @@ public class MainActivity extends AppCompatActivity {
     private void setSearch() {
         search = (SearchView) findViewById(R.id.searchView);
         search.setArrowOnly(false);
-        search.setOnMenuClickListener(new SearchView.OnMenuClickListener() {
-            @Override
-            public void onMenuClick() {
-                search.close(true);
-            }
-        });
+        search.setOnMenuClickListener(() -> search.close(true));
         search.setTheme(darkMode ? SearchView.THEME_DARK : SearchView.THEME_LIGHT);
         search.setVersion(SearchView.VERSION_MENU_ITEM);
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -235,28 +240,19 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
         viewPager.setOffscreenPageLimit(4);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new MaterialDialog.Builder(MainActivity.this)
-                        .title(R.string.add_playlist)
-                        .inputType(InputType.TYPE_CLASS_TEXT)
-                        .input(getString(R.string.playlist_example), null, new MaterialDialog.InputCallback() {
-
-                            @Override
-                            public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                                if (!input.toString().equals("")) {
-                                    MySQLiteHelper helper = new MySQLiteHelper(MainActivity.this);
-                                    helper.createNewPlayList(input.toString());
-                                } else {
-                                    Toast.makeText(MainActivity.this, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        })
-                        .positiveText(getString(R.string.ok))
-                        .negativeText(getString(R.string.cancel)).show();
-            }
-        });
+        fab.setOnClickListener(v -> new MaterialDialog.Builder(MainActivity.this)
+                .title(R.string.add_playlist)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input(getString(R.string.playlist_example), null, (dialog, input) -> {
+                    if (!input.toString().equals("")) {
+                        MySQLiteHelper helper = new MySQLiteHelper(MainActivity.this);
+                        helper.createNewPlayList(input.toString());
+                    } else {
+                        Toast.makeText(MainActivity.this, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .positiveText(getString(R.string.ok))
+                .negativeText(getString(R.string.cancel)).show());
     }
 
     public SlidingUpPanelLayout getSlidingPanel() {
@@ -283,40 +279,36 @@ public class MainActivity extends AppCompatActivity {
                         playlist,
                         new DividerDrawerItem()
                 )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        switch ((int) drawerItem.getIdentifier()) {
-                            case 1:
-                                viewPager.setCurrentItem(0);
-                                break;
-                            case 2:
-                                viewPager.setCurrentItem(1);
-                                break;
-                            case 3:
-                                viewPager.setCurrentItem(2);
-                                break;
-                            case 4:
-                                viewPager.setCurrentItem(3);
-                                break;
-                            case 5:
-                                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                                startActivityForResult(intent, Config.SETTINGS_REQUEST_CODE);
-                                break;
-                            case 6:
-                                new LibsBuilder()
-                                        .withActivityTitle(getString(R.string.about))
-                                        .withAboutIconShown(true)
-                                        .withAboutVersionShown(true)
-                                        .withAboutDescription(getString(R.string.about_text))
-                                        .withActivityStyle(darkMode ? Libs.ActivityStyle.DARK : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
-                                        .withActivityTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main)
-                                        .start(MainActivity.this);
-                                break;
-                        }
-                        return true;
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    switch ((int) drawerItem.getIdentifier()) {
+                        case 1:
+                            viewPager.setCurrentItem(0);
+                            break;
+                        case 2:
+                            viewPager.setCurrentItem(1);
+                            break;
+                        case 3:
+                            viewPager.setCurrentItem(2);
+                            break;
+                        case 4:
+                            viewPager.setCurrentItem(3);
+                            break;
+                        case 5:
+                            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                            startActivityForResult(intent, Config.SETTINGS_REQUEST_CODE);
+                            break;
+                        case 6:
+                            new LibsBuilder()
+                                    .withActivityTitle(getString(R.string.about))
+                                    .withAboutIconShown(true)
+                                    .withAboutVersionShown(true)
+                                    .withAboutDescription(getString(R.string.about_text))
+                                    .withActivityStyle(darkMode ? Libs.ActivityStyle.DARK : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                                    .withActivityTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light)
+                                    .start(MainActivity.this);
+                            break;
                     }
+                    return true;
                 })
                 .build();
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

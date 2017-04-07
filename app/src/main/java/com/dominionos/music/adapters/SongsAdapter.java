@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -105,60 +104,51 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                 : ContextCompat.getColor(context, R.color.primaryTextLight));
         holder.title.setText(items.get(adapterPosition).getName());
         holder.desc.setText(items.get(adapterPosition).getDesc());
-        holder.menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(context, v);
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.menu_play_next:
-                                i.setAction(Config.PLAY_NEXT);
-                                i.putExtra("song", items.get(adapterPosition));
-                                context.sendBroadcast(i);
-                                return true;
-                            case R.id.menu_add_playing:
-                                i.setAction(Config.ADD_SONG_TO_PLAYLIST);
-                                i.putExtra("song", items.get(adapterPosition));
-                                context.sendBroadcast(i);
-                                return true;
-                            case R.id.menu_add_playlist:
-                                Utils.addToPlaylistDialog(context, items.get(adapterPosition));
-                                return true;
-                            case R.id.menu_share:
-                                Intent share = new Intent(Intent.ACTION_SEND);
-                                share.setType("audio/*");
-                                share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" + items.get(adapterPosition).getPath()));
-                                context.startActivity(Intent.createChooser(share, context.getString(R.string.share_song)));
-                                return true;
-                            case R.id.menu_delete:
-                                File file = new File(items.get(adapterPosition).getPath());
-                                boolean deleted = file.delete();
-                                if (deleted) {
-                                    Toast.makeText(context, R.string.song_delete_success, Toast.LENGTH_SHORT).show();
-                                    context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                            MediaStore.MediaColumns._ID + "='" + items.get(adapterPosition).getId() + "'", null);
-                                    notifyItemRemoved(adapterPosition);
-                                } else
-                                    Toast.makeText(context, R.string.song_delete_fail, Toast.LENGTH_SHORT).show();
-                                return true;
-                        }
-                        return false;
-                    }
-                });
-                popupMenu.inflate(R.menu.song_popup_menu);
-                popupMenu.show();
-            }
+        holder.menu.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.menu_play_next:
+                        i.setAction(Config.PLAY_NEXT);
+                        i.putExtra("song", items.get(adapterPosition));
+                        context.sendBroadcast(i);
+                        return true;
+                    case R.id.menu_add_playing:
+                        i.setAction(Config.ADD_SONG_TO_PLAYLIST);
+                        i.putExtra("song", items.get(adapterPosition));
+                        context.sendBroadcast(i);
+                        return true;
+                    case R.id.menu_add_playlist:
+                        Utils.addToPlaylistDialog(context, items.get(adapterPosition));
+                        return true;
+                    case R.id.menu_share:
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("audio/*");
+                        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///" + items.get(adapterPosition).getPath()));
+                        context.startActivity(Intent.createChooser(share, context.getString(R.string.share_song)));
+                        return true;
+                    case R.id.menu_delete:
+                        File file = new File(items.get(adapterPosition).getPath());
+                        boolean deleted = file.delete();
+                        if (deleted) {
+                            Toast.makeText(context, R.string.song_delete_success, Toast.LENGTH_SHORT).show();
+                            context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                                    MediaStore.MediaColumns._ID + "='" + items.get(adapterPosition).getId() + "'", null);
+                            notifyItemRemoved(adapterPosition);
+                        } else
+                            Toast.makeText(context, R.string.song_delete_fail, Toast.LENGTH_SHORT).show();
+                        return true;
+                }
+                return false;
+            });
+            popupMenu.inflate(R.menu.song_popup_menu);
+            popupMenu.show();
         });
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent a = new Intent();
-                a.setAction(Config.PLAY_SINGLE_SONG);
-                a.putExtra("song", items.get(adapterPosition));
-                context.sendBroadcast(a);
-            }
+        holder.view.setOnClickListener(v -> {
+            Intent a = new Intent();
+            a.setAction(Config.PLAY_SINGLE_SONG);
+            a.putExtra("song", items.get(adapterPosition));
+            context.sendBroadcast(a);
         });
         if(shouldHaveArt) {
             new Action<String>() {

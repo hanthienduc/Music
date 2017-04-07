@@ -3,6 +3,7 @@ package com.dominionos.music.ui.activity;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
@@ -29,7 +30,7 @@ public class ArtistActivity extends AppCompatActivity {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
-        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Main);
+        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist);
@@ -55,11 +56,11 @@ public class ArtistActivity extends AppCompatActivity {
                 null, where, null, orderBy);
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.TITLE);
+                    (MediaStore.Audio.Media.TITLE);
             int idColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media._ID);
+                    (MediaStore.Audio.Media._ID);
             int artistColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.ARTIST);
+                    (MediaStore.Audio.Media.ARTIST);
             int pathColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.DATA);
             int albumIdColumn = musicCursor.getColumnIndex
@@ -77,16 +78,15 @@ public class ArtistActivity extends AppCompatActivity {
                 }
             }
             while (musicCursor.moveToNext());
-            Collections.sort(songList, new Comparator<Song>() {
-                @Override
-                public int compare(Song song, Song t1) {
-                    return song.getName().compareTo(t1.getName());
-                }
-            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                songList.sort(Comparator.comparing(Song::getName));
+            } else {
+                Collections.sort(songList, (song, t1) -> song.getName().compareTo(t1.getName()));
+            }
 
             rv.setBackgroundColor(darkMode
                     ? ContextCompat.getColor(this, R.color.darkWindowBackground)
-                    : ContextCompat.getColor(this, R.color.windowBackground));
+                    : ContextCompat.getColor(this, R.color.lightWindowBackground));
             rv.setAdapter(new SongsAdapter(this, songList, darkMode, Glide.with(this), false));
         }
         if (musicCursor != null) {

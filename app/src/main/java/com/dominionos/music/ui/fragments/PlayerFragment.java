@@ -170,36 +170,24 @@ public class PlayerFragment extends Fragment {
         play.setImageDrawable(playPauseDrawable);
         play.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent));
         play.setOnClickListener(playPauseClick());
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(service == null) service = activity.getService();
-                if(service != null) service.next();
+        next.setOnClickListener(v -> {
+            if(service == null) service = activity.getService();
+            if(service != null) service.next();
+        });
+        prev.setOnClickListener(v -> {
+            if(service == null) service = activity.getService();
+            if(service != null) service.prev();
+        });
+        shuffle.setOnClickListener(v -> {
+            if(service == null) service = activity.getService();
+            if(service != null) {
+                setShuffleState(service.shuffle());
+                updatePlayingList();
             }
         });
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(service == null) service = activity.getService();
-                if(service != null) service.prev();
-            }
-        });
-        shuffle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(service == null) service = activity.getService();
-                if(service != null) {
-                    setShuffleState(service.shuffle());
-                    updatePlayingList();
-                }
-            }
-        });
-        repeat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(service != null) {
-                    setRepeatState(service.repeat());
-                }
+        repeat.setOnClickListener(v -> {
+            if(service != null) {
+                setRepeatState(service.repeat());
             }
         });
         playerSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -249,24 +237,21 @@ public class PlayerFragment extends Fragment {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
-                        try {
-                            if(mediaPlayer != null
-                                    && playerSeekBar != null
-                                    && mediaPlayer.isPlaying()) {
-                                int seekProgress = mediaPlayer.getCurrentPosition();
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    playerSeekBar.setProgress(seekProgress, true);
-                                } else {
-                                    playerSeekBar.setProgress(seekProgress);
-                                }
+                activity.runOnUiThread(() -> {
+                    if(mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
+                    try {
+                        if(mediaPlayer != null
+                                && playerSeekBar != null
+                                && mediaPlayer.isPlaying()) {
+                            int seekProgress = mediaPlayer.getCurrentPosition();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                playerSeekBar.setProgress(seekProgress, true);
+                            } else {
+                                playerSeekBar.setProgress(seekProgress);
                             }
-                        } catch(IllegalStateException e) {
-                            e.printStackTrace();
                         }
+                    } catch(IllegalStateException e) {
+                        e.printStackTrace();
                     }
                 });
             }
@@ -342,13 +327,10 @@ public class PlayerFragment extends Fragment {
     }
 
     private View.OnClickListener playPauseClick() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(service == null) service = activity.getService();
-                if(service != null) {
-                    setPlayingState(service.togglePlay());
-                }
+        return v -> {
+            if(service == null) service = activity.getService();
+            if(service != null) {
+                setPlayingState(service.togglePlay());
             }
         };
     }

@@ -1,6 +1,8 @@
 package com.dominionos.music.utils;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.provider.MediaStore;
@@ -20,6 +22,22 @@ import java.util.List;
 
 public class Utils {
 
+    public static boolean isSubsInstalled(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        ApplicationInfo applicationInfo = null;
+        try {
+            applicationInfo = packageManager.getApplicationInfo("projekt.substratum", 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return applicationInfo != null;
+    }
+
+    public static boolean isDarkColor(int color){
+        double darkness = 1-(0.299*Color.red(color) + 0.587*Color.green(color) + 0.114*Color.blue(color))/255;
+        return !(darkness < 0.5);
+    }
+
     public static void setPrimaryTextColor(TextView view, Context context, boolean darkMode) {
         view.setTextColor(darkMode
                 ? ContextCompat.getColor(context, R.color.primaryTextDark)
@@ -35,13 +53,13 @@ public class Utils {
     public static void setWindowColor(View view, Context context, boolean darkMode) {
         view.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(context, R.color.darkWindowBackground)
-                : ContextCompat.getColor(context, R.color.windowBackground));
+                : ContextCompat.getColor(context, R.color.lightWindowBackground));
     }
 
     public static void setContentColor(View view, Context context, boolean darkMode) {
         view.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(context, R.color.darkContentColour)
-                : ContextCompat.getColor(context, R.color.contentColour));
+                : ContextCompat.getColor(context, R.color.lightContentColor));
     }
 
     public static int getAutoStatColor(int baseColor) {

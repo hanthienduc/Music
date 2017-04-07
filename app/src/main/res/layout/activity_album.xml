@@ -64,7 +64,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:clipToPadding="false"
-        android:background="@color/windowBackground"
+        android:background="@color/lightWindowBackground"
         android:numColumns="auto_fit"
         app:fastScrollThumbColor="@color/colorAccent"
         app:fastScrollPopupBgColor="@color/colorAccent"

@@ -8,7 +8,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -156,64 +155,55 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                         : ContextCompat.getColor(context, R.color.primaryTextLight));
             }
         }
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent a = new Intent();
-                a.setAction(Config.PLAY_FROM_PLAYLIST);
-                a.putExtra("song", songs.get(adapterPosition));
-                context.sendBroadcast(a);
-            }
+        holder.view.setOnClickListener(v -> {
+            Intent a = new Intent();
+            a.setAction(Config.PLAY_FROM_PLAYLIST);
+            a.putExtra("song", songs.get(adapterPosition));
+            context.sendBroadcast(a);
         });
-        holder.menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(context, v);
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.menu_play_next:
-                                Intent a = new Intent();
-                                a.setAction(Config.MENU_FROM_PLAYLIST);
-                                a.putExtra("count", adapterPosition);
-                                a.putExtra("action", Config.MENU_PLAY_NEXT);
-                                context.sendBroadcast(a);
-                                return true;
-                            case R.id.menu_remove_playing:
-                                Intent b = new Intent();
-                                b.setAction(Config.MENU_FROM_PLAYLIST);
-                                b.putExtra("count", adapterPosition);
-                                b.putExtra("action", Config.MENU_REMOVE_FROM_QUEUE);
-                                context.sendBroadcast(b);
-                                notifyItemRemoved(adapterPosition);
-                                return true;
-                            case R.id.menu_add_playlist:
-                                Song song = songs.get(adapterPosition);
-                                Utils.addToPlaylistDialog(context, song);
-                                return true;
-                            case R.id.menu_share:
-                                Intent c = new Intent();
-                                c.setAction(Config.MENU_FROM_PLAYLIST);
-                                c.putExtra("count", (int) songs.get(adapterPosition).getId());
-                                c.putExtra("action", Config.MENU_SHARE);
-                                context.sendBroadcast(c);
-                                return true;
-                            case R.id.menu_delete:
-                                Intent d = new Intent();
-                                d.setAction(Config.MENU_FROM_PLAYLIST);
-                                d.putExtra("count", adapterPosition);
-                                d.putExtra("action", Config.MENU_DELETE);
-                                context.sendBroadcast(d);
-                                notifyItemRemoved(adapterPosition);
-                                return true;
-                        }
-                        return false;
-                    }
-                });
-                popupMenu.inflate(R.menu.playing_popup_menu);
-                popupMenu.show();
-            }
+        holder.menu.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.menu_play_next:
+                        Intent a = new Intent();
+                        a.setAction(Config.MENU_FROM_PLAYLIST);
+                        a.putExtra("count", adapterPosition);
+                        a.putExtra("action", Config.MENU_PLAY_NEXT);
+                        context.sendBroadcast(a);
+                        return true;
+                    case R.id.menu_remove_playing:
+                        Intent b = new Intent();
+                        b.setAction(Config.MENU_FROM_PLAYLIST);
+                        b.putExtra("count", adapterPosition);
+                        b.putExtra("action", Config.MENU_REMOVE_FROM_QUEUE);
+                        context.sendBroadcast(b);
+                        notifyItemRemoved(adapterPosition);
+                        return true;
+                    case R.id.menu_add_playlist:
+                        Song song = songs.get(adapterPosition);
+                        Utils.addToPlaylistDialog(context, song);
+                        return true;
+                    case R.id.menu_share:
+                        Intent c = new Intent();
+                        c.setAction(Config.MENU_FROM_PLAYLIST);
+                        c.putExtra("count", (int) songs.get(adapterPosition).getId());
+                        c.putExtra("action", Config.MENU_SHARE);
+                        context.sendBroadcast(c);
+                        return true;
+                    case R.id.menu_delete:
+                        Intent d = new Intent();
+                        d.setAction(Config.MENU_FROM_PLAYLIST);
+                        d.putExtra("count", adapterPosition);
+                        d.putExtra("action", Config.MENU_DELETE);
+                        context.sendBroadcast(d);
+                        notifyItemRemoved(adapterPosition);
+                        return true;
+                }
+                return false;
+            });
+            popupMenu.inflate(R.menu.playing_popup_menu);
+            popupMenu.show();
         });
     }
 

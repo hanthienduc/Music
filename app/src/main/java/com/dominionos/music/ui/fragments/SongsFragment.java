@@ -3,6 +3,7 @@ package com.dominionos.music.ui.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -77,11 +78,11 @@ public class SongsFragment extends Fragment {
                         null, where, null, orderBy);
                 if (musicCursor != null && musicCursor.moveToFirst()) {
                     int titleColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media.TITLE);
+                            (MediaStore.Audio.Media.TITLE);
                     int idColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media._ID);
+                            (MediaStore.Audio.Media._ID);
                     int artistColumn = musicCursor.getColumnIndex
-                            (android.provider.MediaStore.Audio.Media.ARTIST);
+                            (MediaStore.Audio.Media.ARTIST);
                     int pathColumn = musicCursor.getColumnIndex
                             (MediaStore.Audio.Media.DATA);
                     int albumIdColumn = musicCursor.getColumnIndex
@@ -102,12 +103,11 @@ public class SongsFragment extends Fragment {
                 if (musicCursor != null) {
                     musicCursor.close();
                 }
-                Collections.sort(songList, new Comparator<Song>() {
-                    @Override
-                    public int compare(Song song, Song t1) {
-                        return song.getName().compareToIgnoreCase(t1.getName());
-                    }
-                });
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    songList.sort((song, t1) -> song.getName().compareToIgnoreCase(t1.getName()));
+                } else {
+                    Collections.sort(songList, (song, t1) -> song.getName().compareToIgnoreCase(t1.getName()));
+                }
                 return songList;
             }
 

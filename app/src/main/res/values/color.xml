@@ -6,8 +6,8 @@
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#FFD50000</color>
     <color name="cardBackground">@color/colorAccent</color>
-    <color name="windowBackground">#FFFAFAFA</color>
-    <color name="contentColour">#FFFFFFFF</color>
+    <color name="lightWindowBackground">#FFFAFAFA</color>
+    <color name="lightContentColor">#FFFFFFFF</color>
     <color name="primaryTextLight">@android:color/primary_text_light</color>
     <color name="secondaryTextLight">@android:color/secondary_text_light</color>
 

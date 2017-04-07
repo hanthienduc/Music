@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.dominionos.music.R;
@@ -63,25 +62,17 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
         holder.title.setText(items.get(position).getName());
         holder.desc.setText(items.get(position).getDesc());
         holder.checkBox.setOnCheckedChangeListener(null);
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.checkBox.setChecked(!holder.checkBox.isChecked());
-            }
-        });
+        holder.view.setOnClickListener(v -> holder.checkBox.setChecked(!holder.checkBox.isChecked()));
         final int finalPosition = position;
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b) {
-                    if(!checkedItems.contains(items.get(finalPosition))) {
-                        checkedItems.add(items.get(finalPosition));
-                    }
-                } else {
-                    checkedItems.remove(items.get(finalPosition));
+        holder.checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
+            if(b) {
+                if(!checkedItems.contains(items.get(finalPosition))) {
+                    checkedItems.add(items.get(finalPosition));
                 }
-                items.get(finalPosition).setSelected(b);
+            } else {
+                checkedItems.remove(items.get(finalPosition));
             }
+            items.get(finalPosition).setSelected(b);
         });
         holder.checkBox.setChecked(items.get(position).isSelected);
 

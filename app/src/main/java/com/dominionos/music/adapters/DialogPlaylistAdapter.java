@@ -3,12 +3,10 @@ package com.dominionos.music.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.os.CountDownTimer;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -67,64 +65,50 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
             holder.menu.setVisibility(View.GONE);
             holder.add.setVisibility(View.VISIBLE);
             holder.add.setText(items.get(position).getName());
-            holder.view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showNewPlaylistPrompt();
-                }
-            });
+            holder.view.setOnClickListener(v -> showNewPlaylistPrompt());
         } else {
             holder.title.setText(items.get(position).getName());
             final int finalPosition = position;
-            holder.menu.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    PopupMenu popupMenu = new PopupMenu(context, v);
-                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.menu_playlist_delete:
-                                    MySQLiteHelper helper = new MySQLiteHelper(context);
-                                    helper.removePlayList(items.get(finalPosition).getId());
-                                    items.remove(finalPosition);
-                                    notifyItemRemoved(finalPosition);
-                                    new CountDownTimer(400, 1000) {
-                                        public void onTick(long millisUntilFinished) {
-                                        }
+            holder.menu.setOnClickListener(v -> {
+                PopupMenu popupMenu = new PopupMenu(context, v);
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    switch (item.getItemId()) {
+                        case R.id.menu_playlist_delete:
+                            MySQLiteHelper helper = new MySQLiteHelper(context);
+                            helper.removePlayList(items.get(finalPosition).getId());
+                            items.remove(finalPosition);
+                            notifyItemRemoved(finalPosition);
+                            new CountDownTimer(400, 1000) {
+                                public void onTick(long millisUntilFinished) {
+                                }
 
-                                        public void onFinish() {
-                                            notifyDataSetChanged();
-                                        }
-                                    }.start();
-                                    return true;
-                                case R.id.menu_playlist_play:
-                                    Intent i = new Intent();
-                                    i.putExtra("playlistId", items.get(finalPosition).getId());
-                                    i.setAction(Config.PLAY_PLAYLIST);
-                                    context.sendBroadcast(i);
-                                    return true;
-                                case R.id.menu_playlist_rename:
-                                    showRenamePlaylistPrompt(finalPosition);
-                                    return true;
-                            }
-                            return false;
-                        }
-                    });
-                    popupMenu.inflate(R.menu.playlist_popup_menu);
-                    popupMenu.show();
-                }
+                                public void onFinish() {
+                                    notifyDataSetChanged();
+                                }
+                            }.start();
+                            return true;
+                        case R.id.menu_playlist_play:
+                            Intent i = new Intent();
+                            i.putExtra("playlistId", items.get(finalPosition).getId());
+                            i.setAction(Config.PLAY_PLAYLIST);
+                            context.sendBroadcast(i);
+                            return true;
+                        case R.id.menu_playlist_rename:
+                            showRenamePlaylistPrompt(finalPosition);
+                            return true;
+                    }
+                    return false;
+                });
+                popupMenu.inflate(R.menu.playlist_popup_menu);
+                popupMenu.show();
             });
-            holder.view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MySQLiteHelper helper = new MySQLiteHelper(context);
-                    if (songToAdd.getId() != -1)
-                        helper.addSong(songToAdd, items.get(finalPosition).getId());
-                    else
-                        helper.addSong(songToAdd.getName(), items.get(finalPosition).getId());
-                    Toast.makeText(context, "Song added to " + items.get(finalPosition).getName(), Toast.LENGTH_SHORT).show();
-                }
+            holder.view.setOnClickListener(v -> {
+                MySQLiteHelper helper = new MySQLiteHelper(context);
+                if (songToAdd.getId() != -1)
+                    helper.addSong(songToAdd, items.get(finalPosition).getId());
+                else
+                    helper.addSong(songToAdd.getName(), items.get(finalPosition).getId());
+                Toast.makeText(context, "Song added to " + items.get(finalPosition).getName(), Toast.LENGTH_SHORT).show();
             });
         }
     }
@@ -133,18 +117,14 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
         new MaterialDialog.Builder(context)
                 .title(R.string.add_playlist)
                 .inputType(InputType.TYPE_CLASS_TEXT)
-                .input(context.getString(R.string.playlist_example), null, new MaterialDialog.InputCallback() {
-
-                    @Override
-                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        if(!input.toString().equals("")) {
-                            MySQLiteHelper helper = new MySQLiteHelper(context);
-                            items.add(items.size() - 1, new Playlist(helper.createNewPlayList(
-                                    input.toString()), input.toString()));
-                            notifyItemInserted(items.size() - 2);
-                        } else {
-                            Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
-                        }
+                .input(context.getString(R.string.playlist_example), null, (dialog, input) -> {
+                    if(!input.toString().equals("")) {
+                        MySQLiteHelper helper = new MySQLiteHelper(context);
+                        items.add(items.size() - 1, new Playlist(helper.createNewPlayList(
+                                input.toString()), input.toString()));
+                        notifyItemInserted(items.size() - 2);
+                    } else {
+                        Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
                     }
                 })
                 .positiveText(context.getString(R.string.ok))
@@ -155,18 +135,14 @@ public class DialogPlaylistAdapter extends RecyclerView.Adapter<DialogPlaylistAd
         new MaterialDialog.Builder(context)
                 .title(R.string.rename_playlist)
                 .inputType(InputType.TYPE_CLASS_TEXT)
-                .input(context.getString(R.string.playlist_example), null, new MaterialDialog.InputCallback() {
-
-                    @Override
-                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        if(!input.toString().equals("")) {
-                            MySQLiteHelper helper = new MySQLiteHelper(context);
-                            helper.renamePlaylist(input.toString(), items.get(pos).getId());
-                            items.get(pos).setName(input.toString());
-                            notifyItemChanged(pos);
-                        } else {
-                            Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
-                        }
+                .input(context.getString(R.string.playlist_example), null, (dialog, input) -> {
+                    if(!input.toString().equals("")) {
+                        MySQLiteHelper helper = new MySQLiteHelper(context);
+                        helper.renamePlaylist(input.toString(), items.get(pos).getId());
+                        items.get(pos).setName(input.toString());
+                        notifyItemChanged(pos);
+                    } else {
+                        Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
                     }
                 })
                 .positiveText(context.getString(R.string.done))
