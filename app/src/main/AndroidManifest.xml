@@ -65,7 +65,8 @@
         <activity
             android:name="com.dominionos.music.ui.activity.SettingsActivity"
             android:screenOrientation="sensorPortrait"
-            android:label="@string/settings"/>
+            android:label="@string/settings"
+            android:theme="@style/AppTheme.Light"/>
     </application>
 
 </manifest>

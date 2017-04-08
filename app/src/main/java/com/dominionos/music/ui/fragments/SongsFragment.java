@@ -21,11 +21,11 @@ import com.dominionos.music.R;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
 import com.dominionos.music.utils.Utils;
+import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class SongsFragment extends Fragment {
 
@@ -52,6 +52,9 @@ public class SongsFragment extends Fragment {
 
     private void init() {
         rv = (FastScrollRecyclerView) mainView.findViewById(R.id.songs_fragment_list);
+        int accentColor = ThemeStore.accentColor(context);
+        rv.setPopupBgColor(accentColor);
+        rv.setThumbColor(accentColor);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mainView.getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);

@@ -21,6 +21,7 @@ import com.dominionos.music.R;
 import com.dominionos.music.adapters.ArtistAdapter;
 import com.dominionos.music.items.Artist;
 import com.dominionos.music.utils.Utils;
+import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -41,6 +42,9 @@ public class ArtistsFragment extends Fragment {
         darkMode = sharedPref.getBoolean("dark_theme", false);
 
         rv = (FastScrollRecyclerView) view.findViewById(R.id.artist_list);
+        int accentColor = ThemeStore.accentColor(context);
+        rv.setPopupBgColor(accentColor);
+        rv.setThumbColor(accentColor);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);

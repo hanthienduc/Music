@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.fragments.SettingsFragment;
+import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ATH;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
@@ -20,7 +21,7 @@ public class SettingsActivity extends ATHToolbarActivity implements ColorChooser
     protected void onCreate(Bundle savedInstanceState) {
 
         ATH.setActivityToolbarColorAuto(this, getATHToolbar());
-        ATH.setStatusbarColorAuto(this);
+        ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
@@ -49,6 +50,9 @@ public class SettingsActivity extends ATHToolbarActivity implements ColorChooser
     public void onColorSelection(@NonNull ColorChooserDialog colorChooserDialog, int i) {
         if(!colorChooserDialog.isAccentMode()) {
             ThemeStore.editTheme(this).primaryColor(i).commit();
+            recreate();
+        } else {
+            ThemeStore.editTheme(this).accentColor(i).commit();
             recreate();
         }
     }

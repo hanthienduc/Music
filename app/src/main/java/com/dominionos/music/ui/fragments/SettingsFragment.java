@@ -60,6 +60,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         colorPrimaryPref.setOnPreferenceClickListener(preference -> {
             new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.primary_color)
                     .preselect(ThemeStore.primaryColor(getActivity()))
+                    .accentMode(false)
+                    .allowUserColorInput(true)
+                    .allowUserColorInputAlpha(false)
+                    .show();
+            return true;
+        });
+
+        ATEColorPreference colorAccentPref = (ATEColorPreference) findPreference("accent_color");
+        colorAccentPref.setColor(ThemeStore.accentColor(getActivity()), ContextCompat.getColor(getContext(), R.color.colorAccent));
+        colorAccentPref.setOnPreferenceClickListener(preference -> {
+            new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.accent_color)
+                    .preselect(ThemeStore.accentColor(getActivity()))
+                    .accentMode(true)
+                    .allowUserColorInput(true)
+                    .allowUserColorInputAlpha(false)
                     .show();
             return true;
         });

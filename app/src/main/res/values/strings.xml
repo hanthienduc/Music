@@ -74,5 +74,6 @@
     <string name="dark_mode_disabled">Dark theme disabled</string>
     <string name="playback_speed">Playback speed</string>
     <string name="primary_color">Primary color</string>
+    <string name="accent_color">Accent color</string>
 
 </resources>

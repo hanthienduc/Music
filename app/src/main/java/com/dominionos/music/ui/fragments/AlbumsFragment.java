@@ -23,6 +23,7 @@ import com.dominionos.music.utils.SpacesItemDecoration;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.AlbumsAdapter;
 import com.dominionos.music.items.Album;
+import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -42,6 +43,9 @@ public class AlbumsFragment extends Fragment {
         boolean darkMode = sharedPref.getBoolean("dark_theme", false);
 
         gv = (FastScrollRecyclerView) v.findViewById(R.id.album_grid);
+        int accentColor = ThemeStore.accentColor(context);
+        gv.setPopupBgColor(accentColor);
+        gv.setThumbColor(accentColor);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, Utils.calculateNoOfColumns(context));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);

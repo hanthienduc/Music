@@ -33,11 +33,6 @@ public class Utils {
         return applicationInfo != null;
     }
 
-    public static boolean isDarkColor(int color){
-        double darkness = 1-(0.299*Color.red(color) + 0.587*Color.green(color) + 0.114*Color.blue(color))/255;
-        return !(darkness < 0.5);
-    }
-
     public static void setPrimaryTextColor(TextView view, Context context, boolean darkMode) {
         view.setTextColor(darkMode
                 ? ContextCompat.getColor(context, R.color.primaryTextDark)
@@ -65,7 +60,7 @@ public class Utils {
     public static int getAutoStatColor(int baseColor) {
         float[] hsv = new float[3];
         Color.colorToHSV(baseColor, hsv);
-        hsv[2] *= 0.8f;
+        hsv[2] *= 0.6f;
         return Color.HSVToColor(hsv);
     }
 

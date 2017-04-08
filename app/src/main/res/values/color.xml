@@ -4,16 +4,16 @@
     <!-- Light colour palette -->
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#FFD50000</color>
+    <color name="colorAccent">#D50000</color>
     <color name="cardBackground">@color/colorAccent</color>
-    <color name="lightWindowBackground">#FFFAFAFA</color>
-    <color name="lightContentColor">#FFFFFFFF</color>
+    <color name="lightWindowBackground">#FAFAFA</color>
+    <color name="lightContentColor">#FFFFFF</color>
     <color name="primaryTextLight">@android:color/primary_text_light</color>
     <color name="secondaryTextLight">@android:color/secondary_text_light</color>
 
     <!-- Dark colour palette -->
     <color name="darkWindowBackground">#303030</color>
-    <color name="darkContentColour">#FF424242</color>
+    <color name="darkContentColour">#424242</color>
     <color name="primaryTextDark">@android:color/primary_text_dark</color>
     <color name="secondaryTextDark">@android:color/secondary_text_dark</color>
 </resources>

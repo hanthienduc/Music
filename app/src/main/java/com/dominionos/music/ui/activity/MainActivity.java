@@ -43,15 +43,16 @@ import com.kabouzeid.appthemehelper.ATH;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
+import com.kabouzeid.appthemehelper.util.TintHelper;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class MainActivity extends ATHToolbarActivity {
     private Drawer drawer;
     private MusicService service;
     private PlayerFragment player;
+    private int primaryColor, accentColor;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -98,20 +100,24 @@ public class MainActivity extends ATHToolbarActivity {
                     .coloredNavigationBar(false)
                     .commit();
         }
-        int primaryColor = ThemeStore.primaryColor(this);
-        int accentColor = ThemeStore.accentColor(this);
+        primaryColor = ThemeStore.primaryColor(this);
+        accentColor = ThemeStore.accentColor(this);
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
-        ATH.setStatusbarColor(this, Utils.getAutoStatColor(primaryColor));
         ATH.setLightStatusbarAuto(this, Utils.getAutoStatColor(primaryColor));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
 
         toolbar.setBackgroundColor(primaryColor);
+        ATH.setActivityToolbarColorAuto(this, toolbar);
         tabLayout.setBackgroundColor(primaryColor);
         tabLayout.setSelectedTabIndicatorColor(accentColor);
         setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+
+        TintHelper.setTintAuto(fab, accentColor, true);
 
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -268,25 +274,22 @@ public class MainActivity extends ATHToolbarActivity {
     }
 
     private void setDrawer() {
-        final PrimaryDrawerItem songs = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.songs).withIcon(MaterialDesignIconic.Icon.gmi_audio);
-        final PrimaryDrawerItem albums = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.albums).withIcon(MaterialDesignIconic.Icon.gmi_collection_music);
-        final PrimaryDrawerItem artists = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.artist).withIcon(MaterialDesignIconic.Icon.gmi_account_circle);
-        final PrimaryDrawerItem playlist = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.playlist).withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
+        final PrimaryDrawerItem songs = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(1).withName(R.string.songs).withIcon(MaterialDesignIconic.Icon.gmi_audio);
+        final PrimaryDrawerItem albums = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(2).withName(R.string.albums).withIcon(MaterialDesignIconic.Icon.gmi_collection_music);
+        final PrimaryDrawerItem artists = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(3).withName(R.string.artist).withIcon(MaterialDesignIconic.Icon.gmi_account_circle);
+        final PrimaryDrawerItem playlist = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(4).withName(R.string.playlist).withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
         final SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(getString(R.string.settings)).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_settings);
         final SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.about).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_info);
+        final SectionDrawerItem librarySection = new SectionDrawerItem().withName("Library").withIsExpanded(true).withDivider(false).withSubItems(songs, albums, artists, playlist);
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
+                .withHeader(R.layout.header)
                 .withCloseOnClick(true)
-                .withTranslucentStatusBar(true)
                 .addStickyDrawerItems(settings, about)
                 .addDrawerItems(
-                        songs,
-                        albums,
-                        artists,
-                        playlist,
-                        new DividerDrawerItem()
+                        librarySection
                 )
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     switch ((int) drawerItem.getIdentifier()) {
@@ -320,6 +323,8 @@ public class MainActivity extends ATHToolbarActivity {
                     return true;
                 })
                 .build();
+        drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+        drawer.getHeader().findViewById(R.id.header).setBackgroundColor(ThemeStore.primaryColor(this));
         drawer.getDrawerLayout().setStatusBarBackgroundColor(Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -332,13 +337,14 @@ public class MainActivity extends ATHToolbarActivity {
 
             @Override
             public void onPageSelected(int position) {
-                drawer.setSelectionAtPosition(position, false);
+                drawer.setSelectionAtPosition(position + 2, false);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
             }
         });
+        drawer.setSelectionAtPosition(2);
     }
 
     @Override
