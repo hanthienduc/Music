@@ -20,10 +20,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         addPreferencesFromResource(R.xml.prefs_appearance);
         configureAppearanceSettings();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            addPreferencesFromResource(R.xml.prefs_playback);
-            configurePlaybackSettings();
-        }
+        addPreferencesFromResource(R.xml.prefs_playback);
+        configurePlaybackSettings();
     }
 
     private void configurePlaybackSettings() {
@@ -37,6 +35,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
     private void configureAppearanceSettings() {
+        Preference substratumTheme = findPreference("substratum_theme");
+
         final String darkModeEnabled = getString(R.string.dark_mode_enabled);
         final String darkModeDisabled = getString(R.string.dark_mode_disabled);
         Preference darkMode = findPreference("dark_theme");
@@ -52,10 +52,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return true;
         });
 
-        boolean isSubstratumInstalled = Utils.isSubsInstalled(getContext());
-        findPreference("substratum_theme").setEnabled(isSubstratumInstalled);
-
+        boolean subsTheme = substratumTheme.getSharedPreferences().getBoolean("substratum_theme", false);
         ATEColorPreference colorPrimaryPref = (ATEColorPreference) findPreference("primary_color");
+        colorPrimaryPref.setEnabled(!subsTheme);
         colorPrimaryPref.setColor(ThemeStore.primaryColor(getActivity()), ContextCompat.getColor(getContext(), R.color.colorPrimary));
         colorPrimaryPref.setOnPreferenceClickListener(preference -> {
             new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.primary_color)
@@ -68,6 +67,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         ATEColorPreference colorAccentPref = (ATEColorPreference) findPreference("accent_color");
+        colorAccentPref.setEnabled(!subsTheme);
         colorAccentPref.setColor(ThemeStore.accentColor(getActivity()), ContextCompat.getColor(getContext(), R.color.colorAccent));
         colorAccentPref.setOnPreferenceClickListener(preference -> {
             new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.accent_color)
@@ -76,6 +76,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     .allowUserColorInput(true)
                     .allowUserColorInputAlpha(false)
                     .show();
+            return true;
+        });
+
+        boolean isSubstratumInstalled = Utils.isSubsInstalled(getContext());
+        substratumTheme.setEnabled(isSubstratumInstalled);
+        substratumTheme.setOnPreferenceChangeListener((preference, newValue) -> {
+            colorPrimaryPref.setEnabled(!(boolean) newValue);
+            colorAccentPref.setEnabled(!(boolean) newValue);
+            if((boolean) newValue) {
+                ThemeStore.editTheme(getContext())
+                        .primaryColorRes(R.color.colorPrimary)
+                        .accentColorRes(R.color.colorAccent)
+                        .commit();
+                getActivity().recreate();
+            }
             return true;
         });
     }

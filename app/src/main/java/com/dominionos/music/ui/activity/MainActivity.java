@@ -12,7 +12,6 @@ import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -92,6 +91,8 @@ public class MainActivity extends ATHToolbarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean subsTheme = sharedPrefs.getBoolean("substratum_theme", false);
         if (!ThemeStore.isConfigured(this, 2)) {
             ThemeStore.editTheme(this)
                     .activityTheme(R.style.AppTheme_Light)
@@ -100,9 +101,14 @@ public class MainActivity extends ATHToolbarActivity {
                     .coloredNavigationBar(false)
                     .commit();
         }
+        if(subsTheme) {
+            ThemeStore.editTheme(this)
+                    .primaryColorRes(R.color.colorPrimary)
+                    .accentColorRes(R.color.colorAccent)
+                    .commit();
+        }
         primaryColor = ThemeStore.primaryColor(this);
         accentColor = ThemeStore.accentColor(this);
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
         ATH.setLightStatusbarAuto(this, Utils.getAutoStatColor(primaryColor));
         super.onCreate(savedInstanceState);
@@ -120,17 +126,13 @@ public class MainActivity extends ATHToolbarActivity {
         TintHelper.setTintAuto(fab, accentColor, true);
 
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                init();
-            } else {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.MEDIA_CONTENT_CONTROL,
-                        Manifest.permission.INTERNET}, 1);
-            }
-        } else {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             init();
+        } else {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.MEDIA_CONTENT_CONTROL,
+                    Manifest.permission.INTERNET}, 1);
         }
     }
 
@@ -324,8 +326,8 @@ public class MainActivity extends ATHToolbarActivity {
                 })
                 .build();
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-        drawer.getHeader().findViewById(R.id.header).setBackgroundColor(ThemeStore.primaryColor(this));
-        drawer.getDrawerLayout().setStatusBarBackgroundColor(Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
+        drawer.getHeader().findViewById(R.id.header).setBackgroundColor(primaryColor);
+        drawer.getDrawerLayout().setStatusBarBackgroundColor(Utils.getAutoStatColor(primaryColor));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

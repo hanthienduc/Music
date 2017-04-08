@@ -3,7 +3,6 @@ package com.dominionos.music.ui.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -25,7 +24,6 @@ import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class ArtistsFragment extends Fragment {
 
@@ -66,7 +64,6 @@ public class ArtistsFragment extends Fragment {
                 return "artist_list";
             }
 
-            @Nullable
             @Override
             protected ArrayList<Artist> run() throws InterruptedException {
                 final ArrayList<Artist> artistList = new ArrayList<>();
@@ -89,11 +86,8 @@ public class ArtistsFragment extends Fragment {
                     }
                     while (musicCursor.moveToNext());
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    artistList.sort((artist, t1) -> artist.getName().compareToIgnoreCase(t1.getName()));
-                } else {
-                    Collections.sort(artistList, (artist, t1) -> artist.getName().compareToIgnoreCase(t1.getName()));
-                }
+                artistList.sort((artist, t1) -> artist.getName().compareToIgnoreCase(t1.getName()));
+
                 if (musicCursor != null) {
                     musicCursor.close();
                 }

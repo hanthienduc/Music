@@ -80,11 +80,7 @@ public class SearchActivity extends AppCompatActivity {
                         musicCursor.getString(albumColumn)));
             }
             while (musicCursor.moveToNext());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                songs.sort(Comparator.comparing(Song::getName));
-            } else {
-                Collections.sort(songs, (song, t1) -> song.getName().compareTo(t1.getName()));
-            }
+            songs.sort(Comparator.comparing(Song::getName));
             musicCursor.close();
             final List<Song> searchResults = new ArrayList<>();
             SearchView search = (SearchView) findViewById(R.id.searchView);

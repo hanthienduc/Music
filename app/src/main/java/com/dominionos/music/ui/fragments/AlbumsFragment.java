@@ -68,7 +68,6 @@ public class AlbumsFragment extends Fragment {
                 return "album_list";
             }
 
-            @Nullable
             @Override
             protected ArrayList<Album> run() throws InterruptedException {
                 final ArrayList<Album> albumList = new ArrayList<>();
@@ -97,11 +96,8 @@ public class AlbumsFragment extends Fragment {
                     }
                     while (musicCursor.moveToNext());
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    albumList.sort((album, t1) -> album.getName().compareToIgnoreCase(t1.getName()));
-                } else {
-                    Collections.sort(albumList, (album, t1) -> album.getName().compareToIgnoreCase(t1.getName()));
-                }
+                albumList.sort((album, t1) -> album.getName().compareToIgnoreCase(t1.getName()));
+
                 if (musicCursor != null) {
                     musicCursor.close();
                 }

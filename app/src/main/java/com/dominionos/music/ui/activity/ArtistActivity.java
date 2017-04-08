@@ -78,11 +78,7 @@ public class ArtistActivity extends AppCompatActivity {
                 }
             }
             while (musicCursor.moveToNext());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                songList.sort(Comparator.comparing(Song::getName));
-            } else {
-                Collections.sort(songList, (song, t1) -> song.getName().compareTo(t1.getName()));
-            }
+            songList.sort(Comparator.comparing(Song::getName));
 
             rv.setBackgroundColor(darkMode
                     ? ContextCompat.getColor(this, R.color.darkWindowBackground)

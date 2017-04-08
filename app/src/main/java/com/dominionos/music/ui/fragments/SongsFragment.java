@@ -71,7 +71,6 @@ public class SongsFragment extends Fragment {
                 return "song_list";
             }
 
-            @Nullable
             @Override
             protected ArrayList<Song> run() throws InterruptedException {
                 final ArrayList<Song> songList = new ArrayList<>();
@@ -106,11 +105,8 @@ public class SongsFragment extends Fragment {
                 if (musicCursor != null) {
                     musicCursor.close();
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    songList.sort((song, t1) -> song.getName().compareToIgnoreCase(t1.getName()));
-                } else {
-                    Collections.sort(songList, (song, t1) -> song.getName().compareToIgnoreCase(t1.getName()));
-                }
+                songList.sort((song, t1) -> song.getName().compareToIgnoreCase(t1.getName()));
+
                 return songList;
             }
 

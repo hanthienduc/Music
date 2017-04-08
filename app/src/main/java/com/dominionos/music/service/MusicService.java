@@ -14,7 +14,6 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -256,10 +255,8 @@ public class MusicService extends Service {
             mediaPlayer.pause();
             isPlaying = false;
         } else if(mediaPlayer != null && !mediaPlayer.isPlaying()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                final float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
-                mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
-            }
+            final float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+            mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
             mediaPlayer.start();
             isPlaying = true;
         } else if(mediaPlayer == null && playingList.size() != 0) {
@@ -360,10 +357,8 @@ public class MusicService extends Service {
                 notificationManager = NotificationManagerCompat.from(this);
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(song.getPath());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    final Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
-                    mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
-                }
+                final Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+                mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
                 mediaPlayer.setOnPreparedListener(mp -> {
                     mediaPlayer.start();
                     activity.updatePlayer();
@@ -498,9 +493,7 @@ public class MusicService extends Service {
                 PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
 
         float playbackSpeed = 1.0f;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(mediaPlayer != null)  playbackSpeed = mediaPlayer.getPlaybackParams().getSpeed();
-        }
+        if(mediaPlayer != null)  playbackSpeed = mediaPlayer.getPlaybackParams().getSpeed();
         mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
                 .setActions(playBackStateActions)
                 .setState(playState, mediaPlayer != null
