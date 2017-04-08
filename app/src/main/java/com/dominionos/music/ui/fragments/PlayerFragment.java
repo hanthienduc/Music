@@ -206,25 +206,29 @@ public class PlayerFragment extends Fragment {
     }
 
     private void setShuffleState(boolean shuffleState) {
-        shuffle.setAlpha(shuffleState
-                ? Config.BUTTON_ACTIVE
-                : Config.BUTTON_INACTIVE);
+        if(shuffle != null) {
+            shuffle.setAlpha(shuffleState
+                    ? Config.BUTTON_ACTIVE
+                    : Config.BUTTON_INACTIVE);
+        }
     }
 
     private void setRepeatState(int repeatState) {
-        switch (repeatState) {
-            case 0:
-                repeat.setImageResource(R.drawable.ic_repeat_all);
-                repeat.setAlpha(Config.BUTTON_INACTIVE);
-                break;
-            case 1:
-                repeat.setImageResource(R.drawable.ic_repeat_one);
-                repeat.setAlpha(Config.BUTTON_ACTIVE);
-                break;
-            case 2:
-                repeat.setImageResource(R.drawable.ic_repeat_all);
-                repeat.setAlpha(Config.BUTTON_ACTIVE);
-                break;
+        if(repeat != null) {
+            switch (repeatState) {
+                case 0:
+                    repeat.setImageResource(R.drawable.ic_repeat_all);
+                    repeat.setAlpha(Config.BUTTON_INACTIVE);
+                    break;
+                case 1:
+                    repeat.setImageResource(R.drawable.ic_repeat_one);
+                    repeat.setAlpha(Config.BUTTON_ACTIVE);
+                    break;
+                case 2:
+                    repeat.setImageResource(R.drawable.ic_repeat_all);
+                    repeat.setAlpha(Config.BUTTON_ACTIVE);
+                    break;
+            }
         }
     }
 

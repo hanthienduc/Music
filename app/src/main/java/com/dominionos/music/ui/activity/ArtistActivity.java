@@ -3,11 +3,9 @@ package com.dominionos.music.ui.activity;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,32 +16,46 @@ import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
+import com.dominionos.music.utils.Utils;
+import com.kabouzeid.appthemehelper.ATH;
+import com.kabouzeid.appthemehelper.ThemeStore;
+import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
-public class ArtistActivity extends AppCompatActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
+public class ArtistActivity extends ATHToolbarActivity {
+
+    private Unbinder unbinder;
+    @BindView(R.id.artist_toolbar) Toolbar toolbar;
+    @BindView(R.id.artist_recycler_view) RecyclerView rv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
-        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
+        ATH.setActivityToolbarColorAuto(this, toolbar);
+        ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist);
+        unbinder = ButterKnife.bind(this);
+
         String artistName = getIntent().getStringExtra("artistName");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.artist_toolbar);
+        toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(artistName);
         }
 
-        RecyclerView rv = (RecyclerView) findViewById(R.id.artist_recycler_view);
+        rv = (RecyclerView) findViewById(R.id.artist_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
@@ -97,5 +109,11 @@ public class ArtistActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }

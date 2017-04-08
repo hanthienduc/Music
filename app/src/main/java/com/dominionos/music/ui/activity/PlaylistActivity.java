@@ -22,25 +22,39 @@ import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.adapters.CheckableSongsAdapter;
 import com.dominionos.music.items.CheckableSong;
+import com.dominionos.music.utils.Utils;
+import com.kabouzeid.appthemehelper.ATH;
+import com.kabouzeid.appthemehelper.ThemeStore;
+import com.kabouzeid.appthemehelper.util.TintHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 public class PlaylistActivity extends AppCompatActivity {
     private int playlistId;
     private CheckableSongsAdapter adapter;
     private String title;
+    private Unbinder unbinder;
+
+    @BindView(R.id.playlist_toolbar) Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
-        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
+        ATH.setActivityToolbarColorAuto(this, toolbar);
+        ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
-        setSupportActionBar((Toolbar) findViewById(R.id.playlist_toolbar));
+        unbinder = ButterKnife.bind(this);
+        toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
+        setSupportActionBar(toolbar);
         title = getIntent().getStringExtra("title");
         setTitle(title);
         if(getSupportActionBar() != null) {
@@ -119,6 +133,7 @@ public class PlaylistActivity extends AppCompatActivity {
                     }).build();
             dialog.show();
         });
+        TintHelper.setTintAuto(fab, ThemeStore.accentColor(this), true);
     }
 
     @Override
@@ -129,6 +144,12 @@ public class PlaylistActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 
 }
