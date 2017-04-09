@@ -15,3 +15,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keep class com.dominionos.music.adapters.*
+-keep class com.dominionos.music.items.*
+-keep class com.dominionos.music.service.*
+-keep class com.dominionos.music.task.*
+-keep class com.dominionos.music.ui.*
+-keep class com.dominionos.music.utils.*
