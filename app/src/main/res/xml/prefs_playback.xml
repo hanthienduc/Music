@@ -2,14 +2,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v7.preference.PreferenceCategory
-        android:title="Playback">
+    <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory
+        android:title="Playback"
+        app:ateKey_prefCategory_textColor="accent_color">
         <SeekBarPreference
             android:key="playback_speed"
             android:title="@string/playback_speed"
             android:max="15"
             android:defaultValue="10"
             app:min="5"/>
-    </android.support.v7.preference.PreferenceCategory>
+    </com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>
