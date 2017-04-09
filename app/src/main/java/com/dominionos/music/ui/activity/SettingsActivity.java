@@ -22,7 +22,7 @@ public class SettingsActivity extends ATHToolbarActivity implements ColorChooser
 
         ATH.setActivityToolbarColorAuto(this, getATHToolbar());
         ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
-
+        setTheme(ThemeStore.activityTheme(this));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
