@@ -43,6 +43,7 @@ import com.kabouzeid.appthemehelper.ThemeStore;
 import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
 import com.kabouzeid.appthemehelper.util.TintHelper;
+import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
 import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -117,6 +118,7 @@ public class MainActivity extends ATHToolbarActivity {
 
         toolbar.setBackgroundColor(primaryColor);
         ATH.setActivityToolbarColorAuto(this, toolbar);
+        tabLayout.setTabTextColors(ToolbarContentTintHelper.toolbarSubtitleColor(this, primaryColor), ToolbarContentTintHelper.toolbarTitleColor(this, primaryColor));
         tabLayout.setBackgroundColor(primaryColor);
         tabLayout.setSelectedTabIndicatorColor(accentColor);
         setSupportActionBar(toolbar);
@@ -155,6 +157,7 @@ public class MainActivity extends ATHToolbarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        menu.findItem(R.id.search_item).getIcon().setTint(ToolbarContentTintHelper.toolbarContentColor(this, primaryColor));
         return true;
     }
 
@@ -195,6 +198,7 @@ public class MainActivity extends ATHToolbarActivity {
         setupViewPager();
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
+        TintHelper.setTintAuto(tabLayout, primaryColor, true);
 
         setDrawer();
 
@@ -288,6 +292,7 @@ public class MainActivity extends ATHToolbarActivity {
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(R.layout.header)
+                .withActionBarDrawerToggle(true)
                 .withCloseOnClick(true)
                 .addStickyDrawerItems(settings, about)
                 .addDrawerItems(
@@ -328,6 +333,7 @@ public class MainActivity extends ATHToolbarActivity {
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         drawer.getHeader().findViewById(R.id.header).setBackgroundColor(primaryColor);
         drawer.getDrawerLayout().setStatusBarBackgroundColor(Utils.getAutoStatColor(primaryColor));
+        drawer.getActionBarDrawerToggle().getDrawerArrowDrawable().setColor(ToolbarContentTintHelper.toolbarContentColor(this, primaryColor));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
