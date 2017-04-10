@@ -327,7 +327,6 @@ public class MusicService extends Service {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
-            mediaPlayer = null;
         }
         updateCurrentPlaying();
         updateSessionState();
@@ -372,22 +371,23 @@ public class MusicService extends Service {
                             stopMusic();
                         } else {
                             Song song1 = playingList.get(playingList.indexOf(currentSong) + 1);
-                            playMusic(song1);
+                            if(song1 != null) {
+                                playMusic(song1);
+                            } else {
+                                stopMusic();
+                            }
                             updateCurrentPlaying();
                         }
                     } else if(repeatOne) {
                         playMusic(song);
                     } else {
-                        if(playingList.size() == 1) {
-                            playMusic(song);
-                            updateCurrentPlaying();
-                        } else if(playingList.size() != 1) {
-                            Song song1 = playingList.get(playingList.indexOf(currentSong) + 1);
+                        Song song1 = playingList.get(playingList.indexOf(currentSong) + 1);
+                        if(song1 != null) {
                             playMusic(song1);
-                            updateCurrentPlaying();
-                        } else if(playingList.size() == playingList.indexOf(song)) {
+                        } else {
                             playMusic(playingList.get(0));
                         }
+                        updateCurrentPlaying();
                     }
                     updateSessionMetadata();
                     updateSessionState();

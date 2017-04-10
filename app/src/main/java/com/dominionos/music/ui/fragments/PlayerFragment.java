@@ -3,7 +3,6 @@ package com.dominionos.music.ui.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -248,18 +247,14 @@ public class PlayerFragment extends Fragment {
                                 && playerSeekBar != null
                                 && mediaPlayer.isPlaying()) {
                             int seekProgress = mediaPlayer.getCurrentPosition();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                playerSeekBar.setProgress(seekProgress, true);
-                            } else {
-                                playerSeekBar.setProgress(seekProgress);
-                            }
+                            playerSeekBar.setProgress(seekProgress, true);
                         }
                     } catch(IllegalStateException e) {
                         e.printStackTrace();
                     }
                 });
             }
-        }, 0, 100);
+        }, 0, 1000);
     }
 
     private void setArt() {
