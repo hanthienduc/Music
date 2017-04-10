@@ -94,12 +94,11 @@ public class MainActivity extends ATHToolbarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean subsTheme = sharedPrefs.getBoolean("substratum_theme", false);
-        if (!ThemeStore.isConfigured(this, 2)) {
+        if (!ThemeStore.isConfigured(this, 1)) {
             ThemeStore.editTheme(this)
                     .activityTheme(R.style.AppTheme_Light)
                     .primaryColorRes(R.color.colorPrimary)
                     .accentColorRes(R.color.colorAccent)
-                    .coloredNavigationBar(false)
                     .commit();
         }
         if(subsTheme) {
@@ -280,36 +279,36 @@ public class MainActivity extends ATHToolbarActivity {
     }
 
     private void setDrawer() {
-        final PrimaryDrawerItem songs = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(1).withName(R.string.songs).withIcon(MaterialDesignIconic.Icon.gmi_audio);
-        final PrimaryDrawerItem albums = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(2).withName(R.string.albums).withIcon(MaterialDesignIconic.Icon.gmi_collection_music);
-        final PrimaryDrawerItem artists = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(3).withName(R.string.artist).withIcon(MaterialDesignIconic.Icon.gmi_account_circle);
-        final PrimaryDrawerItem playlist = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(4).withName(R.string.playlist).withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
+        final PrimaryDrawerItem songs = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(0).withName(R.string.songs).withIcon(MaterialDesignIconic.Icon.gmi_audio);
+        final PrimaryDrawerItem albums = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(1).withName(R.string.albums).withIcon(MaterialDesignIconic.Icon.gmi_collection_music);
+        final PrimaryDrawerItem artists = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(2).withName(R.string.artist).withIcon(MaterialDesignIconic.Icon.gmi_account_circle);
+        final PrimaryDrawerItem playlist = new PrimaryDrawerItem().withSelectedTextColor(accentColor).withSelectedIconColor(accentColor).withIdentifier(3).withName(R.string.playlist).withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
         final SecondaryDrawerItem settings = new SecondaryDrawerItem().withIdentifier(5).withName(getString(R.string.settings)).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_settings);
         final SecondaryDrawerItem about = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.about).withSelectable(false).withIcon(MaterialDesignIconic.Icon.gmi_info);
         final SectionDrawerItem librarySection = new SectionDrawerItem().withName("Library").withIsExpanded(true).withDivider(false).withSubItems(songs, albums, artists, playlist);
-
+        final SectionDrawerItem appSection = new SectionDrawerItem().withDivider(true).withName("App").withSubItems(settings, about).withIsExpanded(true);
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(R.layout.header)
                 .withActionBarDrawerToggle(true)
                 .withCloseOnClick(true)
-                .addStickyDrawerItems(settings, about)
                 .addDrawerItems(
-                        librarySection
+                        librarySection,
+                        appSection
                 )
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     switch ((int) drawerItem.getIdentifier()) {
-                        case 1:
+                        case 0:
                             viewPager.setCurrentItem(0);
                             break;
-                        case 2:
+                        case 1:
                             viewPager.setCurrentItem(1);
                             break;
-                        case 3:
+                        case 2:
                             viewPager.setCurrentItem(2);
                             break;
-                        case 4:
+                        case 3:
                             viewPager.setCurrentItem(3);
                             break;
                         case 5:
@@ -345,7 +344,7 @@ public class MainActivity extends ATHToolbarActivity {
 
             @Override
             public void onPageSelected(int position) {
-                drawer.setSelectionAtPosition(position + 2, false);
+                drawer.setSelection(position, false);
             }
 
             @Override

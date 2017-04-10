@@ -151,8 +151,10 @@ public class PlayerFragment extends Fragment {
                     RecyclerView.Adapter wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(adapter);
                     playingListView.setAdapter(wrappedAdapter);
                     recyclerViewDragDropManager.attachRecyclerView(playingListView);
+                    playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
                 } else {
                     adapter.updateData(playingList, currentPlaying);
+                    playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
                 }
             }
             if(currentSongName != null) currentSongName.setText(currentPlaying.getName());
@@ -233,7 +235,7 @@ public class PlayerFragment extends Fragment {
 
     public void updateSeekBar() {
         mediaPlayer = service.getMediaPlayer();
-        if(mediaPlayer != null) {
+        if(mediaPlayer != null && mediaPlayer.isPlaying()) {
             playerSeekBar.setMax(mediaPlayer.getDuration());
         }
         Timer timer = new Timer();

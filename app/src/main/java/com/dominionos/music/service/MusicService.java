@@ -268,7 +268,7 @@ public class MusicService extends Service {
     }
 
     public boolean shuffle() {
-        if(playList.getPlaybackTableSize() > 1) {
+        if(playingList.size() > 1) {
             if(!shuffle) {
                 preShuffle = playingList;
                 Collections.shuffle(playingList);
@@ -326,14 +326,14 @@ public class MusicService extends Service {
     private void stopMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
+            updateCurrentPlaying();
+            updateSessionState();
             mediaPlayer.release();
         }
-        updateCurrentPlaying();
-        updateSessionState();
     }
 
     public boolean isPlaying() {
-        return mediaPlayer != null && mediaPlayer.isPlaying();
+        return isPlaying;
     }
 
     private void playSingle(Song song) {
@@ -360,12 +360,16 @@ public class MusicService extends Service {
                 mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
                 mediaPlayer.setOnPreparedListener(mp -> {
                     mediaPlayer.start();
+                    isPlaying = true;
                     activity.updatePlayer();
                     startForeground(NOTIFICATION_ID, createNotification());
                     updateSessionState();
                     updateSessionMetadata();
                 });
                 mediaPlayer.setOnCompletionListener(mp -> {
+                    isPlaying = false;
+                    updateSessionMetadata();
+                    updateSessionState();
                     if(!repeatOne && !repeatAll) {
                         if(playingList.size() == 1) {
                             stopMusic();
@@ -389,8 +393,6 @@ public class MusicService extends Service {
                         }
                         updateCurrentPlaying();
                     }
-                    updateSessionMetadata();
-                    updateSessionState();
                 });
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
@@ -481,7 +483,7 @@ public class MusicService extends Service {
     }
 
     private void updateSessionState() {
-        int playState = mediaPlayer != null && mediaPlayer.isPlaying()
+        int playState = isPlaying
                 ? PlaybackStateCompat.STATE_PLAYING
                 : PlaybackStateCompat.STATE_PAUSED;
 
@@ -548,6 +550,10 @@ public class MusicService extends Service {
         }
         playingList = songList;
         if(!playingList.isEmpty()) playMusic(playingList.get(0));
+        updateCurrentPlaying();
+        updatePlayState();
+        activity.updatePlayingList();
+        activity.updatePlayer();
     }
 
     private Bitmap getAlbumArt() {
@@ -590,6 +596,7 @@ public class MusicService extends Service {
                 .setStyle(new NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSession.getSessionToken())
                         .setShowActionsInCompactView(1))
+                .setShowWhen(false)
                 .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary))
                 .setContentIntent(launchAppIntent)
                 .setSmallIcon(R.drawable.ic_audiotrack)
@@ -600,7 +607,7 @@ public class MusicService extends Service {
         NotificationCompat.Action prev = new NotificationCompat.Action(R.drawable.ic_skip_previous, getString(R.string.previous), prevIntent);
         NotificationCompat.Action playPause;
         notificationBuilder.addAction(prev);
-        if(mediaPlayer.isPlaying()) {
+        if(isPlaying) {
             playPause = new NotificationCompat.Action(R.drawable.ic_pause, getString(R.string.play), playIntent);
         } else {
             playPause = new NotificationCompat.Action(R.drawable.ic_play, getString(R.string.play), playIntent);
@@ -629,6 +636,7 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        playList.overwriteStoredList(playingList);
         audioManager.abandonAudioFocus(afChangeListener);
         if(mediaSession != null) {
             mediaSession.release();

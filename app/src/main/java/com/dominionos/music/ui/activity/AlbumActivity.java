@@ -2,26 +2,24 @@ package com.dominionos.music.ui.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
@@ -35,13 +33,11 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public class AlbumActivity extends AppCompatActivity {
 
-    @BindView(R.id.fab_album) FloatingActionButton fab;
 
     private Unbinder unbinder;
     private final ArrayList<Song> songList = new ArrayList<>();
@@ -53,7 +49,6 @@ public class AlbumActivity extends AppCompatActivity {
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
         getWindow().setStatusBarColor(Color.TRANSPARENT);
-        setTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
@@ -68,15 +63,12 @@ public class AlbumActivity extends AppCompatActivity {
         collapsingToolbarLayout.setStatusBarScrimColor(
                 Utils.getAutoStatColor(((ColorDrawable) collapsingToolbarLayout.getContentScrim()).getColor()));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_album);
-        final Drawable upButton = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_arrow_back, null);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(upButton);
         }
         ImageView albumArt = (ImageView) findViewById(R.id.album_art);
 
-        final View toolbarBackground = findViewById(R.id.title_background);
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
@@ -113,15 +105,10 @@ public class AlbumActivity extends AppCompatActivity {
                                     vibrantRgb = ContextCompat.getColor(AlbumActivity.this, R.color.cardBackground);
                                     vibrantTitleText = ContextCompat.getColor(AlbumActivity.this, R.color.primaryTextDark);
                                 }
-                                toolbarBackground.setBackgroundColor(vibrantRgb);
+                                collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
                                 collapsingToolbarLayout.setStatusBarScrimColor(Utils.getAutoStatColor(vibrantRgb));
                                 collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
-                                collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
                                 collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
-                                collapsingToolbarLayout.setBackgroundColor(vibrantRgb);
-                                if (upButton != null) {
-                                    upButton.setTintList(ColorStateList.valueOf(vibrantTitleText));
-                                }
                             } catch (NullPointerException e) {
                                 Log.i("AlbumActivity", "Palette.Builder could not generate swatches, falling back to default colours");
                             }
@@ -134,12 +121,6 @@ public class AlbumActivity extends AppCompatActivity {
 
         setSongList();
 
-        fab.setOnClickListener(v -> {
-            Intent bro = new Intent();
-            bro.setAction(Config.PLAY_ALBUM);
-            bro.putExtra("albumId", getIntent().getLongExtra("albumId", 0));
-            sendBroadcast(bro);
-        });
     }
 
     private void setSongList() {
@@ -193,8 +174,30 @@ public class AlbumActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        fab.hide();
         super.onDestroy();
         unbinder.unbind();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.album_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.play_all:
+                Intent bro = new Intent();
+                bro.setAction(Config.PLAY_ALBUM);
+                bro.putExtra("albumId", getIntent().getLongExtra("albumId", 0));
+                sendBroadcast(bro);
+                return true;
+            case R.id.shuffle_all:
+                Toast.makeText(this, "Shuffle all", Toast.LENGTH_SHORT).show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
