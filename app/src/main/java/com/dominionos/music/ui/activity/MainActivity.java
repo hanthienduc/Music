@@ -7,11 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Icon;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -44,7 +40,6 @@ import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
 import com.kabouzeid.appthemehelper.util.TintHelper;
 import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
-import com.lapism.searchview.SearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
@@ -55,7 +50,6 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,7 +66,6 @@ public class MainActivity extends ATHToolbarActivity {
     private Unbinder unbinder;
     private SharedPreferences sharedPrefs;
     private boolean darkMode = false;
-    private SearchView search;
     private Drawer drawer;
     private MusicService service;
     private PlayerFragment player;
@@ -156,7 +149,6 @@ public class MainActivity extends ATHToolbarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        menu.findItem(R.id.search_item).getIcon().setTint(ToolbarContentTintHelper.toolbarContentColor(this, primaryColor));
         return true;
     }
 
@@ -166,9 +158,6 @@ public class MainActivity extends ATHToolbarActivity {
         switch (id) {
             case R.id.play_all:
                 if(service != null) service.playAllSongs();
-                return true;
-            case R.id.search_item:
-                search.open(true, item);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -201,53 +190,12 @@ public class MainActivity extends ATHToolbarActivity {
 
         setDrawer();
 
-        setDynamicShortcuts();
-
-        setSearch();
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         player = new PlayerFragment();
         transaction.replace(R.id.player_holder, player).commit();
 
         MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
 
-    }
-
-    private void setSearch() {
-        search = (SearchView) findViewById(R.id.searchView);
-        search.setArrowOnly(false);
-        search.setOnMenuClickListener(() -> search.close(true));
-        search.setTheme(darkMode ? SearchView.THEME_DARK : SearchView.THEME_LIGHT);
-        search.setVersion(SearchView.VERSION_MENU_ITEM);
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                intent.putExtra("dark_theme", darkMode);
-                intent.putExtra("query", query);
-                startActivity(intent);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-    }
-
-    private void setDynamicShortcuts() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
-            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-            ArrayList<ShortcutInfo> shortcuts = new ArrayList<>();
-            ShortcutInfo searchShortcut = new ShortcutInfo.Builder(this, "search")
-                    .setShortLabel(getString(R.string.search))
-                    .setIcon(Icon.createWithResource(MainActivity.this, R.drawable.ic_shortcut_search))
-                    .setIntent(new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, SearchActivity.class))
-                    .build();
-            shortcuts.add(searchShortcut);
-            shortcutManager.setDynamicShortcuts(shortcuts);
-        }
     }
 
     private void setupViewPager() {
@@ -368,11 +316,7 @@ public class MainActivity extends ATHToolbarActivity {
 
     @Override
     public void onBackPressed() {
-        if (search.isSearchOpen()) {
-            search.close(true);
-        } else {
-            super.onBackPressed();
-        }
+        super.onBackPressed();
     }
 
     @Override

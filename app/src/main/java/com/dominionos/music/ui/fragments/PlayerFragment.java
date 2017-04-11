@@ -82,12 +82,13 @@ public class PlayerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        context = getContext();
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
         View view = inflater.inflate(R.layout.fragment_player, container, false);
         unbinder = ButterKnife.bind(this, view);
         activity = (MainActivity) getActivity();
-        context = getContext();
+
 
         setControls();
         setStyle();
@@ -147,14 +148,14 @@ public class PlayerFragment extends Fragment {
             ArrayList<Song> playingList = service.getPlayingList();
             if(playingList.size() > 0) {
                 if(adapter == null) {
-                    adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(getContext()), activity);
+                    adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(context), activity);
                     RecyclerView.Adapter wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(adapter);
                     playingListView.setAdapter(wrappedAdapter);
                     recyclerViewDragDropManager.attachRecyclerView(playingListView);
                     playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
                 } else {
                     adapter.updateData(playingList, currentPlaying);
-                    playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
+                    if(playingListView != null) playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
                 }
             }
             if(currentSongName != null) currentSongName.setText(currentPlaying.getName());
@@ -235,9 +236,12 @@ public class PlayerFragment extends Fragment {
 
     public void updateSeekBar() {
         mediaPlayer = service.getMediaPlayer();
-        if(mediaPlayer != null && mediaPlayer.isPlaying()) {
-            playerSeekBar.setMax(mediaPlayer.getDuration());
-        }
+        try {
+            if(mediaPlayer != null && mediaPlayer.isPlaying()) {
+                playerSeekBar.setMax(mediaPlayer.getDuration());
+            }
+        } catch(IllegalStateException ignored) {}
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override

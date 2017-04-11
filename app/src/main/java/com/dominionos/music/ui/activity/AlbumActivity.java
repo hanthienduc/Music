@@ -1,12 +1,16 @@
 package com.dominionos.music.ui.activity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
@@ -19,13 +23,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.Config;
+import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
@@ -33,15 +36,30 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public class AlbumActivity extends AppCompatActivity {
 
+    @BindView(R.id.collapsing_toolbar_album) CollapsingToolbarLayout collapsingToolbarLayout;
 
     private Unbinder unbinder;
     private final ArrayList<Song> songList = new ArrayList<>();
     private boolean darkMode = false;
+    private long albumId;
+    private MusicService service;
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            service = ((MusicService.MyBinder) binder).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            service = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +68,16 @@ public class AlbumActivity extends AppCompatActivity {
 
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
+        Intent i = new Intent(this, MusicService.class);
+        bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
+
+        albumId = getIntent().getLongExtra("albumId", 0);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
         unbinder = ButterKnife.bind(this);
         overridePendingTransition(0, 0);
-        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
+        collapsingToolbarLayout = (CollapsingToolbarLayout)
                 findViewById(R.id.collapsing_toolbar_album);
         collapsingToolbarLayout.setTitle(getIntent().getStringExtra("albumName"));
         if ((collapsingToolbarLayout.getContentScrim()) != null) {
@@ -69,11 +92,10 @@ public class AlbumActivity extends AppCompatActivity {
         }
         ImageView albumArt = (ImageView) findViewById(R.id.album_art);
 
-
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
                 MediaStore.Audio.Albums._ID + "=?",
-                new String[]{String.valueOf(getIntent().getLongExtra("albumId", 0))},
+                new String[]{String.valueOf(albumId)},
                 null);
         if (cursor != null && cursor.moveToFirst()) {
             String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
@@ -189,15 +211,16 @@ public class AlbumActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.play_all:
-                Intent bro = new Intent();
-                bro.setAction(Config.PLAY_ALBUM);
-                bro.putExtra("albumId", getIntent().getLongExtra("albumId", 0));
-                sendBroadcast(bro);
+                if(service != null) service.playAlbum(albumId);
                 return true;
             case R.id.shuffle_all:
-                Toast.makeText(this, "Shuffle all", Toast.LENGTH_SHORT).show();
+                service.shuffleAlbum(albumId);
+                return true;
+            case android.R.id.home:
+                onBackPressed();
                 return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 }

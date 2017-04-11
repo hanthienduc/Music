@@ -109,45 +109,7 @@ public class MusicService extends Service {
                     stopNotification();
                     break;
                 case Config.PLAY_ALBUM:
-                    playingList.clear();
-                    Cursor musicCursor;
-                    String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
-                    String whereVal[] = {String.valueOf(intent.getLongExtra("albumId", 0))};
-                    String orderBy = MediaStore.Audio.Media._ID;
-
-                    musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                            null, where, whereVal, orderBy);
-                    if (musicCursor != null && musicCursor.moveToFirst()) {
-                        //get columns
-                        int titleColumn = musicCursor.getColumnIndex
-                                (android.provider.MediaStore.Audio.Media.TITLE);
-                        int idColumn = musicCursor.getColumnIndex
-                                (android.provider.MediaStore.Audio.Media._ID);
-                        int artistColumn = musicCursor.getColumnIndex
-                                (android.provider.MediaStore.Audio.Media.ARTIST);
-                        int pathColumn = musicCursor.getColumnIndex
-                                (MediaStore.Audio.Media.DATA);
-                        int albumIdColumn = musicCursor.getColumnIndex
-                                (MediaStore.Audio.Media.ALBUM_ID);
-                        int albumNameColumn = musicCursor.getColumnIndex
-                                (MediaStore.Audio.Media.ALBUM);
-                        do {
-                            playingList.add(new Song(musicCursor.getLong(idColumn),
-                                    musicCursor.getString(titleColumn),
-                                    musicCursor.getString(artistColumn),
-                                    musicCursor.getString(pathColumn), false,
-                                    musicCursor.getLong(albumIdColumn),
-                                    musicCursor.getString(albumNameColumn)));
-                        }
-                        while (musicCursor.moveToNext());
-                    }
-                    if (musicCursor != null) {
-                        musicCursor.close();
-                    }
-                    playMusic(playingList.get(0));
-                    requestSongDetails = new Intent();
-                    requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
-                    sendBroadcast(requestSongDetails);
+                    playAlbum(intent.getLongExtra("albumId", 0));
                     break;
                 case Config.NEXT:
                     next();
@@ -326,7 +288,7 @@ public class MusicService extends Service {
     private void stopMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
-            updateCurrentPlaying();
+            updatePlayState();
             updateSessionState();
             mediaPlayer.release();
         }
@@ -633,6 +595,70 @@ public class MusicService extends Service {
         if(activity != null) activity.updatePlayer();
     }
 
+    public ArrayList<Song> getAlbumSongs(long albumId) {
+        ArrayList<Song> albumSongList = new ArrayList<>();
+        Cursor musicCursor;
+        String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
+        String whereVal[] = {String.valueOf(albumId)};
+        String orderBy = MediaStore.Audio.Media._ID;
+
+        musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                null, where, whereVal, orderBy);
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            //get columns
+            int titleColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex
+                    (android.provider.MediaStore.Audio.Media.ARTIST);
+            int pathColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.DATA);
+            int albumIdColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM_ID);
+            int albumNameColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM);
+            do {
+                albumSongList.add(new Song(musicCursor.getLong(idColumn),
+                        musicCursor.getString(titleColumn),
+                        musicCursor.getString(artistColumn),
+                        musicCursor.getString(pathColumn), false,
+                        musicCursor.getLong(albumIdColumn),
+                        musicCursor.getString(albumNameColumn)));
+            }
+            while (musicCursor.moveToNext());
+        }
+        if (musicCursor != null) {
+            musicCursor.close();
+        }
+        return albumSongList;
+    }
+
+    public void playAlbum(long albumId) {
+        ArrayList<Song> albumSongs = getAlbumSongs(albumId);
+        if(!albumSongs.isEmpty()){
+            stopMusic();
+            playingList.clear();
+            playingList = albumSongs;
+            currentSong = playingList.get(0);
+            playMusic(currentSong);
+            updateCurrentPlaying();
+        }
+    }
+
+    public void shuffleAlbum(long albumId) {
+        ArrayList<Song> albumSongs = getAlbumSongs(albumId);
+        if(!albumSongs.isEmpty()){
+            Collections.shuffle(albumSongs);
+            stopMusic();
+            playingList.clear();
+            playingList = albumSongs;
+            currentSong = playingList.get(0);
+            playMusic(currentSong);
+            updateCurrentPlaying();
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -651,6 +677,10 @@ public class MusicService extends Service {
     public class MyBinder extends Binder {
         public MusicService getService(MainActivity activity) {
             MusicService.this.activity = activity;
+            return MusicService.this;
+        }
+
+        public MusicService getService() {
             return MusicService.this;
         }
     }
