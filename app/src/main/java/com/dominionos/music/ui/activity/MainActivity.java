@@ -40,8 +40,6 @@ import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
 import com.kabouzeid.appthemehelper.util.TintHelper;
 import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
-import com.mikepenz.aboutlibraries.Libs;
-import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -264,14 +262,7 @@ public class MainActivity extends ATHToolbarActivity {
                             startActivityForResult(intent, Config.SETTINGS_REQUEST_CODE);
                             break;
                         case 6:
-                            new LibsBuilder()
-                                    .withActivityTitle(getString(R.string.about))
-                                    .withAboutIconShown(true)
-                                    .withAboutVersionShown(true)
-                                    .withAboutDescription(getString(R.string.about_text))
-                                    .withActivityStyle(darkMode ? Libs.ActivityStyle.DARK : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
-                                    .withActivityTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light)
-                                    .start(MainActivity.this);
+                            startActivity(new Intent(MainActivity.this, AboutActivity.class));
                             break;
                     }
                     return true;

@@ -32,6 +32,7 @@ import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
+import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -127,10 +128,12 @@ public class AlbumActivity extends AppCompatActivity {
                                     vibrantRgb = ContextCompat.getColor(AlbumActivity.this, R.color.cardBackground);
                                     vibrantTitleText = ContextCompat.getColor(AlbumActivity.this, R.color.primaryTextDark);
                                 }
-                                collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
+                                collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
                                 collapsingToolbarLayout.setStatusBarScrimColor(Utils.getAutoStatColor(vibrantRgb));
                                 collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
-                                collapsingToolbarLayout.setCollapsedTitleTextColor(vibrantTitleText);
+                                ToolbarContentTintHelper.setToolbarContentColorBasedOnToolbarColor(AlbumActivity.this, toolbar, vibrantRgb);
+                                int toolbarColor = ToolbarContentTintHelper.toolbarTitleColor(AlbumActivity.this, vibrantRgb);
+                                collapsingToolbarLayout.setCollapsedTitleTextColor(toolbarColor);
                             } catch (NullPointerException e) {
                                 Log.i("AlbumActivity", "Palette.Builder could not generate swatches, falling back to default colours");
                             }

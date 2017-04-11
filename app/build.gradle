@@ -62,7 +62,7 @@ dependencies {
     compile('com.mikepenz:aboutlibraries:5.9.5@aar') {
         transitive = true
     }
-    compile ('com.github.kabouzeid:app-theme-helper:1.3.5@aar') {
+    compile('com.github.kabouzeid:app-theme-helper:1.3.5@aar') {
         transitive = true
     }
 
