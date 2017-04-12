@@ -6,4 +6,17 @@
     android:layout_height="match_parent"
     tools:context="com.dominionos.music.ui.activity.AboutActivity">
 
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/about_toolbar"
+            android:layout_width="match_parent"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@android:style/ThemeOverlay.Material.Light"/>
+    </android.support.design.widget.AppBarLayout>
+
 </android.support.design.widget.CoordinatorLayout>
