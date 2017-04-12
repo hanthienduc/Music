@@ -60,7 +60,10 @@
             android:label="@string/settings"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.Light" />
-        <activity android:name=".ui.activity.AboutActivity"></activity>
+        <activity
+            android:name=".ui.activity.AboutActivity"
+            android:theme="@style/AppTheme.Light"
+            android:label="About"/>
     </application>
 
 </manifest>

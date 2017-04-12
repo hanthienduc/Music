@@ -106,16 +106,12 @@ public class MainActivity extends ATHToolbarActivity {
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
 
-        toolbar.setBackgroundColor(primaryColor);
         ATH.setActivityToolbarColorAuto(this, toolbar);
         tabLayout.setTabTextColors(ToolbarContentTintHelper.toolbarSubtitleColor(this, primaryColor), ToolbarContentTintHelper.toolbarTitleColor(this, primaryColor));
         tabLayout.setBackgroundColor(primaryColor);
         tabLayout.setSelectedTabIndicatorColor(accentColor);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
-
-        TintHelper.setTintAuto(fab, accentColor, true);
 
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
@@ -175,6 +171,8 @@ public class MainActivity extends ATHToolbarActivity {
     }
 
     private void init() {
+        TintHelper.setTintAuto(fab, accentColor, true);
+
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         Intent i = new Intent(MainActivity.this, MusicService.class);

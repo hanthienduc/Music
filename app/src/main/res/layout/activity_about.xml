@@ -19,4 +19,64 @@
             app:popupTheme="@android:style/ThemeOverlay.Material.Light"/>
     </android.support.design.widget.AppBarLayout>
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/branded_logo"
+                android:id="@+id/app_icon"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/app_version"
+                android:layout_below="@id/app_icon"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:textSize="16sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/app_desc"
+                android:layout_below="@id/app_version"
+                android:layout_centerHorizontal="true"
+                android:textSize="14sp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp"
+                android:text="@string/app_desc"/>
+            <View
+                android:id="@+id/div1"
+                android:layout_below="@id/app_desc"
+                style="@style/Divider"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:layout_below="@id/div1"
+                android:layout_alignParentStart="true"
+                android:id="@+id/libs_used_title"
+                android:text="Libraries used"/>
+
+            <FrameLayout
+                android:layout_below="@id/libs_used_title"
+                android:id="@+id/fragment_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+
 </android.support.design.widget.CoordinatorLayout>

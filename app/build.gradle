@@ -9,7 +9,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 25
         versionCode 22
-        versionName "2.4.0"
+        versionName "v2.4.0"
     }
     configurations {
         all*.exclude group: 'com.google.firebase', module: 'firebase-core'
