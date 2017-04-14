@@ -14,6 +14,7 @@ import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ATH;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
+import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
 
 public class SettingsActivity extends ATHToolbarActivity implements ColorChooserDialog.ColorCallback {
 
@@ -36,6 +37,8 @@ public class SettingsActivity extends ATHToolbarActivity implements ColorChooser
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.fragment_holder, new SettingsFragment());
         transaction.commit();
+
+        MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
     }
 
     @Override

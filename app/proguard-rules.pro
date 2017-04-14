@@ -21,3 +21,5 @@
 -keep class com.dominionos.music.task.*
 -keep class com.dominionos.music.ui.*
 -keep class com.dominionos.music.utils.*
+-dontwarn java.lang.invoke.*
+-dontwarn **$$Lambda$*

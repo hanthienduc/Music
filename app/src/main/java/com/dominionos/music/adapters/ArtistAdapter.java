@@ -75,7 +75,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
     @Override
     public ArtistAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.artist_list_item, parent, false);
+                .inflate(R.layout.artist, parent, false);
         return new SimpleItemViewHolder(itemView);
     }
 

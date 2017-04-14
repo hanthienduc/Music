@@ -260,7 +260,7 @@ public class MainActivity extends ATHToolbarActivity {
                             startActivityForResult(intent, Config.SETTINGS_REQUEST_CODE);
                             break;
                         case 6:
-                            startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                            Toast.makeText(MainActivity.this, "Under construction", Toast.LENGTH_SHORT).show();
                             break;
                     }
                     return true;
