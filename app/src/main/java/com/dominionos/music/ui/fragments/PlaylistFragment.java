@@ -24,6 +24,7 @@ public class PlaylistFragment extends Fragment {
     private View mainView;
     private RecyclerView rv;
     private boolean darkMode;
+    private MySQLiteHelper helper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,12 +36,13 @@ public class PlaylistFragment extends Fragment {
         darkMode = sharedPref.getBoolean("dark_theme", false);
 
         getPlaylistList();
+        Utils.setWindowColor(rv, getContext(), darkMode);
 
         return v;
     }
 
     private void getPlaylistList() {
-        MySQLiteHelper helper = new MySQLiteHelper(mainView.getContext());
+        helper = new MySQLiteHelper(mainView.getContext());
         List<Playlist> playlistList = helper.getAllPlaylist();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -48,7 +50,13 @@ public class PlaylistFragment extends Fragment {
         rv.setLayoutManager(linearLayoutManager);
         rv.setHasFixedSize(true);
         rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList, darkMode));
-        Utils.setWindowColor(rv, getContext(), darkMode);
+    }
+
+    public void updateList() {
+        PlaylistAdapter adapter = (PlaylistAdapter) rv.getAdapter();
+        if(adapter != null) {
+            adapter.updateData(helper.getAllPlaylist());
+        }
     }
 
 }

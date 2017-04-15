@@ -3,6 +3,7 @@ package com.dominionos.music.ui.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -168,10 +169,10 @@ public class PlayerFragment extends Fragment {
         playPauseDrawable = new PlayPauseDrawable(activity);
         miniPlayPauseDrawable = new PlayPauseDrawable(activity);
         playingAction.setImageDrawable(miniPlayPauseDrawable);
-        playingAction.setOnClickListener(playPauseClick());
+        playingAction.setOnClickListener(playPauseClick(true));
         play.setImageDrawable(playPauseDrawable);
         play.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent));
-        play.setOnClickListener(playPauseClick());
+        play.setOnClickListener(playPauseClick(false));
         next.setOnClickListener(v -> {
             if(service == null) service = activity.getService();
             if(service != null) service.next();
@@ -234,13 +235,11 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-    public void updateSeekBar() {
+    private void updateSeekBar() {
         mediaPlayer = service.getMediaPlayer();
-        try {
-            if(mediaPlayer != null && mediaPlayer.isPlaying()) {
-                playerSeekBar.setMax(mediaPlayer.getDuration());
-            }
-        } catch(IllegalStateException ignored) {}
+        if(mediaPlayer != null && service.isPlaying()) {
+            playerSeekBar.setMax(mediaPlayer.getDuration());
+        }
 
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -248,15 +247,15 @@ public class PlayerFragment extends Fragment {
             public void run() {
                 activity.runOnUiThread(() -> {
                     if(mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
-                    try {
-                        if(mediaPlayer != null
-                                && playerSeekBar != null
-                                && mediaPlayer.isPlaying()) {
-                            int seekProgress = mediaPlayer.getCurrentPosition();
+                    if(mediaPlayer != null
+                            && playerSeekBar != null
+                            && service.isPlaying()) {
+                        int seekProgress = mediaPlayer.getCurrentPosition();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             playerSeekBar.setProgress(seekProgress, true);
+                        } else {
+                            playerSeekBar.setProgress(seekProgress);
                         }
-                    } catch(IllegalStateException e) {
-                        e.printStackTrace();
                     }
                 });
             }
@@ -312,6 +311,7 @@ public class PlayerFragment extends Fragment {
                             .load(result)
                             .error(R.drawable.default_art)
                             .into(playingSongArt);
+                    playingSongArt.setContentDescription(currentPlaying.getAlbumName());
                 } catch(IllegalArgumentException e) {
                     e.printStackTrace();
                     if(playingSongArt != null) playingSongArt.setImageResource(R.drawable.default_art);
@@ -331,11 +331,17 @@ public class PlayerFragment extends Fragment {
                 : ContextCompat.getColor(context, R.color.primaryTextLight));
     }
 
-    private View.OnClickListener playPauseClick() {
+    private View.OnClickListener playPauseClick(boolean fromPlayingBar) {
         return v -> {
             if(service == null) service = activity.getService();
             if(service != null) {
-                setPlayingState(service.togglePlay());
+                if(service.togglePlay()) {
+                    playPauseDrawable.setPause(!fromPlayingBar);
+                    miniPlayPauseDrawable.setPause(fromPlayingBar);
+                } else {
+                    playPauseDrawable.setPlay(!fromPlayingBar);
+                    miniPlayPauseDrawable.setPlay(fromPlayingBar);
+                }
             }
         };
     }

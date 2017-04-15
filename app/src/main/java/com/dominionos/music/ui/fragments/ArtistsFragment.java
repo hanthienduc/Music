@@ -24,6 +24,7 @@ import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class ArtistsFragment extends Fragment {
 
@@ -86,7 +87,7 @@ public class ArtistsFragment extends Fragment {
                     }
                     while (musicCursor.moveToNext());
                 }
-                artistList.sort((artist, t1) -> artist.getName().compareToIgnoreCase(t1.getName()));
+                artistList.sort(Comparator.comparing(Artist::getName));
 
                 if (musicCursor != null) {
                     musicCursor.close();

@@ -2,8 +2,6 @@ package com.dominionos.music.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.CountDownTimer;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -20,12 +18,13 @@ import com.dominionos.music.ui.activity.PlaylistActivity;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.items.Playlist;
+import com.dominionos.music.utils.Utils;
 
 import java.util.List;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.SimpleItemViewHolder> {
 
-    private final List<Playlist> items;
+    private List<Playlist> items;
     private final Context context;
     private final boolean darkMode;
 
@@ -60,10 +59,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
-        if(darkMode) {
-            holder.gridName.setTextColor(ContextCompat.getColor(context, R.color.primaryTextDark));
-            holder.overflow.setColorFilter(ContextCompat.getColor(context, R.color.primaryTextDark));
-        }
+        Utils.setPrimaryTextColor(holder.gridName, context, darkMode);
+        Utils.setOverflowColor(holder.overflow, context, darkMode);
         position = holder.getAdapterPosition();
         holder.gridName.setText(items.get(position).getName());
         final int finalPosition = position;
@@ -76,17 +73,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                         helper.removePlayList(items.get(finalPosition).getId());
                         items.remove(finalPosition);
                         notifyItemRemoved(finalPosition);
-                        new CountDownTimer(400, 1000) {
-
-                            @Override
-                            public void onTick(long l) {
-                            }
-
-                            public void onFinish() {
-                                notifyDataSetChanged();
-                            }
-
-                        }.start();
                         return true;
                     case R.id.menu_playlist_play:
                         Intent i = new Intent();
@@ -129,6 +115,10 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                 .negativeText(context.getString(R.string.cancel)).show();
     }
 
+    public void updateData(List<Playlist> newPlaylistList) {
+        items = newPlaylistList;
+        notifyDataSetChanged();
+    }
 
     @Override
     public int getItemCount() {

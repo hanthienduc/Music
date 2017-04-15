@@ -20,8 +20,8 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:scaleType="centerCrop"
-                android:contentDescription="@string/album_art"
-                android:src="@drawable/default_art"/>
+                android:src="@drawable/default_art"
+                tools:ignore="ContentDescription" />
         </android.support.percent.PercentRelativeLayout>
 
         <LinearLayout
@@ -43,7 +43,6 @@
                     app:pressedTranslationZ="2dp"
                     app:elevation="4dp" />
                 <Space
-                    android:id="@+id/play_space"
                     android:layout_centerInParent="true"
                     android:layout_width="56dp"
                     android:layout_height="56dp" />
@@ -125,8 +124,8 @@
             android:layout_height="72dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:contentDescription="@string/album_art"
-            android:src="@drawable/ic_audiotrack"/>
+            android:src="@drawable/ic_audiotrack"
+            tools:ignore="ContentDescription" />
 
         <ImageButton
             android:id="@+id/playing_bar_action"

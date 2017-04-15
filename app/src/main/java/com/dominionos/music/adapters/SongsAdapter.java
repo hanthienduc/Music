@@ -172,6 +172,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                             .into(holder.art);
                 }
             }.execute();
+            holder.art.setContentDescription(items.get(adapterPosition).getAlbumName());
         } else {
             holder.art.setVisibility(View.GONE);
             holder.textHolder.setPaddingRelative(Utils.dpToPx(context, 16), 0, 0, 0);

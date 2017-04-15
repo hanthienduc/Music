@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -68,9 +67,6 @@ public class PlaylistActivity extends AppCompatActivity {
         }
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setItemAnimator(new DefaultItemAnimator());
-        rv.setBackgroundColor(darkMode
-                ? ContextCompat.getColor(this, R.color.darkWindowBackground)
-                : ContextCompat.getColor(this, R.color.lightWindowBackground));
         rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), darkMode, Glide.with(this), true));
 
         List<CheckableSong> songList = new ArrayList<>();
