@@ -18,6 +18,8 @@ import com.dominionos.music.R;
 import com.dominionos.music.adapters.DialogPlaylistAdapter;
 import com.dominionos.music.items.Playlist;
 import com.dominionos.music.items.Song;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.List;
 
@@ -32,6 +34,12 @@ public class Utils {
             e.printStackTrace();
         }
         return applicationInfo != null;
+    }
+
+    public static boolean isGooglePlayServicesAvailable(Context context){
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context);
+        return resultCode == ConnectionResult.SUCCESS;
     }
 
     public static void setPrimaryTextColor(TextView view, Context context, boolean darkMode) {

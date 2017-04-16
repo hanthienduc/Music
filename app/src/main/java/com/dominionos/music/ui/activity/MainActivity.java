@@ -1,16 +1,21 @@
 package com.dominionos.music.ui.activity;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
@@ -24,6 +29,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.vending.billing.IInAppBillingService;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.ViewPagerAdapter;
 import com.dominionos.music.service.MusicService;
@@ -55,6 +61,11 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -71,6 +82,7 @@ public class MainActivity extends ATHToolbarActivity {
     private SharedPreferences sharedPrefs;
     private boolean darkMode = false;
     private Drawer drawer;
+    private IInAppBillingService billingService;
     private MusicService service;
     private PlayerFragment player;
     private PlaylistFragment playlistFragment;
@@ -87,10 +99,25 @@ public class MainActivity extends ATHToolbarActivity {
             service = null;
         }
     };
+    private final ServiceConnection billingConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            billingService = IInAppBillingService.Stub.asInterface(service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            billingService = null;
+        }
+    };
     private LibsConfiguration.LibsListener libsListener = new LibsConfiguration.LibsListener() {
         @Override
         public void onIconClicked(View view) {
-
+            String url = "https://github.com/MnmlOS/Music";
+            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+            builder.setInstantAppsEnabled(true);
+            CustomTabsIntent customTabsIntent = builder.build();
+            customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
         }
 
         @Override
@@ -125,7 +152,62 @@ public class MainActivity extends ATHToolbarActivity {
                     Toast.makeText(view.getContext(), "Contributors", Toast.LENGTH_SHORT).show();
                     return true;
                 case "SPECIAL3":
-                    Toast.makeText(view.getContext(), "Donate", Toast.LENGTH_SHORT).show();
+                    ArrayList<String> skuList = new ArrayList<>();
+                    skuList.add("donate10");
+                    skuList.add("donate5");
+                    skuList.add("donate2");
+                    Bundle querySkus = new Bundle();
+                    querySkus.putStringArrayList("ITEM_ID_LIST", skuList);
+                    try {
+                        Bundle skuDetails = billingService.getSkuDetails(3,
+                                getPackageName(), "inapp", querySkus);
+                        int response = skuDetails.getInt("RESPONSE_CODE");
+                        if (response == 0) {
+                            ArrayList<String> responseList
+                                    = skuDetails.getStringArrayList("DETAILS_LIST");
+
+                            if (responseList != null) {
+                                ArrayList<String> optionsList = new ArrayList<>();
+                                for (String thisResponse : responseList) {
+                                    JSONObject object = new JSONObject(thisResponse);
+                                    String sku = object.getString("title");
+                                    if(sku != null) optionsList.add(sku.substring(0, sku.indexOf("(") -1));
+                                }
+                                new MaterialDialog.Builder(view.getContext())
+                                        .title("Changelog")
+                                        .items(optionsList)
+                                        .itemsCallback((materialDialog, view1, i, charSequence) -> {
+                                            Toast.makeText(view.getContext(), charSequence, Toast.LENGTH_SHORT).show();
+                                            try {
+                                                switch(charSequence.toString()) {
+                                                    case "Donate $2":
+                                                        Bundle buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), "donate2", "inapp", "");
+                                                        PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                                                        try {
+                                                            if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), 5963, new Intent(), 0, 0, 0);
+                                                        } catch (IntentSender.SendIntentException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                        break;
+                                                    case "donate5":
+                                                        break;
+                                                    case "donate10":
+                                                        break;
+                                                }
+                                            } catch (RemoteException e) {
+                                                e.printStackTrace();
+                                            }
+                                        })
+                                        .autoDismiss(false)
+                                        .positiveText("Done")
+                                        .positiveColor(ThemeStore.accentColor(view.getContext()))
+                                        .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
+                                        .show();
+                            }
+                        }
+                    } catch (RemoteException | JSONException | NullPointerException e) {
+                        e.printStackTrace();
+                    }
                     return true;
             }
             return false;
@@ -238,9 +320,30 @@ public class MainActivity extends ATHToolbarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Config.SETTINGS_REQUEST_CODE) {
             if (darkMode != sharedPrefs.getBoolean("dark_theme", false)) recreate();
+        } else if (requestCode == 5963) {
+            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+
+            if (resultCode == RESULT_OK) {
+                try {
+                    JSONObject jo = new JSONObject(purchaseData);
+                    String sku = jo.getString("productId");
+                    switch(sku) {
+                        case "donate2":
+                            Toast.makeText(this, "Thanks for donating $2", Toast.LENGTH_SHORT).show();
+                            break;
+                        case "donate5":
+                            Toast.makeText(this, "Thanks for donating $5", Toast.LENGTH_SHORT).show();
+                            break;
+                        case "donate10":
+                            Toast.makeText(this, "Thanks for donating $10", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
-
     private void init() {
         TintHelper.setTintAuto(fab, accentColor, true);
 
@@ -260,6 +363,11 @@ public class MainActivity extends ATHToolbarActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         player = new PlayerFragment();
         transaction.replace(R.id.player_holder, player).commit();
+
+        Intent serviceIntent =
+                new Intent("com.android.vending.billing.InAppBillingService.BIND");
+        serviceIntent.setPackage("com.android.vending");
+        bindService(serviceIntent, billingConnection, Context.BIND_AUTO_CREATE);
 
         MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
 
@@ -337,7 +445,7 @@ public class MainActivity extends ATHToolbarActivity {
                             break;
                         case 6:
                             Colors colors = new Colors(primaryColor, Utils.getAutoStatColor(primaryColor));
-                            new LibsBuilder()
+                            LibsBuilder builder = new LibsBuilder()
                                     .withActivityStyle(darkMode ? Libs.ActivityStyle.DARK : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
                                     .withSortEnabled(true)
                                     .withActivityTheme(ThemeStore.activityTheme(this))
@@ -349,10 +457,12 @@ public class MainActivity extends ATHToolbarActivity {
                                     .withAboutSpecial1Description("Button 1")
                                     .withAboutSpecial2("Contributors")
                                     .withAboutSpecial2Description("Button 2")
-                                    .withAboutSpecial3("Donate")
-                                    .withAboutSpecial3Description("Button 3")
-                                    .withListener(libsListener)
-                                    .start(this);
+                                    .withListener(libsListener);
+                            if(Utils.isGooglePlayServicesAvailable(this)) {
+                                builder.withAboutSpecial3("Donate")
+                                        .withAboutSpecial3Description("Button 3");
+                            }
+                            builder.start(this);
                             break;
                     }
                     return true;
@@ -392,6 +502,7 @@ public class MainActivity extends ATHToolbarActivity {
                 } else {
                     finish();
                 }
+                break;
         }
     }
 
@@ -409,6 +520,9 @@ public class MainActivity extends ATHToolbarActivity {
         super.onDestroy();
         unbinder.unbind();
         unbindService(serviceConnection);
+        if (billingService != null) {
+            unbindService(billingConnection);
+        }
     }
 
 }

@@ -27,3 +27,4 @@
 -keep class **.R$* {
     <fields>;
 }
+-keep class com.android.vending.billing.**
