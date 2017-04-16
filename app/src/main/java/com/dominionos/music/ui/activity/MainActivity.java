@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -40,6 +41,11 @@ import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
 import com.kabouzeid.appthemehelper.util.TintHelper;
 import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.aboutlibraries.LibsConfiguration;
+import com.mikepenz.aboutlibraries.entity.Library;
+import com.mikepenz.aboutlibraries.util.Colors;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -78,6 +84,70 @@ public class MainActivity extends ATHToolbarActivity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             service = null;
+        }
+    };
+    private LibsConfiguration.LibsListener libsListener = new LibsConfiguration.LibsListener() {
+        @Override
+        public void onIconClicked(View view) {
+
+        }
+
+        @Override
+        public boolean onLibraryAuthorClicked(View view, Library library) {
+            return false;
+        }
+
+        @Override
+        public boolean onLibraryContentClicked(View view, Library library) {
+            return false;
+        }
+
+        @Override
+        public boolean onLibraryBottomClicked(View view, Library library) {
+            return false;
+        }
+
+        @Override
+        public boolean onExtraClicked(View view, Libs.SpecialButton specialButton) {
+            switch(specialButton.toString()) {
+                case "SPECIAL1":
+                    new MaterialDialog.Builder(view.getContext())
+                            .title("Changelog")
+                            .items(R.array.changelog)
+                            .autoDismiss(false)
+                            .positiveText("Done")
+                            .positiveColor(ThemeStore.accentColor(view.getContext()))
+                            .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
+                            .show();
+                    return true;
+                case "SPECIAL2":
+                    Toast.makeText(view.getContext(), "Contributors", Toast.LENGTH_SHORT).show();
+                    return true;
+                case "SPECIAL3":
+                    Toast.makeText(view.getContext(), "Donate", Toast.LENGTH_SHORT).show();
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onIconLongClicked(View view) {
+            return false;
+        }
+
+        @Override
+        public boolean onLibraryAuthorLongClicked(View view, Library library) {
+            return false;
+        }
+
+        @Override
+        public boolean onLibraryContentLongClicked(View view, Library library) {
+            return false;
+        }
+
+        @Override
+        public boolean onLibraryBottomLongClicked(View view, Library library) {
+            return false;
         }
     };
 
@@ -260,7 +330,23 @@ public class MainActivity extends ATHToolbarActivity {
                             startActivityForResult(intent, Config.SETTINGS_REQUEST_CODE);
                             break;
                         case 6:
-                            Toast.makeText(MainActivity.this, "Under construction", Toast.LENGTH_SHORT).show();
+                            Colors colors = new Colors(primaryColor, Utils.getAutoStatColor(primaryColor));
+                            new LibsBuilder()
+                                    .withActivityStyle(darkMode ? Libs.ActivityStyle.DARK : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                                    .withSortEnabled(true)
+                                    .withActivityTheme(ThemeStore.activityTheme(this))
+                                    .withActivityColor(colors)
+                                    .withAboutIconShown(true)
+                                    .withAboutVersionShown(true)
+                                    .withAboutDescription(getString(R.string.app_desc))
+                                    .withAboutSpecial1("Changelog")
+                                    .withAboutSpecial1Description("Button 1")
+                                    .withAboutSpecial2("Contributors")
+                                    .withAboutSpecial2Description("Button 2")
+                                    .withAboutSpecial3("Donate")
+                                    .withAboutSpecial3Description("Button 3")
+                                    .withListener(libsListener)
+                                    .start(this);
                             break;
                     }
                     return true;

@@ -23,3 +23,7 @@
 -keep class com.dominionos.music.utils.*
 -dontwarn java.lang.invoke.*
 -dontwarn **$$Lambda$*
+-keep class .R
+-keep class **.R$* {
+    <fields>;
+}

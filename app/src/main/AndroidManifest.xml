@@ -60,6 +60,7 @@
             android:label="@string/settings"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.Light" />
+
     </application>
 
 </manifest>
