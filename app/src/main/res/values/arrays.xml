@@ -2,5 +2,10 @@
 <resources>
     <array name="changelog">
         <item>Revamped \'About\' activity</item>
+        <item>In-app changelog, contributors, and donate button</item>
+    </array>
+    <array name="contributors">
+        <item>Jack Boswell (boswelja) - Lead Developer</item>
+        <item>Fauzan (F4uzan) - UI Tweaks &amp; Fixes</item>
     </array>
 </resources>

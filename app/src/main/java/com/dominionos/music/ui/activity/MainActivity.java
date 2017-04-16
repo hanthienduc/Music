@@ -149,7 +149,34 @@ public class MainActivity extends ATHToolbarActivity {
                             .show();
                     return true;
                 case "SPECIAL2":
-                    Toast.makeText(view.getContext(), "Contributors", Toast.LENGTH_SHORT).show();
+                    new MaterialDialog.Builder(view.getContext())
+                            .title("Contributors")
+                            .items(R.array.contributors)
+                            .autoDismiss(false)
+                            .positiveText("Done")
+                            .positiveColor(ThemeStore.accentColor(view.getContext()))
+                            .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
+                            .itemsCallback((materialDialog, view12, i, charSequence) -> {
+                                String url;
+                                CustomTabsIntent.Builder builder;
+                                CustomTabsIntent customTabsIntent;
+                                switch(charSequence.subSequence(0, 1).toString()) {
+                                    case "J":
+                                        url = "https://github.com/boswelja/";
+                                        builder = new CustomTabsIntent.Builder();
+                                        builder.setInstantAppsEnabled(true);
+                                        customTabsIntent = builder.build();
+                                        customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
+                                        break;
+                                    case "F":
+                                        url = "https://github.com/F4uzan/";
+                                        builder = new CustomTabsIntent.Builder();
+                                        builder.setInstantAppsEnabled(true);
+                                        customTabsIntent = builder.build();
+                                        customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
+                                }
+                            })
+                            .show();
                     return true;
                 case "SPECIAL3":
                     ArrayList<String> skuList = new ArrayList<>();
@@ -174,28 +201,44 @@ public class MainActivity extends ATHToolbarActivity {
                                     if(sku != null) optionsList.add(sku.substring(0, sku.indexOf("(") -1));
                                 }
                                 new MaterialDialog.Builder(view.getContext())
-                                        .title("Changelog")
+                                        .title("Donate")
                                         .items(optionsList)
                                         .itemsCallback((materialDialog, view1, i, charSequence) -> {
-                                            Toast.makeText(view.getContext(), charSequence, Toast.LENGTH_SHORT).show();
                                             try {
+                                                Bundle buyIntentBundle;
+                                                PendingIntent pendingIntent;
                                                 switch(charSequence.toString()) {
                                                     case "Donate $2":
-                                                        Bundle buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), "donate2", "inapp", "");
-                                                        PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                                                        buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), "donate2", "inapp", "");
+                                                        pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
                                                         try {
                                                             if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), 5963, new Intent(), 0, 0, 0);
                                                         } catch (IntentSender.SendIntentException e) {
                                                             e.printStackTrace();
                                                         }
                                                         break;
-                                                    case "donate5":
+                                                    case "Donate $5":
+                                                        buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), "donate5", "inapp", "");
+                                                        pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                                                        try {
+                                                            if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), 5963, new Intent(), 0, 0, 0);
+                                                        } catch (IntentSender.SendIntentException e) {
+                                                            e.printStackTrace();
+                                                        }
                                                         break;
-                                                    case "donate10":
+                                                    case "Donate $10":
+                                                        buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), "donate10", "inapp", "");
+                                                        pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                                                        try {
+                                                            if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), 5963, new Intent(), 0, 0, 0);
+                                                        } catch (IntentSender.SendIntentException e) {
+                                                            e.printStackTrace();
+                                                        }
                                                         break;
                                                 }
                                             } catch (RemoteException e) {
                                                 e.printStackTrace();
+                                                Toast.makeText(view.getContext(), "Failed to send request", Toast.LENGTH_SHORT).show();
                                             }
                                         })
                                         .autoDismiss(false)
@@ -207,6 +250,7 @@ public class MainActivity extends ATHToolbarActivity {
                         }
                     } catch (RemoteException | JSONException | NullPointerException e) {
                         e.printStackTrace();
+                        Toast.makeText(view.getContext(), "Failed to get option data", Toast.LENGTH_SHORT).show();
                     }
                     return true;
             }
