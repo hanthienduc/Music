@@ -492,7 +492,6 @@ public class MainActivity extends ATHToolbarActivity {
                             LibsBuilder builder = new LibsBuilder()
                                     .withActivityStyle(darkMode ? Libs.ActivityStyle.DARK : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
                                     .withSortEnabled(true)
-                                    .withActivityTheme(ThemeStore.activityTheme(this))
                                     .withActivityColor(colors)
                                     .withAboutIconShown(true)
                                     .withAboutVersionShown(true)

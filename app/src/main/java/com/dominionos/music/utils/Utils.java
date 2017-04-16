@@ -75,7 +75,7 @@ public class Utils {
     public static int getAutoStatColor(int baseColor) {
         float[] hsv = new float[3];
         Color.colorToHSV(baseColor, hsv);
-        hsv[2] *= 0.6f;
+        hsv[2] *= 0.8f;
         return Color.HSVToColor(hsv);
     }
 
