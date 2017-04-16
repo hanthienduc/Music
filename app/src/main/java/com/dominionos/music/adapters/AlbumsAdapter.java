@@ -90,7 +90,9 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
         final int adapterPosition = holder.getAdapterPosition();
-        holder.albumName.setText(items.get(adapterPosition).getName());
+        final String name = items.get(adapterPosition).getName();
+        holder.albumArt.setContentDescription(name);
+        holder.albumName.setText(name);
         String albumDesc;
         String desc = items.get(adapterPosition).getDesc();
         int songCount = items.get(adapterPosition).getSongCount();
@@ -142,4 +144,3 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         return this.items.size();
     }
 }
-

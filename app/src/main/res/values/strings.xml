@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mnml Player</string>
-    <string name="album_art">Album Art</string>
     <string name="artist_fetch_url" translatable="false">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo</string>
-    <string name="api" translatable="false">911da172e486f9339ebc82b65ee89993</string>
+    <string name="api" translatable="false">493fc564e6533635edcc4e0f371bf1da</string>
     <string name="artist_image">Artist Image</string>
 
     <!-- Navigation -->
@@ -32,7 +31,6 @@
     <string name="menu_delete">Delete from device</string>
     <string name="menu_share">Share</string>
     <string name="play_all">Play all</string>
-    <string name="search">Search</string>
     <string name="add_playlist">Create playlist</string>
     <string name="share_song">Share song</string>
     <string name="song_delete_success">Song deleted</string>
@@ -50,7 +48,6 @@
     <string name="ok">OK</string>
 
     <!-- About screen -->
-    <string name="app_desc">A lightweight, fast music player with all the latest features!</string>
 
     <!-- MusicService -->
     <string name="file_invalid">File invalid</string>

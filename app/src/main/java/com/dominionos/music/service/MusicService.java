@@ -80,7 +80,7 @@ public class MusicService extends Service {
                 }
             };
 
-    public synchronized void playerDuck(boolean duck) {
+    private synchronized void playerDuck(boolean duck) {
         // Reduce the volume by half when ducking - otherwise play at full volume.
         mediaPlayer.setVolume(duck ? 0.5f : 1.0f, duck ? 0.5f : 1.0f);
     }
@@ -457,7 +457,7 @@ public class MusicService extends Service {
                 PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
 
         float playbackSpeed = 1.0f;
-        if(mediaPlayer != null)  playbackSpeed = mediaPlayer.getPlaybackParams().getSpeed();
+        if(mediaPlayer != null) playbackSpeed = mediaPlayer.getPlaybackParams().getSpeed();
         mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
                 .setActions(playBackStateActions)
                 .setState(playState, mediaPlayer != null
@@ -467,12 +467,12 @@ public class MusicService extends Service {
     }
     private void updateSessionMetadata() {
 
-        boolean showAlbumArtOnLockscreen = prefs.getBoolean("lock_screen_art", true);
+        boolean showAlbumArtOnLockScreen = prefs.getBoolean("lock_screen_art", true);
 
         mediaSession.setMetadata(new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, currentSong.getAlbumName())
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentSong.getName())
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, showAlbumArtOnLockscreen
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, showAlbumArtOnLockScreen
                         ? getAlbumArt() : null)
                 .build());
 
@@ -595,7 +595,7 @@ public class MusicService extends Service {
         if(activity != null) activity.updatePlayer();
     }
 
-    public ArrayList<Song> getAlbumSongs(long albumId) {
+    private ArrayList<Song> getAlbumSongs(long albumId) {
         ArrayList<Song> albumSongList = new ArrayList<>();
         Cursor musicCursor;
         String where = MediaStore.Audio.Media.ALBUM_ID + "=?";

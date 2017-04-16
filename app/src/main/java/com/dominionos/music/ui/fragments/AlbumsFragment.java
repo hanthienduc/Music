@@ -3,7 +3,6 @@ package com.dominionos.music.ui.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -27,7 +26,7 @@ import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 
 public class AlbumsFragment extends Fragment {
 
@@ -96,7 +95,7 @@ public class AlbumsFragment extends Fragment {
                     }
                     while (musicCursor.moveToNext());
                 }
-                albumList.sort((album, t1) -> album.getName().compareToIgnoreCase(t1.getName()));
+                albumList.sort(Comparator.comparing(Album::getName));
 
                 if (musicCursor != null) {
                     musicCursor.close();

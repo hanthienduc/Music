@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -55,6 +56,12 @@ public class Utils {
         view.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(context, R.color.darkContentColour)
                 : ContextCompat.getColor(context, R.color.lightContentColor));
+    }
+
+    public static void setOverflowColor(ImageView view, Context context, boolean darkMode) {
+        view.setColorFilter(darkMode
+                ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                : ContextCompat.getColor(context, R.color.primaryTextLight));
     }
 
     public static int getAutoStatColor(int baseColor) {
