@@ -419,16 +419,6 @@ public class MusicService extends Service {
                 super.onStop();
             }
             @Override
-            public void onFastForward() {
-                next();
-                super.onFastForward();
-            }
-            @Override
-            public void onRewind() {
-                prev();
-                super.onRewind();
-            }
-            @Override
             public void onSkipToNext() {
                 next();
                 super.onSkipToNext();
@@ -457,8 +447,6 @@ public class MusicService extends Service {
         long playBackStateActions = PlaybackStateCompat.ACTION_PLAY |
                 PlaybackStateCompat.ACTION_PAUSE |
                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
-                PlaybackStateCompat.ACTION_REWIND |
-                PlaybackStateCompat.ACTION_FAST_FORWARD |
                 PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
 
         float playbackSpeed = 1.0f;
