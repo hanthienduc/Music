@@ -38,6 +38,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
             android:textColor="@color/secondaryTextDark"
+            android:textSize="12sp"
             style="@style/DescText"/>
     </RelativeLayout>
 </LinearLayout>

@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,7 +19,6 @@ import com.afollestad.async.Action;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.items.Song;
@@ -77,7 +75,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         this.glideRequest = glide
                 .fromString()
                 .centerCrop()
-                .transform(new CircleTransform(context))
                 .override(px, px)
                 .crossFade();
         this.shouldHaveArt = shouldHaveArt;

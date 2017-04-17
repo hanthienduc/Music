@@ -118,6 +118,7 @@ public class MainActivity extends ATHToolbarActivity {
             String url = "https://github.com/MnmlOS/Music";
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setInstantAppsEnabled(true);
+            builder.setToolbarColor(ThemeStore.primaryColor(view.getContext()));
             CustomTabsIntent customTabsIntent = builder.build();
             customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
         }
@@ -167,6 +168,7 @@ public class MainActivity extends ATHToolbarActivity {
                                         url = "https://github.com/boswelja/";
                                         builder = new CustomTabsIntent.Builder();
                                         builder.setInstantAppsEnabled(true);
+                                        builder.setToolbarColor(ThemeStore.primaryColor(view.getContext()));
                                         customTabsIntent = builder.build();
                                         customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
                                         break;
@@ -174,6 +176,7 @@ public class MainActivity extends ATHToolbarActivity {
                                         url = "https://github.com/F4uzan/";
                                         builder = new CustomTabsIntent.Builder();
                                         builder.setInstantAppsEnabled(true);
+                                        builder.setToolbarColor(ThemeStore.primaryColor(view.getContext()));
                                         customTabsIntent = builder.build();
                                         customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
                                 }
@@ -424,6 +427,7 @@ public class MainActivity extends ATHToolbarActivity {
     }
 
     private void setupSearch() {
+        searchView.setEllipsize(true);
         searchView.setCursorColor(ThemeStore.accentColor(this));
         searchView.setAnimationDuration(500);
         searchView.setHint("");
