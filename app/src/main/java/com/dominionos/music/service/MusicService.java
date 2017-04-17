@@ -17,6 +17,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -26,12 +28,15 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
+import com.afollestad.async.Action;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
 import com.dominionos.music.ui.activity.MainActivity;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.items.Song;
+import com.kabouzeid.appthemehelper.ThemeStore;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -479,43 +484,69 @@ public class MusicService extends Service {
     }
 
     public void playAllSongs() {
-        final ArrayList<Song> songList = new ArrayList<>();
-        final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
-        final String orderBy = MediaStore.Audio.Media.TITLE;
-        Cursor musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                null, where, null, orderBy);
-        if (musicCursor != null && musicCursor.moveToFirst()) {
-            int titleColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.TITLE);
-            int idColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media._ID);
-            int artistColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.ARTIST);
-            int pathColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.DATA);
-            int albumIdColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM_ID);
-            int albumColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM);
-            do {
-                songList.add(new Song(musicCursor.getLong(idColumn),
-                        musicCursor.getString(titleColumn),
-                        musicCursor.getString(artistColumn),
-                        musicCursor.getString(pathColumn), false,
-                        musicCursor.getLong(albumIdColumn),
-                        musicCursor.getString(albumColumn)));
+        MaterialDialog progressDialog = new MaterialDialog.Builder(activity)
+                .title("Please wait")
+                .progress(true, 0)
+                .widgetColor(ThemeStore.accentColor(this))
+                .show();
+        new Action<ArrayList<Song>>() {
+
+            @NonNull
+            @Override
+            public String id() {
+                return "play_all";
             }
-            while (musicCursor.moveToNext());
-        }
-        if (musicCursor != null) {
-            musicCursor.close();
-        }
-        playingList = songList;
-        if(!playingList.isEmpty()) playMusic(playingList.get(0));
-        updateCurrentPlaying();
-        updatePlayState();
-        activity.updatePlayingList();
-        activity.updatePlayer();
+
+            @Override
+            protected ArrayList<Song> run() throws InterruptedException {
+                final ArrayList<Song> songList = new ArrayList<>();
+                final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
+                final String orderBy = MediaStore.Audio.Media.TITLE;
+                Cursor musicCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        null, where, null, orderBy);
+                if (musicCursor != null && musicCursor.moveToFirst()) {
+                    int titleColumn = musicCursor.getColumnIndex
+                            (android.provider.MediaStore.Audio.Media.TITLE);
+                    int idColumn = musicCursor.getColumnIndex
+                            (android.provider.MediaStore.Audio.Media._ID);
+                    int artistColumn = musicCursor.getColumnIndex
+                            (android.provider.MediaStore.Audio.Media.ARTIST);
+                    int pathColumn = musicCursor.getColumnIndex
+                            (MediaStore.Audio.Media.DATA);
+                    int albumIdColumn = musicCursor.getColumnIndex
+                            (MediaStore.Audio.Media.ALBUM_ID);
+                    int albumColumn = musicCursor.getColumnIndex
+                            (MediaStore.Audio.Media.ALBUM);
+                    do {
+                        songList.add(new Song(musicCursor.getLong(idColumn),
+                                musicCursor.getString(titleColumn),
+                                musicCursor.getString(artistColumn),
+                                musicCursor.getString(pathColumn), false,
+                                musicCursor.getLong(albumIdColumn),
+                                musicCursor.getString(albumColumn)));
+                    }
+                    while (musicCursor.moveToNext());
+                }
+                if (musicCursor != null) {
+                    musicCursor.close();
+                }
+                return songList;
+            }
+
+            @Override
+            protected void done(@Nullable ArrayList<Song> result) {
+                super.done(result);
+                if(result != null && !result.isEmpty()) {
+                    playingList = result;
+                    playMusic(playingList.get(0));
+                    updateCurrentPlaying();
+                    updatePlayState();
+                    activity.updatePlayingList();
+                    activity.updatePlayer();
+                }
+                progressDialog.dismiss();
+            }
+        }.execute();
     }
 
     private Bitmap getAlbumArt() {
