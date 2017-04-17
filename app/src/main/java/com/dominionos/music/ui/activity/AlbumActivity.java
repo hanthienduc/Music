@@ -70,7 +70,7 @@ public class AlbumActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         Intent i = new Intent(this, MusicService.class);
-        bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
+        if(service == null) bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
 
         albumId = getIntent().getLongExtra("albumId", 0);
 

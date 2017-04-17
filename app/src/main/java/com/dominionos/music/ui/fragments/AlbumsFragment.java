@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.SpacesItemDecoration;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.AlbumsAdapter;
 import com.dominionos.music.items.Album;
@@ -49,7 +48,6 @@ public class AlbumsFragment extends Fragment {
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
-        gv.addItemDecoration(new SpacesItemDecoration());
         gv.setHasFixedSize(true);
         Utils.setWindowColor(gv, context, darkMode);
 

@@ -58,8 +58,8 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         SimpleItemViewHolder(View view) {
             super(view);
 
-            albumName = (TextView) view.findViewById(R.id.grid_name);
-            albumDesc = (TextView) view.findViewById(R.id.grid_desc);
+            albumName = (TextView) view.findViewById(R.id.album_name);
+            albumDesc = (TextView) view.findViewById(R.id.album_info);
             albumArt = (ImageView) view.findViewById(R.id.album_art);
             textHolder = view.findViewById(R.id.text_holder);
             background = view.findViewById(R.id.background);

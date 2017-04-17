@@ -42,11 +42,11 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|enterAlways|snap">
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/main_toolbar"
                     android:layout_width="match_parent"
-                    app:layout_scrollFlags="scroll|enterAlways|snap"
                     android:layout_height="?attr/actionBarSize"
                     app:popupTheme="@android:style/ThemeOverlay.Material.Light"/>
                 <com.miguelcatalan.materialsearchview.MaterialSearchView
