@@ -81,10 +81,8 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     @Override
     public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
-        if(darkMode) {
-            holder.artistName.setTextColor(ContextCompat.getColor(context, R.color.primaryTextDark));
-            holder.artistDesc.setTextColor(ContextCompat.getColor(context, R.color.secondaryTextDark));
-        }
+        Utils.setPrimaryTextColor(holder.artistName, context, darkMode);
+        Utils.setSecondaryTextColor(holder.artistDesc, context, darkMode);
         final int adapterPosition = holder.getAdapterPosition();
         int albumCount = items.get(adapterPosition).getNumOfAlbums();
         int songCount = items.get(adapterPosition).getNumOfTracks();

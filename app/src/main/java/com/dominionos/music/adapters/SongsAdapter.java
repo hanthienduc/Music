@@ -93,15 +93,9 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
         final int adapterPosition = holder.getAdapterPosition();
-        holder.title.setTextColor(darkMode
-                ? ContextCompat.getColor(context, R.color.primaryTextDark)
-                : ContextCompat.getColor(context, R.color.primaryTextLight));
-        holder.desc.setTextColor(darkMode
-                ? ContextCompat.getColor(context, R.color.secondaryTextDark)
-                : ContextCompat.getColor(context, R.color.secondaryTextLight));
-        holder.menu.setColorFilter(darkMode
-                ? ContextCompat.getColor(context, R.color.primaryTextDark)
-                : ContextCompat.getColor(context, R.color.primaryTextLight));
+        Utils.setPrimaryTextColor(holder.title, context, darkMode);
+        Utils.setSecondaryTextColor(holder.title, context, darkMode);
+        Utils.setOverflowColor(holder.menu, context, darkMode);
         holder.title.setText(items.get(adapterPosition).getName());
         holder.desc.setText(items.get(adapterPosition).getDesc());
         holder.menu.setOnClickListener(v -> {
