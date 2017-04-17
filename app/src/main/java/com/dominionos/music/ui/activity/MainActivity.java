@@ -47,6 +47,7 @@ import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
 import com.kabouzeid.appthemehelper.util.TintHelper;
 import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.LibsConfiguration;
@@ -77,6 +78,7 @@ public class MainActivity extends ATHToolbarActivity {
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.sliding_layout) SlidingUpPanelLayout slidingUpPanelLayout;
     @BindView(R.id.main_tab_layout) TabLayout tabLayout;
+    @BindView(R.id.search_view) MaterialSearchView searchView;
 
     private Unbinder unbinder;
     private SharedPreferences sharedPrefs;
@@ -340,6 +342,10 @@ public class MainActivity extends ATHToolbarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+        ToolbarContentTintHelper.setToolbarContentColorBasedOnToolbarColor(this, toolbar, menu, primaryColor);
         return true;
     }
 
@@ -408,13 +414,44 @@ public class MainActivity extends ATHToolbarActivity {
         player = new PlayerFragment();
         transaction.replace(R.id.player_holder, player).commit();
 
+        setupSearch();
+        MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
+
         Intent serviceIntent =
                 new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending");
         bindService(serviceIntent, billingConnection, Context.BIND_AUTO_CREATE);
+    }
 
-        MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
+    private void setupSearch() {
+        searchView.setCursorColor(ThemeStore.accentColor(this));
+        searchView.setAnimationDuration(500);
+        searchView.setHint("");
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //Do some magic
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+                return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+            }
+        });
     }
 
     private void setupViewPager() {
@@ -553,6 +590,8 @@ public class MainActivity extends ATHToolbarActivity {
     public void onBackPressed() {
         if(slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
         } else {
             super.onBackPressed();
         }
