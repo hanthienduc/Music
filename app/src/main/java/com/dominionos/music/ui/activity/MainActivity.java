@@ -141,20 +141,20 @@ public class MainActivity extends ATHToolbarActivity {
             switch(specialButton.toString()) {
                 case "SPECIAL1":
                     new MaterialDialog.Builder(view.getContext())
-                            .title("Changelog")
+                            .title(getString(R.string.changelog))
                             .items(R.array.changelog)
                             .autoDismiss(false)
-                            .positiveText("Done")
+                            .positiveText(getString(R.string.done))
                             .positiveColor(ThemeStore.accentColor(view.getContext()))
                             .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
                             .show();
                     return true;
                 case "SPECIAL2":
                     new MaterialDialog.Builder(view.getContext())
-                            .title("Contributors")
+                            .title(getString(R.string.contributors))
                             .items(R.array.contributors)
                             .autoDismiss(false)
-                            .positiveText("Done")
+                            .positiveText(getString(R.string.done))
                             .positiveColor(ThemeStore.accentColor(view.getContext()))
                             .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
                             .itemsCallback((materialDialog, view12, i, charSequence) -> {
@@ -183,9 +183,9 @@ public class MainActivity extends ATHToolbarActivity {
                     return true;
                 case "SPECIAL3":
                     ArrayList<String> skuList = new ArrayList<>();
-                    skuList.add("donate10");
-                    skuList.add("donate5");
-                    skuList.add("donate2");
+                    skuList.add(Config.DONATE_10);
+                    skuList.add(Config.DONATE_5);
+                    skuList.add(Config.DONATE_2);
                     Bundle querySkus = new Bundle();
                     querySkus.putStringArrayList("ITEM_ID_LIST", skuList);
                     try {
@@ -209,9 +209,11 @@ public class MainActivity extends ATHToolbarActivity {
                                         .itemsCallback((materialDialog, view1, i, charSequence) -> {
                                             try {
                                                 String sku = charSequence.toString().toLowerCase().replaceAll(" ", "").replace("$", "");
-                                                Bundle buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), sku, "inapp", "");
-                                                PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                                                if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), Config.DONATE_REQUEST_CODE, new Intent(), 0, 0, 0);
+                                                if(sku.equals(Config.DONATE_2) || sku.equals(Config.DONATE_5) || sku.equals(Config.DONATE_10)) {
+                                                    Bundle buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), sku, "inapp", "");
+                                                    PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                                                    if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), Config.DONATE_REQUEST_CODE, new Intent(), 0, 0, 0);
+                                                }
                                             } catch (RemoteException | IntentSender.SendIntentException e) {
                                                 e.printStackTrace();
                                                 Toast.makeText(view.getContext(), "Failed to send request", Toast.LENGTH_SHORT).show();
@@ -286,7 +288,6 @@ public class MainActivity extends ATHToolbarActivity {
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             init();
         } else {
@@ -473,6 +474,7 @@ public class MainActivity extends ATHToolbarActivity {
                                     .withActivityColor(colors)
                                     .withAboutIconShown(true)
                                     .withAboutVersionShown(true)
+                                    .withActivityTitle(getString(R.string.about))
                                     .withAboutDescription(getString(R.string.app_desc))
                                     .withAboutSpecial1("Changelog")
                                     .withAboutSpecial1Description("Button 1")
@@ -511,7 +513,7 @@ public class MainActivity extends ATHToolbarActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
-        drawer.setSelectionAtPosition(2);
+        drawer.setSelectionAtPosition(1);
     }
 
     @Override

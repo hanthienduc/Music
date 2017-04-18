@@ -5,6 +5,11 @@ public class Config {
     public static final int SETTINGS_REQUEST_CODE = 6118;
     public static final int DONATE_REQUEST_CODE = 5963;
 
+    // In-App SKUs
+    public static final String DONATE_2 = "donate2";
+    public static final String DONATE_5 = "donate5";
+    public static final String DONATE_10 = "donate10";
+
     // Button state alpha values
     public static final float BUTTON_ACTIVE_ALPHA = 1.0f;
     public static final float BUTTON_INACTIVE_ALPHA = 0.5f;

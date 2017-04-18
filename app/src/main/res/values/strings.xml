@@ -49,6 +49,9 @@
 
     <!-- About screen -->
     <string name="app_desc">A fast, lightweight music player with all the latest features!</string>
+    <string name="changelog">Changelog</string>
+    <string name="donate">Donate</string>
+    <string name="contributors">Contributors</string>
 
     <!-- MusicService -->
     <string name="file_invalid">File invalid</string>
