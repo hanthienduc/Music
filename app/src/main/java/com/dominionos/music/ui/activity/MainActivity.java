@@ -61,7 +61,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -81,14 +80,24 @@ public class MainActivity extends ATHToolbarActivity {
     @BindView(R.id.search_view) MaterialSearchView searchView;
 
     private Unbinder unbinder;
-    private SharedPreferences sharedPrefs;
     private boolean darkMode = false;
     private Drawer drawer;
     private IInAppBillingService billingService;
-    private MusicService service;
-    private PlayerFragment player;
     private PlaylistFragment playlistFragment;
     private int primaryColor, accentColor;
+    private final ServiceConnection billingConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            billingService = IInAppBillingService.Stub.asInterface(service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            billingService = null;
+        }
+    };
+    private MusicService service;
+    private PlayerFragment player;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -99,17 +108,6 @@ public class MainActivity extends ATHToolbarActivity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             service = null;
-        }
-    };
-    private final ServiceConnection billingConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            billingService = IInAppBillingService.Stub.asInterface(service);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            billingService = null;
         }
     };
     private LibsConfiguration.LibsListener libsListener = new LibsConfiguration.LibsListener() {
@@ -210,44 +208,17 @@ public class MainActivity extends ATHToolbarActivity {
                                         .items(optionsList)
                                         .itemsCallback((materialDialog, view1, i, charSequence) -> {
                                             try {
-                                                Bundle buyIntentBundle;
-                                                PendingIntent pendingIntent;
-                                                switch(charSequence.toString()) {
-                                                    case "Donate $2":
-                                                        buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), "donate2", "inapp", "");
-                                                        pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                                                        try {
-                                                            if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), 5963, new Intent(), 0, 0, 0);
-                                                        } catch (IntentSender.SendIntentException e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                        break;
-                                                    case "Donate $5":
-                                                        buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), "donate5", "inapp", "");
-                                                        pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                                                        try {
-                                                            if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), 5963, new Intent(), 0, 0, 0);
-                                                        } catch (IntentSender.SendIntentException e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                        break;
-                                                    case "Donate $10":
-                                                        buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), "donate10", "inapp", "");
-                                                        pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                                                        try {
-                                                            if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), 5963, new Intent(), 0, 0, 0);
-                                                        } catch (IntentSender.SendIntentException e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                        break;
-                                                }
-                                            } catch (RemoteException e) {
+                                                String sku = charSequence.toString().toLowerCase().replaceAll(" ", "").replace("$", "");
+                                                Bundle buyIntentBundle = billingService.getBuyIntent(3, getPackageName(), sku, "inapp", "");
+                                                PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                                                if(pendingIntent != null) startIntentSenderForResult(pendingIntent.getIntentSender(), Config.DONATE_REQUEST_CODE, new Intent(), 0, 0, 0);
+                                            } catch (RemoteException | IntentSender.SendIntentException e) {
                                                 e.printStackTrace();
                                                 Toast.makeText(view.getContext(), "Failed to send request", Toast.LENGTH_SHORT).show();
                                             }
                                         })
                                         .autoDismiss(false)
-                                        .positiveText("Done")
+                                        .positiveText(getString(R.string.done))
                                         .positiveColor(ThemeStore.accentColor(view.getContext()))
                                         .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
                                         .show();
@@ -285,7 +256,7 @@ public class MainActivity extends ATHToolbarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean subsTheme = sharedPrefs.getBoolean("substratum_theme", false);
         if (!ThemeStore.isConfigured(this, 1)) {
             ThemeStore.editTheme(this)
@@ -363,40 +334,6 @@ public class MainActivity extends ATHToolbarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(service != null) player.updatePlayer();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Config.SETTINGS_REQUEST_CODE) {
-            if (darkMode != sharedPrefs.getBoolean("dark_theme", false)) recreate();
-        } else if (requestCode == 5963) {
-            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-
-            if (resultCode == RESULT_OK) {
-                try {
-                    JSONObject jo = new JSONObject(purchaseData);
-                    String sku = jo.getString("productId");
-                    switch(sku) {
-                        case "donate2":
-                            Toast.makeText(this, "Thanks for donating $2", Toast.LENGTH_SHORT).show();
-                            break;
-                        case "donate5":
-                            Toast.makeText(this, "Thanks for donating $5", Toast.LENGTH_SHORT).show();
-                            break;
-                        case "donate10":
-                            Toast.makeText(this, "Thanks for donating $10", Toast.LENGTH_SHORT).show();
-                            break;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
     private void init() {
         TintHelper.setTintAuto(fab, accentColor, true);
 
@@ -608,6 +545,39 @@ public class MainActivity extends ATHToolbarActivity {
         unbindService(serviceConnection);
         if (billingService != null) {
             unbindService(billingConnection);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(service != null) player.updatePlayer();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Config.DONATE_REQUEST_CODE) {
+            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+
+            if (resultCode == RESULT_OK) {
+                try {
+                    JSONObject jo = new JSONObject(purchaseData);
+                    String sku = jo.getString("productId");
+                    switch(sku) {
+                        case "donate2":
+                            Toast.makeText(this, "Thanks for donating $2", Toast.LENGTH_SHORT).show();
+                            break;
+                        case "donate5":
+                            Toast.makeText(this, "Thanks for donating $5", Toast.LENGTH_SHORT).show();
+                            break;
+                        case "donate10":
+                            Toast.makeText(this, "Thanks for donating $10", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

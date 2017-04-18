@@ -1,15 +1,18 @@
 package com.dominionos.music.utils;
 
 public class Config {
+    // Request codes
     public static final int SETTINGS_REQUEST_CODE = 6118;
+    public static final int DONATE_REQUEST_CODE = 5963;
 
-    public static final float BUTTON_ACTIVE = 1.0f;
-    public static final float BUTTON_INACTIVE = 0.5f;
+    // Button state alpha values
+    public static final float BUTTON_ACTIVE_ALPHA = 1.0f;
+    public static final float BUTTON_INACTIVE_ALPHA = 0.5f;
 
-    static final int ANIMATION_DURATION = 500; //milliseconds
-
+    static final int ANIMATION_DURATION = 500;
     public static final int ALBUM_CARD_WIDTH = 180;
 
+    // Intent values
     public static final String GET_PLAY_STATE = "get_play_state";
     public static final String PREV = "prev";
     public static final String NEXT = "next";
@@ -25,7 +28,6 @@ public class Config {
     public static final String REQUEST_SONG_DETAILS = "request_song_details";
     public static final String SEEK_TO_SONG = "seek_to_song";
     public static final String SEEK_GET_SONG = "seek_get_song";
-
     public static final String MENU_PLAY_NEXT = "menu_play_next";
     public static final String MENU_REMOVE_FROM_QUEUE = "menu_remove_from_queue";
     public static final String MENU_SHARE = "menu_share";
