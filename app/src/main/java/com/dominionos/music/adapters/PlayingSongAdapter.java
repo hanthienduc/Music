@@ -17,56 +17,21 @@ import com.afollestad.async.Action;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.dominionos.music.R;
-import com.dominionos.music.service.MusicService;
-import com.dominionos.music.ui.activity.MainActivity;
 import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.items.Song;
-import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter;
-import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder;
 
 import java.util.ArrayList;
 
-public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.ViewHolder>
-        implements DraggableItemAdapter<PlayingSongAdapter.ViewHolder> {
+public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.ViewHolder> {
 
     private ArrayList<Song> songs;
     private final Context context;
     private final boolean darkMode;
     private Song currentSong;
     private final DrawableRequestBuilder<String> glideRequest;
-    private final MainActivity activity;
-    private MusicService service;
-
-    @Override
-    public boolean onCheckCanStartDrag(ViewHolder holder, int position, int x, int y) {
-        return true;
-    }
-
-    @Override
-    public ItemDraggableRange onGetItemDraggableRange(ViewHolder holder, int position) {
-        return null;
-    }
-
-    @Override
-    public void onMoveItem(int fromPosition, int toPosition) {
-        if (fromPosition == toPosition) {
-            return;
-        }
-        Song movedSong = songs.get(fromPosition);
-        songs.remove(movedSong);
-        songs.add(toPosition, movedSong);
-        if(service == null) service = activity.getService();
-        service.changePlayingList(songs);
-        notifyItemMoved(fromPosition, toPosition);
-    }
-
-    @Override
-    public boolean onCheckCanDrop(int draggingPosition, int dropPosition) {
-        return true;
-    }
 
     final static class ViewHolder extends AbstractDraggableItemViewHolder {
         final TextView title;
@@ -91,7 +56,7 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         notifyDataSetChanged();
     }
 
-    public PlayingSongAdapter(Context context, ArrayList<Song> songs, boolean darkMode, Song currentSong, RequestManager glide, MainActivity activity) {
+    public PlayingSongAdapter(Context context, ArrayList<Song> songs, boolean darkMode, Song currentSong, RequestManager glide) {
         this.context = context;
         this.songs = songs;
         this.darkMode = darkMode;
@@ -103,7 +68,6 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                 .crossFade()
                 .transform(new CircleTransform(context))
                 .override(px, px);
-        this.activity = activity;
         setHasStableIds(true);
     }
 

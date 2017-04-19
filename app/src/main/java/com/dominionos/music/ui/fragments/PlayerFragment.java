@@ -37,8 +37,6 @@ import com.dominionos.music.utils.PaletteBitmap;
 import com.dominionos.music.utils.PaletteBitmapTranscoder;
 import com.dominionos.music.utils.PlayPauseDrawable;
 import com.dominionos.music.utils.Utils;
-import com.h6ah4i.android.widget.advrecyclerview.animator.DraggableItemAnimator;
-import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -79,7 +77,6 @@ public class PlayerFragment extends Fragment {
     private MainActivity activity;
     private Context context;
     private Song currentPlaying;
-    private RecyclerViewDragDropManager recyclerViewDragDropManager;
     private PlayingSongAdapter adapter;
     private MediaPlayer mediaPlayer;
     private int generatedColor;
@@ -102,14 +99,7 @@ public class PlayerFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
-        DraggableItemAnimator animator = new DraggableItemAnimator();
-        animator.setSupportsChangeAnimations(false);
         playingListView.setLayoutManager(layoutManager);
-        playingListView.setItemAnimator(animator);
-
-        recyclerViewDragDropManager = new RecyclerViewDragDropManager();
-        recyclerViewDragDropManager.setInitiateOnLongPress(true);
-        recyclerViewDragDropManager.setInitiateOnMove(false);
 
         slidingUpPanelLayout = activity.getSlidingPanel();
         slidingUpPanelLayout.setAntiDragView(playerSlidingPanel);
@@ -161,10 +151,8 @@ public class PlayerFragment extends Fragment {
             ArrayList<Song> playingList = service.getPlayingList();
             if(playingList.size() > 0) {
                 if(adapter == null) {
-                    adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(context), activity);
-                    RecyclerView.Adapter wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(adapter);
-                    playingListView.setAdapter(wrappedAdapter);
-                    recyclerViewDragDropManager.attachRecyclerView(playingListView);
+                    adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(context));
+                    playingListView.setAdapter(adapter);
                     playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
                 } else {
                     adapter.updateData(playingList, currentPlaying);
@@ -384,7 +372,6 @@ public class PlayerFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
-        recyclerViewDragDropManager.release();
     }
 
 }
