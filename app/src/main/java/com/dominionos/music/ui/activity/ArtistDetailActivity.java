@@ -28,7 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class ArtistActivity extends ATHToolbarActivity {
+public class ArtistDetailActivity extends ATHToolbarActivity {
 
     private Unbinder unbinder;
     @BindView(R.id.artist_toolbar) Toolbar toolbar;

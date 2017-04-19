@@ -41,7 +41,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class AlbumActivity extends AppCompatActivity {
+public class AlbumDetailActivity extends AppCompatActivity {
 
     @BindView(R.id.collapsing_toolbar_album) CollapsingToolbarLayout collapsingToolbarLayout;
 
@@ -100,7 +100,7 @@ public class AlbumActivity extends AppCompatActivity {
                 null);
         if (cursor != null && cursor.moveToFirst()) {
             String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-            Glide.with(AlbumActivity.this)
+            Glide.with(AlbumDetailActivity.this)
                     .load(imagePath)
                     .asBitmap()
                     .error(R.drawable.default_art)
@@ -125,17 +125,17 @@ public class AlbumActivity extends AppCompatActivity {
                                     vibrantRgb = altSwatch.getRgb();
                                     vibrantTitleText = altSwatch.getTitleTextColor();
                                 } else {
-                                    vibrantRgb = ContextCompat.getColor(AlbumActivity.this, R.color.cardBackground);
-                                    vibrantTitleText = ContextCompat.getColor(AlbumActivity.this, R.color.primaryTextDark);
+                                    vibrantRgb = ContextCompat.getColor(AlbumDetailActivity.this, R.color.cardBackground);
+                                    vibrantTitleText = ContextCompat.getColor(AlbumDetailActivity.this, R.color.primaryTextDark);
                                 }
                                 collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
                                 collapsingToolbarLayout.setStatusBarScrimColor(Utils.getAutoStatColor(vibrantRgb));
                                 collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
-                                ToolbarContentTintHelper.setToolbarContentColorBasedOnToolbarColor(AlbumActivity.this, toolbar, vibrantRgb);
-                                int toolbarColor = ToolbarContentTintHelper.toolbarTitleColor(AlbumActivity.this, vibrantRgb);
+                                ToolbarContentTintHelper.setToolbarContentColorBasedOnToolbarColor(AlbumDetailActivity.this, toolbar, vibrantRgb);
+                                int toolbarColor = ToolbarContentTintHelper.toolbarTitleColor(AlbumDetailActivity.this, vibrantRgb);
                                 collapsingToolbarLayout.setCollapsedTitleTextColor(toolbarColor);
                             } catch (NullPointerException e) {
-                                Log.i("AlbumActivity", "Palette.Builder could not generate swatches, falling back to default colours");
+                                Log.i("AlbumDetailActivity", "Palette.Builder could not generate swatches, falling back to default colours");
                             }
                             return false;
                         }
@@ -194,7 +194,7 @@ public class AlbumActivity extends AppCompatActivity {
                 ? ContextCompat.getColor(this, R.color.darkWindowBackground)
                 : ContextCompat.getColor(this, R.color.lightWindowBackground));
 
-        rv.setAdapter(new SongsAdapter(AlbumActivity.this, songList, darkMode, Glide.with(this), false));
+        rv.setAdapter(new SongsAdapter(AlbumDetailActivity.this, songList, darkMode, Glide.with(this), false));
     }
 
     @Override

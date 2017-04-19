@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.dominionos.music.R;
-import com.dominionos.music.ui.activity.ArtistActivity;
+import com.dominionos.music.ui.activity.ArtistDetailActivity;
 import com.dominionos.music.utils.ArtistImgHandler;
 import com.dominionos.music.utils.CircleTransform;
 import com.dominionos.music.utils.Utils;
@@ -101,7 +101,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         holder.artistDesc.setText(artistItemsCount);
 
         holder.view.setOnClickListener(view -> {
-            Intent i = new Intent(context, ArtistActivity.class);
+            Intent i = new Intent(context, ArtistDetailActivity.class);
             i.putExtra("artistName", items.get(adapterPosition).getName());
             context.startActivity(i);
         });

@@ -53,7 +53,7 @@ dependencies {
     compile 'com.afollestad:async:0.2.3'
     compile 'com.simplecityapps:recyclerview-fastscroll:1.0.14'
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
-    compile 'com.sothree.slidinguppanel:library:3.3.1'
+    compile 'com.github.kabouzeid:AndroidSlidingUpPanel:3.3.0-kmod3'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.jakewharton:butterknife:8.5.1'
     compile 'com.afollestad.material-dialogs:core:0.9.4.2'

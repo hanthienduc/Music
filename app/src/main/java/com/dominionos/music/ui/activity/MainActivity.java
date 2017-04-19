@@ -288,11 +288,10 @@ public class MainActivity extends ATHToolbarActivity {
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             init();
         } else {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.MEDIA_CONTENT_CONTROL,
                     Manifest.permission.INTERNET}, 1);
         }
@@ -493,8 +492,8 @@ public class MainActivity extends ATHToolbarActivity {
                 .build();
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         drawer.getHeader().findViewById(R.id.header).setBackgroundColor(primaryColor);
-        drawer.getDrawerLayout().setStatusBarBackgroundColor(Utils.getAutoStatColor(primaryColor));
         drawer.getActionBarDrawerToggle().getDrawerArrowDrawable().setColor(ToolbarContentTintHelper.toolbarContentColor(this, primaryColor));
+        setStatusBarColor(Utils.getAutoStatColor(primaryColor));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -554,6 +553,10 @@ public class MainActivity extends ATHToolbarActivity {
     protected void onResume() {
         super.onResume();
         if(service != null) player.updatePlayer();
+    }
+
+    public void setStatusBarColor(int color) {
+        drawer.getDrawerLayout().setStatusBarBackgroundColor(Utils.getAutoStatColor(color));
     }
 
     @Override

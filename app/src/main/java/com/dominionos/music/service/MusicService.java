@@ -47,7 +47,7 @@ public class MusicService extends Service {
     private MediaPlayer mediaPlayer;
 
     private boolean repeatOne = false, repeatAll = false, shuffle = false;
-    private MusicPlayerDBHelper playList;
+    private MusicPlayerDBHelper playerDBHelper;
     private AudioManager audioManager;
     private MediaSessionCompat mediaSession;
     private ArrayList<Song> preShuffle, playingList;
@@ -104,7 +104,7 @@ public class MusicService extends Service {
                     song = (Song) intent.getSerializableExtra("song");
                     playingList.clear();
                     playingList.add(song);
-                    playList.overwriteStoredList(playingList);
+                    playerDBHelper.overwriteStoredList(playingList);
                     playSingle(song);
                     Intent requestSongDetails = new Intent();
                     requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
@@ -137,13 +137,13 @@ public class MusicService extends Service {
                     int insertPos = playingList.indexOf(currentSong) + 1;
                     song = (Song) intent.getSerializableExtra("song");
                     playingList.add(insertPos, song);
-                    playList.overwriteStoredList(playingList);
+                    playerDBHelper.overwriteStoredList(playingList);
                     break;
                 case Config.ADD_SONG_TO_PLAYLIST:
                     song = (Song) intent.getSerializableExtra("song");
-                    if (playList.getPlaybackTableSize() != 0) {
+                    if (playerDBHelper.getPlaybackTableSize() != 0) {
                         playingList.add(song);
-                        playList.overwriteStoredList(playingList);
+                        playerDBHelper.overwriteStoredList(playingList);
                     } else {
                         intent.setAction(Config.PLAY_SINGLE_SONG);
                         sendBroadcast(intent);
@@ -157,7 +157,7 @@ public class MusicService extends Service {
                 case Config.PLAY_PLAYLIST:
                     MySQLiteHelper helper = new MySQLiteHelper(context);
                     playingList = helper.getPlayListSongs(intent.getIntExtra("playlistId", -1));
-                    playList.overwriteStoredList(playingList);
+                    playerDBHelper.overwriteStoredList(playingList);
                     playMusic(playingList.get(0));
                     requestSongDetails = new Intent();
                     requestSongDetails.setAction(Config.REQUEST_SONG_DETAILS);
@@ -243,7 +243,7 @@ public class MusicService extends Service {
             } else {
                 if(preShuffle != null) {
                     playingList = preShuffle;
-                    playList.overwriteStoredList(playingList);
+                    playerDBHelper.overwriteStoredList(playingList);
                 }
                 shuffle = false;
             }
@@ -277,11 +277,13 @@ public class MusicService extends Service {
     }
 
     public void prev() {
-        int currentPos = playingList.indexOf(currentSong);
         if(mediaPlayer.getCurrentPosition() < 5000) {
             mediaPlayer.seekTo(0);
-        } else if(currentPos != 0 && playingList.size() > 0) {
-            playMusic(playingList.get(currentPos - 1));
+        } else {
+            int currentPos = playingList.indexOf(currentSong);
+            final Song song = playingList.get(currentPos - 1);
+            if(isPlaying) stopMusic();
+            if(song != null) playMusic(song);
         }
     }
 
@@ -292,11 +294,12 @@ public class MusicService extends Service {
 
     private void stopMusic() {
         if (mediaPlayer != null) {
-            mediaPlayer.stop();
+            if(isPlaying) mediaPlayer.stop();
             updatePlayState();
             updateSessionState();
             mediaPlayer.release();
         }
+        playerDBHelper.overwriteStoredList(playingList);
     }
 
     public boolean isPlaying() {
@@ -326,29 +329,25 @@ public class MusicService extends Service {
                 final Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
                 mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
                 mediaPlayer.setOnPreparedListener(mp -> {
-                    mediaPlayer.start();
                     isPlaying = true;
+                    mediaPlayer.start();
                     activity.updatePlayer();
-                    startForeground(NOTIFICATION_ID, createNotification());
                     updateSessionState();
                     updateSessionMetadata();
+                    startForeground(NOTIFICATION_ID, createNotification());
                 });
                 mediaPlayer.setOnCompletionListener(mp -> {
                     isPlaying = false;
                     updateSessionMetadata();
                     updateSessionState();
                     if(!repeatOne && !repeatAll) {
-                        if(playingList.size() == 1) {
-                            stopMusic();
+                        Song song1 = playingList.get(playingList.indexOf(currentSong) + 1);
+                        if(song1 != null) {
+                            playMusic(song1);
                         } else {
-                            Song song1 = playingList.get(playingList.indexOf(currentSong) + 1);
-                            if(song1 != null) {
-                                playMusic(song1);
-                            } else {
-                                stopMusic();
-                            }
-                            updateCurrentPlaying();
+                            stopMusic();
                         }
+                            updateCurrentPlaying();
                     } else if(repeatOne) {
                         playMusic(song);
                     } else {
@@ -377,7 +376,7 @@ public class MusicService extends Service {
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
         sharedPrefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
-        playList = new MusicPlayerDBHelper(this);
+        playerDBHelper = new MusicPlayerDBHelper(this);
         IntentFilter commandFilter = new IntentFilter();
         commandFilter.addAction(Config.TOGGLE_PLAY);
         commandFilter.addAction(Config.CANCEL_NOTIFICATION);
@@ -432,7 +431,7 @@ public class MusicService extends Service {
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setActive(true);
 
-        playingList = playList.getStoredList();
+        playingList = playerDBHelper.getStoredList();
         if(!playingList.isEmpty()) {
             currentSong = playingList.get(0);
         }
@@ -451,6 +450,7 @@ public class MusicService extends Service {
 
         float playbackSpeed = 1.0f;
         if(mediaPlayer != null) playbackSpeed = mediaPlayer.getPlaybackParams().getSpeed();
+        //TODO We don't need to be recreating this every time the play state is changed
         mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
                 .setActions(playBackStateActions)
                 .setState(playState, mediaPlayer != null
@@ -681,7 +681,7 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        playList.overwriteStoredList(playingList);
+        playerDBHelper.overwriteStoredList(playingList);
         audioManager.abandonAudioFocus(afChangeListener);
         if(mediaSession != null) {
             mediaSession.release();

@@ -7,7 +7,7 @@
     android:gravity="bottom"
     android:id="@+id/sliding_layout"
     android:fitsSystemWindows="true"
-    app:umanoScrollableView="@+id/playing_list"
+    app:umanoScrollableView="@+id/player_view"
     app:umanoDragView="@+id/album_art_holder"
     app:umanoPanelHeight="72dp"
     app:umanoInitialState="hidden">

@@ -2,6 +2,7 @@ package com.dominionos.music.ui.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,7 @@ import com.dominionos.music.utils.PlayPauseDrawable;
 import com.dominionos.music.utils.Utils;
 import com.h6ah4i.android.widget.advrecyclerview.animator.DraggableItemAnimator;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
+import com.kabouzeid.appthemehelper.ThemeStore;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -51,7 +54,7 @@ public class PlayerFragment extends Fragment {
 
     @BindView(R.id.play) FloatingActionButton play;
     @BindView(R.id.playing_bar_action) ImageButton playingAction;
-    @BindView(R.id.player_view) View playerView;
+    @BindView(R.id.player_view) SlidingUpPanelLayout playerView;
     @BindView(R.id.playing_list) RecyclerView playingListView;
     @BindView(R.id.next) ImageButton next;
     @BindView(R.id.prev) ImageButton prev;
@@ -60,6 +63,8 @@ public class PlayerFragment extends Fragment {
     @BindView(R.id.art) ImageView playingArt;
     @BindView(R.id.control_holder) View controlHolder;
     @BindView(R.id.player_seekbar) SeekBar playerSeekBar;
+    @BindView(R.id.art_container) View artContainer;
+    @BindView(R.id.player_sliding_panel) View playerSlidingPanel;
 
     @BindView(R.id.playing_bar) View playingBar;
     @BindView(R.id.playing_song_name) TextView currentSongName;
@@ -77,6 +82,7 @@ public class PlayerFragment extends Fragment {
     private RecyclerViewDragDropManager recyclerViewDragDropManager;
     private PlayingSongAdapter adapter;
     private MediaPlayer mediaPlayer;
+    private int generatedColor;
 
     private boolean darkMode;
 
@@ -89,7 +95,6 @@ public class PlayerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_player, container, false);
         unbinder = ButterKnife.bind(this, view);
         activity = (MainActivity) getActivity();
-
 
         setControls();
         setStyle();
@@ -107,19 +112,26 @@ public class PlayerFragment extends Fragment {
         recyclerViewDragDropManager.setInitiateOnMove(false);
 
         slidingUpPanelLayout = activity.getSlidingPanel();
-        slidingUpPanelLayout.setScrollableView(playingListView);
+        slidingUpPanelLayout.setAntiDragView(playerSlidingPanel);
+        playerView.setScrollableView(playingListView);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                if(playingBar != null) playingBar.setAlpha(1 - slideOffset);
+                if (playingBar != null) playingBar.setAlpha(1 - slideOffset);
             }
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                    if(playingBar != null) playingBar.setVisibility(View.GONE);
+                if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    if (playingBar != null) playingBar.setVisibility(View.GONE);
+                    activity.setStatusBarColor(Utils.getAutoStatColor(generatedColor));
+                } else if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED && playerView != null && playerView.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    playerView.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
+                    activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
                 } else {
-                    if(playingBar != null) playingBar.setVisibility(View.VISIBLE);
+                    if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
+                    activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
                 }
             }
         });
@@ -247,15 +259,18 @@ public class PlayerFragment extends Fragment {
             public void run() {
                 activity.runOnUiThread(() -> {
                     if(mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
-                    if(mediaPlayer != null
-                            && playerSeekBar != null
-                            && service.isPlaying()) {
-                        int seekProgress = mediaPlayer.getCurrentPosition();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            playerSeekBar.setProgress(seekProgress, true);
-                        } else {
-                            playerSeekBar.setProgress(seekProgress);
+                    if(mediaPlayer != null && playerSeekBar != null) {
+                        try {
+                            int seekProgress = mediaPlayer.getCurrentPosition();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                playerSeekBar.setProgress(seekProgress, true);
+                            } else {
+                                playerSeekBar.setProgress(seekProgress);
+                            }
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
                         }
+
                     }
                 });
             }
@@ -300,10 +315,12 @@ public class PlayerFragment extends Fragment {
                                         swatch = palette.getVibrantSwatch();
                                         controlHolder.setBackgroundColor(swatch.getRgb());
                                         play.setColorFilter(swatch.getRgb());
+                                        generatedColor = swatch.getRgb();
                                     } else if(palette.getDominantSwatch() != null) {
                                         swatch = palette.getDominantSwatch();
                                         controlHolder.setBackgroundColor(swatch.getRgb());
                                         play.setColorFilter(swatch.getRgb());
+                                        generatedColor = swatch.getRgb();
                                     }
                                 }
                             });
@@ -317,12 +334,19 @@ public class PlayerFragment extends Fragment {
                     if(playingSongArt != null) playingSongArt.setImageResource(R.drawable.default_art);
                     if(playingArt != null) playingArt.setImageResource(R.drawable.default_art);
                 }
+                Display display = getActivity().getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int height = size.y;
+                final int availablePanelHeight = height - artContainer.getWidth();
+                final int minPanelHeight = Utils.dpToPx(context, 250);
+                playerView.setPanelHeight(Math.max(minPanelHeight, availablePanelHeight));
             }
         }.execute();
     }
 
     private void setStyle() {
-        Utils.setWindowColor(playerView, context, darkMode);
+        Utils.setWindowColor(playingListView, context, darkMode);
         Utils.setContentColor(playingBar, context, darkMode);
         Utils.setPrimaryTextColor(currentSongName, context, darkMode);
         Utils.setSecondaryTextColor(currentSongDesc, context, darkMode);

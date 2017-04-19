@@ -1,16 +1,19 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="bottom"
+    app:umanoPanelHeight="300dp"
+    app:umanoScrollableView="@+id/playing_list"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent"
     android:id="@+id/player_view"
-    tools:context="com.dominionos.music.ui.fragments.PlayerFragment">
-    <!-- Player screen -->
-    <LinearLayout
+    android:layout_width="match_parent">
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
         <android.support.percent.PercentRelativeLayout
+            android:id="@+id/art_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <ImageView
@@ -24,34 +27,95 @@
                 tools:ignore="ContentDescription" />
         </android.support.percent.PercentRelativeLayout>
 
-        <LinearLayout
+        <!-- Playing bar -->
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="72dp"
+            android:id="@+id/playing_bar">
+
+            <ImageView
+                android:id="@+id/playing_art"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_audiotrack"
+                tools:ignore="ContentDescription" />
+
+            <ImageButton
+                android:id="@+id/playing_bar_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/unbounded_ripple"
+                android:layout_margin="-16dp"
+                android:padding="32dp"
+                android:contentDescription="@string/play" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_toStartOf="@+id/playing_bar_action"
+                android:layout_toEndOf="@+id/playing_art">
+                <TextView
+                    android:id="@+id/playing_song_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/primary_text_light"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/playing_song_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </FrameLayout>
+    <!-- Player screen -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/player_sliding_panel"
+        android:orientation="vertical">
+        <LinearLayout
             android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:id="@+id/control_holder"
-            android:background="@color/colorAccent">
+            android:clipToPadding="false"
+            android:elevation="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <android.support.design.widget.FloatingActionButton
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
                     android:id="@+id/play"
                     app:backgroundTint="@color/lightContentColor"
                     app:fabSize="normal"
                     app:pressedTranslationZ="2dp"
                     app:elevation="4dp" />
-                <Space
-                    android:layout_centerInParent="true"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp" />
                 <ImageButton
                     android:id="@+id/prev"
                     android:background="@drawable/unbounded_ripple"
                     android:src="@drawable/ic_skip_previous"
                     android:scaleType="fitCenter"
-                    android:layout_centerVertical="true"
                     android:layout_toStartOf="@id/play"
                     android:padding="22dp"
                     android:layout_width="72dp"
@@ -62,7 +126,6 @@
                     android:background="@drawable/unbounded_ripple"
                     android:src="@drawable/ic_skip_next"
                     android:scaleType="fitCenter"
-                    android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/play"
                     android:padding="22dp"
                     android:layout_width="72dp"
@@ -73,7 +136,6 @@
                     android:background="@drawable/unbounded_ripple"
                     android:src="@drawable/ic_shuffle"
                     android:scaleType="fitCenter"
-                    android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/next"
                     android:layout_alignParentEnd="true"
                     android:padding="22dp"
@@ -85,7 +147,6 @@
                     android:background="@drawable/unbounded_ripple"
                     android:src="@drawable/ic_repeat_all"
                     android:scaleType="fitCenter"
-                    android:layout_centerVertical="true"
                     android:layout_toStartOf="@id/prev"
                     android:layout_alignParentStart="true"
                     android:padding="22dp"
@@ -97,7 +158,7 @@
                 android:id="@+id/player_seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="16dp"
+                android:paddingTop="16dp"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:progressTint="@color/lightContentColor"
@@ -109,61 +170,4 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
-    <!-- Playing bar -->
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:id="@+id/playing_bar">
-
-        <ImageView
-            android:id="@+id/playing_art"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_audiotrack"
-            tools:ignore="ContentDescription" />
-
-        <ImageButton
-            android:id="@+id/playing_bar_action"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/unbounded_ripple"
-            android:layout_margin="-16dp"
-            android:padding="32dp"
-            android:contentDescription="@string/play" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_toStartOf="@+id/playing_bar_action"
-            android:layout_toEndOf="@+id/playing_art">
-            <TextView
-                android:id="@+id/playing_song_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/playing_song_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/secondary_text_light"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </RelativeLayout>
-</FrameLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

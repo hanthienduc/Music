@@ -25,7 +25,7 @@ import com.dominionos.music.utils.PaletteBitmap;
 import com.dominionos.music.utils.PaletteBitmapTranscoder;
 import com.dominionos.music.utils.Utils;
 import com.dominionos.music.items.Album;
-import com.dominionos.music.ui.activity.AlbumActivity;
+import com.dominionos.music.ui.activity.AlbumDetailActivity;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.List;
@@ -127,7 +127,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
                         }
                     });
         holder.background.setOnClickListener(v -> {
-            Intent intent = new Intent(context, AlbumActivity.class);
+            Intent intent = new Intent(context, AlbumDetailActivity.class);
             intent.putExtra("albumName", items.get(adapterPosition).getName());
             intent.putExtra("albumId", items.get(adapterPosition).getId());
             String transitionName = "albumArt";

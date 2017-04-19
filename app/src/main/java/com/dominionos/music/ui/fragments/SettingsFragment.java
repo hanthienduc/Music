@@ -1,7 +1,6 @@
 package com.dominionos.music.ui.fragments;
 
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SeekBarPreference;
@@ -54,7 +53,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         boolean subsTheme = substratumTheme.getSharedPreferences().getBoolean("substratum_theme", false);
         ATEColorPreference colorPrimaryPref = (ATEColorPreference) findPreference("primary_color");
         colorPrimaryPref.setEnabled(!subsTheme);
-        colorPrimaryPref.setColor(ThemeStore.primaryColor(getActivity()), ContextCompat.getColor(getContext(), R.color.colorPrimary));
+        colorPrimaryPref.setColor(ThemeStore.primaryColor(getActivity()), ThemeStore.primaryColor(getActivity()));
         colorPrimaryPref.setOnPreferenceClickListener(preference -> {
             new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.primary_color)
                     .preselect(ThemeStore.primaryColor(getActivity()))
@@ -67,7 +66,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         ATEColorPreference colorAccentPref = (ATEColorPreference) findPreference("accent_color");
         colorAccentPref.setEnabled(!subsTheme);
-        colorAccentPref.setColor(ThemeStore.accentColor(getActivity()), ContextCompat.getColor(getContext(), R.color.colorAccent));
+        colorAccentPref.setColor(ThemeStore.accentColor(getActivity()), ThemeStore.accentColor(getActivity()));
         colorAccentPref.setOnPreferenceClickListener(preference -> {
             new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.accent_color)
                     .preselect(ThemeStore.accentColor(getActivity()))
