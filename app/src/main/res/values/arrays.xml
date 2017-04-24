@@ -5,7 +5,7 @@
         <item>In-app changelog, contributors, and donate button</item>
         <item>Revamp Album detail view</item>
         <item>Wrap player controls and playing list in a sliding panel</item>
-        <item>Temporarily remove drag n drop on playing list</item>
+        <item>Temporarily remove drag n drop on playing list (I wasn\'t happy with the way it was implemented)</item>
     </string-array>
     <string-array name="contributors">
         <item>Jack Boswell (boswelja) - Lead Developer</item>
