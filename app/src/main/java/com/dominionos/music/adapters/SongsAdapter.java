@@ -32,7 +32,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     private final List<Song> items;
     private final Context context;
-    private final boolean darkMode, shouldHaveArt;
+    private final boolean shouldHaveArt;
     private final Intent i;
     private final DrawableRequestBuilder<String> glideRequest;
 
@@ -60,16 +60,15 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
             view = itemView;
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
-            menu = (ImageView) itemView.findViewById(R.id.playing_bar_action);
+            menu = (ImageView) itemView.findViewById(R.id.song_overflow);
             art = (ImageView) itemView.findViewById(R.id.song_item_art);
             textHolder = itemView.findViewById(R.id.song_text_holder);
         }
     }
 
-    public SongsAdapter(Context context, List<Song> items, boolean darkMode, RequestManager glide, boolean shouldHaveArt) {
+    public SongsAdapter(Context context, List<Song> items, RequestManager glide, boolean shouldHaveArt) {
         this.context = context;
         this.items = items;
-        this.darkMode = darkMode;
         i = new Intent();
         final int px = Utils.dpToPx(context, 48);
         this.glideRequest = glide
@@ -90,9 +89,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
         final int adapterPosition = holder.getAdapterPosition();
-        Utils.setPrimaryTextColor(holder.title, context, darkMode);
-        Utils.setSecondaryTextColor(holder.title, context, darkMode);
-        Utils.setOverflowColor(holder.menu, context, darkMode);
         holder.title.setText(items.get(adapterPosition).getName());
         holder.desc.setText(items.get(adapterPosition).getDesc());
         holder.menu.setOnClickListener(v -> {

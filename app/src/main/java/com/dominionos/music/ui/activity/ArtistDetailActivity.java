@@ -95,7 +95,7 @@ public class ArtistDetailActivity extends ATHToolbarActivity {
             rv.setBackgroundColor(darkMode
                     ? ContextCompat.getColor(this, R.color.darkWindowBackground)
                     : ContextCompat.getColor(this, R.color.lightWindowBackground));
-            rv.setAdapter(new SongsAdapter(this, songList, darkMode, Glide.with(this), false));
+            rv.setAdapter(new SongsAdapter(this, songList, Glide.with(this), false));
         }
         if (musicCursor != null) {
             musicCursor.close();

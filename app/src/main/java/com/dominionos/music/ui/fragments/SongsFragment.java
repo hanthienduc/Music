@@ -1,14 +1,12 @@
 package com.dominionos.music.ui.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +17,6 @@ import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
-import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
@@ -30,15 +27,11 @@ public class SongsFragment extends Fragment {
 
     private View mainView;
     private FastScrollRecyclerView rv;
-    private boolean darkMode = false;
     private Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         context = getContext();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        darkMode = sharedPref.getBoolean("dark_theme", false);
-
         View v = inflater.inflate(R.layout.fragment_songs, container, false);
         mainView = v;
 
@@ -58,7 +51,6 @@ public class SongsFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
-        Utils.setWindowColor(rv, context, darkMode);
     }
 
     private void setSongList() {
@@ -112,7 +104,7 @@ public class SongsFragment extends Fragment {
             @Override
             protected void done(ArrayList<Song> songList) {
                 if(songList.size() != 0) {
-                    rv.setAdapter(new SongsAdapter(mainView.getContext(), songList, darkMode, Glide.with(context), true));
+                    rv.setAdapter(new SongsAdapter(mainView.getContext(), songList, Glide.with(context), true));
                 } else {
                     getActivity().findViewById(R.id.no_songs).setVisibility(View.VISIBLE);
                 }

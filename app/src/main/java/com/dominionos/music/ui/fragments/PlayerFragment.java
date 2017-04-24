@@ -334,10 +334,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void setStyle() {
-        Utils.setWindowColor(playingListView, context, darkMode);
         Utils.setContentColor(playingBar, context, darkMode);
-        Utils.setPrimaryTextColor(currentSongName, context, darkMode);
-        Utils.setSecondaryTextColor(currentSongDesc, context, darkMode);
         playingAction.setColorFilter(darkMode
                 ? ContextCompat.getColor(context, R.color.primaryTextDark)
                 : ContextCompat.getColor(context, R.color.primaryTextLight));

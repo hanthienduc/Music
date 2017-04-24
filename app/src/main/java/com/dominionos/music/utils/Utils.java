@@ -10,8 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dominionos.music.R;
@@ -42,34 +40,10 @@ public class Utils {
         return resultCode == ConnectionResult.SUCCESS;
     }
 
-    public static void setPrimaryTextColor(TextView view, Context context, boolean darkMode) {
-        view.setTextColor(darkMode
-                ? ContextCompat.getColor(context, R.color.primaryTextDark)
-                : ContextCompat.getColor(context, R.color.primaryTextLight));
-    }
-
-    public static void setSecondaryTextColor(TextView view, Context context, boolean darkMode) {
-        view.setTextColor(darkMode
-                ? ContextCompat.getColor(context, R.color.secondaryTextDark)
-                : ContextCompat.getColor(context, R.color.secondaryTextLight));
-    }
-
-    public static void setWindowColor(View view, Context context, boolean darkMode) {
-        view.setBackgroundColor(darkMode
-                ? ContextCompat.getColor(context, R.color.darkWindowBackground)
-                : ContextCompat.getColor(context, R.color.lightWindowBackground));
-    }
-
     public static void setContentColor(View view, Context context, boolean darkMode) {
         view.setBackgroundColor(darkMode
                 ? ContextCompat.getColor(context, R.color.darkContentColour)
                 : ContextCompat.getColor(context, R.color.lightContentColor));
-    }
-
-    public static void setOverflowColor(ImageView view, Context context, boolean darkMode) {
-        view.setColorFilter(darkMode
-                ? ContextCompat.getColor(context, R.color.primaryTextDark)
-                : ContextCompat.getColor(context, R.color.primaryTextLight));
     }
 
     public static int getAutoStatColor(int baseColor) {

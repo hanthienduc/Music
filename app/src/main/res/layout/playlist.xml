@@ -8,13 +8,9 @@
 
     <TextView
         android:id="@+id/playlist_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:maxLines="1"
-        android:textColor="?android:attr/textColorPrimary"
-        android:textSize="16sp" />
+        style="@style/TitleText"/>
 
     <ImageView
         android:id="@+id/playlist_menu"
@@ -24,6 +20,7 @@
         android:layout_centerVertical="true"
         android:background="@drawable/unbounded_ripple"
         android:focusable="false"
+        android:tint="?attr/secondaryTextColor"
         android:focusableInTouchMode="false"
         android:src="@drawable/ic_overflow_dark"
         android:contentDescription="@string/menu" />

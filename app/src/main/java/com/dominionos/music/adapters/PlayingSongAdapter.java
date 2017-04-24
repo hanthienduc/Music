@@ -81,9 +81,6 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final int adapterPosition = holder.getAdapterPosition();
-        Utils.setPrimaryTextColor(holder.title, context, darkMode);
-        Utils.setSecondaryTextColor(holder.desc, context, darkMode);
-        Utils.setOverflowColor(holder.menu, context, darkMode);
         if(adapterPosition != -1) {
             holder.title.setText(songs.get(adapterPosition).getName());
             holder.desc.setText(songs.get(adapterPosition).getDesc());

@@ -13,8 +13,10 @@
         <item name="android:windowBackground">@color/lightWindowBackground</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
-        <item name="colorControlNormal">@android:color/primary_text_dark</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="primaryTextColor">@color/primaryTextLight</item>
+        <item name="secondaryTextColor">@color/secondaryTextLight</item>
+
     </style>
 
     <style name="AppTheme.Dark" parent="MaterialDrawerTheme">
@@ -29,8 +31,9 @@
         <item name="android:windowBackground">@color/darkWindowBackground</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
-        <item name="colorControlNormal">@android:color/primary_text_dark</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="primaryTextColor">@color/primaryTextDark</item>
+        <item name="secondaryTextColor">@color/secondaryTextDark</item>
     </style>
 
     <style name="AppTheme.BrandedLaunch" parent="AppTheme.Light">
@@ -43,14 +46,16 @@
         <item name="android:ellipsize">end</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/primaryTextColor</item>
     </style>
 
     <style name="DescText">
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/secondaryTextColor</item>
     </style>
 
 </resources>

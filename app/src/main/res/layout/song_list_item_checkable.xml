@@ -26,18 +26,10 @@
         android:orientation="vertical">
         <TextView
             android:id="@+id/song_item_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="16sp" />
+            style="@style/TitleText" />
 
         <TextView
             android:id="@+id/song_item_desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:textColor="@android:color/secondary_text_light"
-            android:textSize="14sp"/>
+            style="@style/DescText"/>
     </LinearLayout>
 </RelativeLayout>

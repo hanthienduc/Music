@@ -1,14 +1,12 @@
 package com.dominionos.music.ui.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -37,8 +35,6 @@ public class AlbumsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_albums, container, false);
 
         context = getContext();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean darkMode = sharedPref.getBoolean("dark_theme", false);
 
         gv = (FastScrollRecyclerView) v.findViewById(R.id.album_grid);
         int accentColor = ThemeStore.accentColor(context);
@@ -49,7 +45,6 @@ public class AlbumsFragment extends Fragment {
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
         gv.setHasFixedSize(true);
-        Utils.setWindowColor(gv, context, darkMode);
 
         getAlbumList();
 

@@ -1,14 +1,12 @@
 package com.dominionos.music.ui.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +17,6 @@ import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
 import com.dominionos.music.adapters.ArtistAdapter;
 import com.dominionos.music.items.Artist;
-import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
@@ -30,15 +27,11 @@ public class ArtistsFragment extends Fragment {
 
     private FastScrollRecyclerView rv;
     private Context context;
-    private boolean darkMode;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_artists, container, false);
         context = view.getContext();
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        darkMode = sharedPref.getBoolean("dark_theme", false);
 
         rv = (FastScrollRecyclerView) view.findViewById(R.id.artist_list);
         int accentColor = ThemeStore.accentColor(context);
@@ -48,7 +41,6 @@ public class ArtistsFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
-        Utils.setWindowColor(rv, context, darkMode);
 
         getArtistList();
 
@@ -98,7 +90,7 @@ public class ArtistsFragment extends Fragment {
             @Override
             protected void done(ArrayList<Artist> artistList) {
                 if(artistList.size() != 0) {
-                    rv.setAdapter(new ArtistAdapter(context, artistList, darkMode, Glide.with(context)));
+                    rv.setAdapter(new ArtistAdapter(context, artistList, Glide.with(context)));
                 } else {
                     getActivity().findViewById(R.id.no_artists).setVisibility(View.VISIBLE);
                 }

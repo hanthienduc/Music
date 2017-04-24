@@ -1,7 +1,5 @@
 package com.dominionos.music.adapters;
 
-import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +9,6 @@ import android.widget.TextView;
 
 import com.dominionos.music.R;
 import com.dominionos.music.items.CheckableSong;
-import com.dominionos.music.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +16,6 @@ import java.util.List;
 public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAdapter.SimpleItemViewHolder> {
     private final List<CheckableSong> items;
     private final List<CheckableSong> checkedItems;
-    private final boolean darkMode;
-    private final Context context;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
@@ -37,11 +32,9 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
         }
     }
 
-    public CheckableSongsAdapter(Context context, List<CheckableSong> items, boolean darkMode) {
-        this.context = context;
+    public CheckableSongsAdapter(List<CheckableSong> items) {
         this.items = items;
         checkedItems = new ArrayList<>();
-        this.darkMode = darkMode;
     }
 
     @Override
@@ -54,8 +47,6 @@ public class CheckableSongsAdapter extends RecyclerView.Adapter<CheckableSongsAd
     @Override
     public void onBindViewHolder(final CheckableSongsAdapter.SimpleItemViewHolder holder, int position) {
         position = holder.getAdapterPosition();
-        Utils.setPrimaryTextColor(holder.title, context, darkMode);
-        Utils.setSecondaryTextColor(holder.desc, context, darkMode);
         holder.title.setText(items.get(position).getName());
         holder.desc.setText(items.get(position).getDesc());
         holder.checkBox.setOnCheckedChangeListener(null);

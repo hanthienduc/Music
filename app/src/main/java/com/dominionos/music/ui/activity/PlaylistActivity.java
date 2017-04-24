@@ -67,7 +67,7 @@ public class PlaylistActivity extends AppCompatActivity {
         }
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setItemAnimator(new DefaultItemAnimator());
-        rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), darkMode, Glide.with(this), true));
+        rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), Glide.with(this), true));
 
         List<CheckableSong> songList = new ArrayList<>();
         Cursor musicCursor2;
@@ -104,7 +104,7 @@ public class PlaylistActivity extends AppCompatActivity {
         if (musicCursor2 != null) {
             musicCursor2.close();
         }
-        adapter = new CheckableSongsAdapter(this, songList, darkMode);
+        adapter = new CheckableSongsAdapter(songList);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

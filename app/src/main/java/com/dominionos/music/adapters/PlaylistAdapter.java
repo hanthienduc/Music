@@ -26,7 +26,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     private List<Playlist> items;
     private final Context context;
-    private final boolean darkMode;
 
     final static class SimpleItemViewHolder extends RecyclerView.ViewHolder {
         final TextView gridName;
@@ -42,16 +41,15 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
         }
     }
 
-    public PlaylistAdapter(Context context, List<Playlist> items, boolean darkMode) {
+    public PlaylistAdapter(Context context, List<Playlist> items) {
         this.context = context;
         this.items = items;
-        this.darkMode = darkMode;
     }
 
     @Override
     public PlaylistAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.playlist_list_item, parent, false);
+                inflate(R.layout.playlist, parent, false);
 
 
         return new SimpleItemViewHolder(itemView);
@@ -59,8 +57,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
-        Utils.setPrimaryTextColor(holder.gridName, context, darkMode);
-        Utils.setOverflowColor(holder.overflow, context, darkMode);
         position = holder.getAdapterPosition();
         holder.gridName.setText(items.get(position).getName());
         final int finalPosition = position;

@@ -2,7 +2,6 @@ package com.dominionos.music.ui.fragments;
 
 import android.os.Bundle;
 import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SeekBarPreference;
 
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
@@ -11,8 +10,9 @@ import com.dominionos.music.ui.activity.SettingsActivity;
 import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEColorPreference;
+import com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceFragmentCompat;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends ATEPreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.prefs_appearance);

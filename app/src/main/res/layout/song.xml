@@ -17,7 +17,7 @@
         tools:ignore="ContentDescription" />
 
     <ImageView
-        android:id="@+id/playing_bar_action"
+        android:id="@+id/song_overflow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -26,6 +26,7 @@
         android:focusable="true"
         android:layout_margin="-16dp"
         android:padding="16dp"
+        android:tint="?attr/secondaryTextColor"
         android:src="@drawable/ic_overflow_dark"
         tools:ignore="ContentDescription" />
 
@@ -39,20 +40,10 @@
         android:layout_toStartOf="@id/playing_bar_action">
         <TextView
             android:id="@+id/song_item_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="16sp"
-            android:ellipsize="end" />
+            style="@style/TitleText"/>
 
         <TextView
             android:id="@+id/song_item_desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:textColor="@android:color/secondary_text_light"
-            android:textSize="14sp"
-            android:ellipsize="end" />
+            style="@style/DescText"/>
     </LinearLayout>
 </RelativeLayout>

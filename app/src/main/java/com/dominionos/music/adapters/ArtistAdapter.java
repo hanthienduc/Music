@@ -29,7 +29,6 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     private final List<Artist> items;
     private final Context context;
-    private final boolean darkMode;
     private final DrawableRequestBuilder<File> glideRequest;
 
     @NonNull
@@ -59,10 +58,9 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         }
     }
 
-    public ArtistAdapter(Context context, List<Artist> items, boolean darkMode, RequestManager glide) {
+    public ArtistAdapter(Context context, List<Artist> items, RequestManager glide) {
         this.items = items;
         this.context = context;
-        this.darkMode = darkMode;
         final int px = Utils.dpToPx(context, 48);
         this.glideRequest = glide
                 .fromFile()
@@ -80,8 +78,6 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     @Override
     public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
-        Utils.setPrimaryTextColor(holder.artistName, context, darkMode);
-        Utils.setSecondaryTextColor(holder.artistDesc, context, darkMode);
         final int adapterPosition = holder.getAdapterPosition();
         int albumCount = items.get(adapterPosition).getNumOfAlbums();
         int songCount = items.get(adapterPosition).getNumOfTracks();

@@ -194,7 +194,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
                 ? ContextCompat.getColor(this, R.color.darkWindowBackground)
                 : ContextCompat.getColor(this, R.color.lightWindowBackground));
 
-        rv.setAdapter(new SongsAdapter(AlbumDetailActivity.this, songList, darkMode, Glide.with(this), false));
+        rv.setAdapter(new SongsAdapter(AlbumDetailActivity.this, songList, Glide.with(this), false));
     }
 
     @Override
