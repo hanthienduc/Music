@@ -56,8 +56,8 @@ dependencies {
     compile 'com.github.kabouzeid:AndroidSlidingUpPanel:3.3.0-kmod3'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.jakewharton:butterknife:8.5.1'
-    compile 'com.afollestad.material-dialogs:core:0.9.4.2'
-    compile 'com.afollestad.material-dialogs:commons:0.9.4.2'
+    compile 'com.afollestad.material-dialogs:core:0.9.4.4'
+    compile 'com.afollestad.material-dialogs:commons:0.9.4.4'
     compile 'com.miguelcatalan:searchview:1.4.0-modified@aar'
     compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.5@aar') {
         transitive = true

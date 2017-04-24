@@ -98,7 +98,7 @@ public class AlbumsFragment extends Fragment {
 
             @Override
             protected void done(ArrayList<Album> albumList) {
-                if(albumList.size() != 0) {
+                if (albumList.size() != 0) {
                     gv.setAdapter(new AlbumsAdapter(context, albumList, Glide.with(context)));
                 } else {
                     getActivity().findViewById(R.id.no_albums).setVisibility(View.VISIBLE);

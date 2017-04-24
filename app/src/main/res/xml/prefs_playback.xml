@@ -10,6 +10,7 @@
             android:title="@string/playback_speed"
             android:max="15"
             android:defaultValue="10"
+            app:showSeekBarValue="false"
             app:min="5"/>
     </com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
 
