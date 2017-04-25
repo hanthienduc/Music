@@ -23,7 +23,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.ImageViewTarget;
@@ -32,11 +34,9 @@ import com.dominionos.music.adapters.PlayingSongAdapter;
 import com.dominionos.music.items.Song;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.ui.activity.MainActivity;
-import com.dominionos.music.utils.Config;
-import com.dominionos.music.utils.PaletteBitmap;
-import com.dominionos.music.utils.PaletteBitmapTranscoder;
-import com.dominionos.music.utils.PlayPauseDrawable;
-import com.dominionos.music.utils.Utils;
+import com.dominionos.music.utils.*;
+import com.dominionos.music.utils.glide.PaletteBitmap;
+import com.dominionos.music.utils.glide.PaletteBitmapTranscoder;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -44,30 +44,42 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-
 public class PlayerFragment extends Fragment {
 
-    @BindView(R.id.play) FloatingActionButton play;
-    @BindView(R.id.playing_bar_action) ImageButton playingAction;
-    @BindView(R.id.player_view) SlidingUpPanelLayout playerView;
-    @BindView(R.id.playing_list) RecyclerView playingListView;
-    @BindView(R.id.next) ImageButton next;
-    @BindView(R.id.prev) ImageButton prev;
-    @BindView(R.id.shuffle) ImageButton shuffle;
-    @BindView(R.id.repeat) ImageButton repeat;
-    @BindView(R.id.art) ImageView playingArt;
-    @BindView(R.id.control_holder) View controlHolder;
-    @BindView(R.id.player_seekbar) SeekBar playerSeekBar;
-    @BindView(R.id.art_container) View artContainer;
-    @BindView(R.id.player_sliding_panel) View playerSlidingPanel;
-
-    @BindView(R.id.playing_bar) View playingBar;
-    @BindView(R.id.playing_song_name) TextView currentSongName;
-    @BindView(R.id.playing_song_desc) TextView currentSongDesc;
-    @BindView(R.id.playing_art) ImageView playingSongArt;
+    @BindView(R.id.play)
+    FloatingActionButton play;
+    @BindView(R.id.playing_bar_action)
+    ImageButton playingAction;
+    @BindView(R.id.player_view)
+    SlidingUpPanelLayout playerView;
+    @BindView(R.id.playing_list)
+    RecyclerView playingListView;
+    @BindView(R.id.next)
+    ImageButton next;
+    @BindView(R.id.prev)
+    ImageButton prev;
+    @BindView(R.id.shuffle)
+    ImageButton shuffle;
+    @BindView(R.id.repeat)
+    ImageButton repeat;
+    @BindView(R.id.art)
+    ImageView playingArt;
+    @BindView(R.id.control_holder)
+    View controlHolder;
+    @BindView(R.id.player_seekbar)
+    SeekBar playerSeekBar;
+    @BindView(R.id.art_container)
+    View artContainer;
+    @BindView(R.id.player_sliding_panel)
+    View playerSlidingPanel;
+    @BindView(R.id.playing_bar)
+    View playingBar;
+    @BindView(R.id.playing_song_name)
+    TextView currentSongName;
+    @BindView(R.id.playing_song_desc)
+    TextView currentSongDesc;
+    @BindView(R.id.playing_art)
+    ImageView playingSongArt;
 
     private Unbinder unbinder;
     private PlayPauseDrawable playPauseDrawable;
@@ -80,12 +92,11 @@ public class PlayerFragment extends Fragment {
     private PlayingSongAdapter adapter;
     private MediaPlayer mediaPlayer;
     private int generatedColor;
-
     private boolean darkMode;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = getContext();
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
@@ -104,40 +115,46 @@ public class PlayerFragment extends Fragment {
         slidingUpPanelLayout = activity.getSlidingPanel();
         slidingUpPanelLayout.setAntiDragView(playerSlidingPanel);
         playerView.setScrollableView(playingListView);
-        slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View panel, float slideOffset) {
-                if (playingBar != null) playingBar.setAlpha(1 - slideOffset);
-            }
+        slidingUpPanelLayout.addPanelSlideListener(
+                new SlidingUpPanelLayout.PanelSlideListener() {
+                    @Override
+                    public void onPanelSlide(View panel, float slideOffset) {
+                        if (playingBar != null) playingBar.setAlpha(1 - slideOffset);
+                    }
 
-            @Override
-            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                    if (playingBar != null) playingBar.setVisibility(View.GONE);
-                    activity.setStatusBarColor(Utils.getAutoStatColor(generatedColor));
-                } else if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED && playerView != null && playerView.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                    playerView.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
-                    activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
-                } else {
-                    if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
-                    activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
-                }
-            }
-        });
+                    @Override
+                    public void onPanelStateChanged(
+                            View panel,
+                            SlidingUpPanelLayout.PanelState previousState,
+                            SlidingUpPanelLayout.PanelState newState) {
+                        if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                            if (playingBar != null) playingBar.setVisibility(View.GONE);
+                            activity.setStatusBarColor(Utils.getAutoStatColor(generatedColor));
+                        } else if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED
+                                && playerView != null
+                                && playerView.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                            playerView.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                            if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
+                            activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
+                        } else {
+                            if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
+                            activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
+                        }
+                    }
+                });
         return view;
     }
 
     public void updatePlayer() {
-        if(service == null) service = activity.getService();
+        if (service == null) service = activity.getService();
         currentPlaying = service.getCurrentSong();
-        if(currentPlaying != null) {
+        if (currentPlaying != null) {
             updatePlayingList();
             updatePlayState();
             setShuffleState(service.getShuffleState());
             setRepeatState(service.getRepeatState());
             updateSeekBar();
-            if(slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
+            if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
                 slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
     }
@@ -147,20 +164,23 @@ public class PlayerFragment extends Fragment {
     }
 
     public void updatePlayingList() {
-        if(currentPlaying != null) {
+        if (currentPlaying != null) {
             ArrayList<Song> playingList = service.getPlayingList();
-            if(playingList.size() > 0) {
-                if(adapter == null) {
-                    adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(context));
+            if (playingList.size() > 0) {
+                if (adapter == null) {
+                    adapter =
+                            new PlayingSongAdapter(
+                                    context, playingList, darkMode, currentPlaying, Glide.with(context));
                     playingListView.setAdapter(adapter);
                     playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
                 } else {
                     adapter.updateData(playingList, currentPlaying);
-                    if(playingListView != null) playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
+                    if (playingListView != null)
+                        playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
                 }
             }
-            if(currentSongName != null) currentSongName.setText(currentPlaying.getName());
-            if(currentSongDesc != null) currentSongDesc.setText(currentPlaying.getDesc());
+            if (currentSongName != null) currentSongName.setText(currentPlaying.getName());
+            if (currentSongDesc != null) currentSongDesc.setText(currentPlaying.getDesc());
             setArt();
         }
     }
@@ -173,51 +193,56 @@ public class PlayerFragment extends Fragment {
         play.setImageDrawable(playPauseDrawable);
         play.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent));
         play.setOnClickListener(playPauseClick(false));
-        next.setOnClickListener(v -> {
-            if(service == null) service = activity.getService();
-            if(service != null) service.next();
-        });
-        prev.setOnClickListener(v -> {
-            if(service == null) service = activity.getService();
-            if(service != null) service.prev();
-        });
-        shuffle.setOnClickListener(v -> {
-            if(service == null) service = activity.getService();
-            if(service != null) {
-                setShuffleState(service.shuffle());
-                updatePlayingList();
-            }
-        });
-        repeat.setOnClickListener(v -> {
-            if(service != null) {
-                setRepeatState(service.repeat());
-            }
-        });
-        playerSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(mediaPlayer == null && service != null) mediaPlayer = service.getMediaPlayer();
-                if(fromUser && mediaPlayer != null) mediaPlayer.seekTo(progress);
-            }
+        next.setOnClickListener(
+                v -> {
+                    if (service == null) service = activity.getService();
+                    if (service != null) service.next();
+                });
+        prev.setOnClickListener(
+                v -> {
+                    if (service == null) service = activity.getService();
+                    if (service != null) service.prev();
+                });
+        shuffle.setOnClickListener(
+                v -> {
+                    if (service == null) service = activity.getService();
+                    if (service != null) {
+                        setShuffleState(service.shuffle());
+                        updatePlayingList();
+                    }
+                });
+        repeat.setOnClickListener(
+                v -> {
+                    if (service != null) {
+                        setRepeatState(service.repeat());
+                    }
+                });
+        playerSeekBar.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if (mediaPlayer == null && service != null) mediaPlayer = service.getMediaPlayer();
+                        if (fromUser && mediaPlayer != null) mediaPlayer.seekTo(progress);
+                    }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                });
     }
 
     private void setShuffleState(boolean shuffleState) {
-        if(shuffle != null) {
-            shuffle.setAlpha(shuffleState
-                    ? Config.BUTTON_ACTIVE_ALPHA
-                    : Config.BUTTON_INACTIVE_ALPHA);
+        if (shuffle != null) {
+            shuffle.setAlpha(shuffleState ? Config.BUTTON_ACTIVE_ALPHA : Config.BUTTON_INACTIVE_ALPHA);
         }
     }
 
     private void setRepeatState(int repeatState) {
-        if(repeat != null) {
+        if (repeat != null) {
             switch (repeatState) {
                 case 0:
                     repeat.setImageResource(R.drawable.ic_repeat_all);
@@ -237,32 +262,35 @@ public class PlayerFragment extends Fragment {
 
     private void updateSeekBar() {
         mediaPlayer = service.getMediaPlayer();
-        if(mediaPlayer != null && service.isPlaying()) {
+        if (mediaPlayer != null && service.isPlaying()) {
             playerSeekBar.setMax(mediaPlayer.getDuration());
         }
 
         Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                activity.runOnUiThread(() -> {
-                    if(mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
-                    if(mediaPlayer != null && playerSeekBar != null) {
-                        try {
-                            int seekProgress = mediaPlayer.getCurrentPosition();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                playerSeekBar.setProgress(seekProgress, true);
-                            } else {
-                                playerSeekBar.setProgress(seekProgress);
-                            }
-                        } catch (IllegalStateException e) {
-                            e.printStackTrace();
-                        }
-
+        timer.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        activity.runOnUiThread(
+                                () -> {
+                                    if (mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
+                                    if (mediaPlayer != null && playerSeekBar != null && service.isPlaying()) {
+                                        try {
+                                            int seekProgress = mediaPlayer.getCurrentPosition();
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                                playerSeekBar.setProgress(seekProgress, true);
+                                            } else {
+                                                playerSeekBar.setProgress(seekProgress);
+                                            }
+                                        } catch (IllegalStateException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
                     }
-                });
-            }
-        }, 0, 1000);
+                },
+                0,
+                1000);
     }
 
     private void setArt() {
@@ -277,7 +305,7 @@ public class PlayerFragment extends Fragment {
             @Nullable
             @Override
             protected String run() throws InterruptedException {
-                if(service != null && service.getCurrentSong() != null) {
+                if (service != null && service.getCurrentSong() != null) {
                     long albumId = service.getCurrentSong().getAlbumId();
                     return Utils.getAlbumArt(context, albumId);
                 }
@@ -293,34 +321,32 @@ public class PlayerFragment extends Fragment {
                             .transcode(new PaletteBitmapTranscoder(activity), PaletteBitmap.class)
                             .centerCrop()
                             .error(R.drawable.default_art)
-                            .into(new ImageViewTarget<PaletteBitmap>(playingArt) {
-                                @Override
-                                protected void setResource(PaletteBitmap resource) {
-                                    super.view.setImageBitmap(resource.bitmap);
-                                    Palette palette = resource.palette;
-                                    Palette.Swatch swatch;
-                                    if(palette.getVibrantSwatch() != null) {
-                                        swatch = palette.getVibrantSwatch();
-                                        controlHolder.setBackgroundColor(swatch.getRgb());
-                                        play.setColorFilter(swatch.getRgb());
-                                        generatedColor = swatch.getRgb();
-                                    } else if(palette.getDominantSwatch() != null) {
-                                        swatch = palette.getDominantSwatch();
-                                        controlHolder.setBackgroundColor(swatch.getRgb());
-                                        play.setColorFilter(swatch.getRgb());
-                                        generatedColor = swatch.getRgb();
-                                    }
-                                }
-                            });
-                    Glide.with(context)
-                            .load(result)
-                            .error(R.drawable.default_art)
-                            .into(playingSongArt);
+                            .into(
+                                    new ImageViewTarget<PaletteBitmap>(playingArt) {
+                                        @Override
+                                        protected void setResource(PaletteBitmap resource) {
+                                            super.view.setImageBitmap(resource.bitmap);
+                                            Palette palette = resource.palette;
+                                            Palette.Swatch swatch;
+                                            if (palette.getVibrantSwatch() != null) {
+                                                swatch = palette.getVibrantSwatch();
+                                                controlHolder.setBackgroundColor(swatch.getRgb());
+                                                play.setColorFilter(swatch.getRgb());
+                                                generatedColor = swatch.getRgb();
+                                            } else if (palette.getDominantSwatch() != null) {
+                                                swatch = palette.getDominantSwatch();
+                                                controlHolder.setBackgroundColor(swatch.getRgb());
+                                                play.setColorFilter(swatch.getRgb());
+                                                generatedColor = swatch.getRgb();
+                                            }
+                                        }
+                                    });
+                    Glide.with(context).load(result).error(R.drawable.default_art).into(playingSongArt);
                     playingSongArt.setContentDescription(currentPlaying.getAlbumName());
-                } catch(IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     e.printStackTrace();
-                    if(playingSongArt != null) playingSongArt.setImageResource(R.drawable.default_art);
-                    if(playingArt != null) playingArt.setImageResource(R.drawable.default_art);
+                    if (playingSongArt != null) playingSongArt.setImageResource(R.drawable.default_art);
+                    if (playingArt != null) playingArt.setImageResource(R.drawable.default_art);
                 }
                 Display display = getActivity().getWindowManager().getDefaultDisplay();
                 Point size = new Point();
@@ -335,16 +361,17 @@ public class PlayerFragment extends Fragment {
 
     private void setStyle() {
         Utils.setContentColor(playingBar, context, darkMode);
-        playingAction.setColorFilter(darkMode
-                ? ContextCompat.getColor(context, R.color.primaryTextDark)
-                : ContextCompat.getColor(context, R.color.primaryTextLight));
+        playingAction.setColorFilter(
+                darkMode
+                        ? ContextCompat.getColor(context, R.color.primaryTextDark)
+                        : ContextCompat.getColor(context, R.color.primaryTextLight));
     }
 
     private View.OnClickListener playPauseClick(boolean fromPlayingBar) {
         return v -> {
-            if(service == null) service = activity.getService();
-            if(service != null) {
-                if(service.togglePlay()) {
+            if (service == null) service = activity.getService();
+            if (service != null) {
+                if (service.togglePlay()) {
                     playPauseDrawable.setPause(!fromPlayingBar);
                     miniPlayPauseDrawable.setPause(fromPlayingBar);
                 } else {
@@ -356,7 +383,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void setPlayingState(boolean isPlaying) {
-        if(isPlaying) {
+        if (isPlaying) {
             playPauseDrawable.setPause(true);
             miniPlayPauseDrawable.setPause(true);
         } else {
@@ -370,5 +397,4 @@ public class PlayerFragment extends Fragment {
         super.onDestroyView();
         unbinder.unbind();
     }
-
 }

@@ -16,50 +16,51 @@ import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
 
 public class SettingsActivity extends ATHToolbarActivity
-    implements ColorChooserDialog.ColorCallback {
+        implements ColorChooserDialog.ColorCallback {
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
-    ATH.setActivityToolbarColorAuto(this, getATHToolbar());
-    ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
-    setTheme(ThemeStore.activityTheme(this));
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_settings);
+        ATH.setActivityToolbarColorAuto(this, getATHToolbar());
+        ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
+        setTheme(ThemeStore.activityTheme(this));
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
 
-    Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-    toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
-    setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
+        setSupportActionBar(toolbar);
 
-    if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-    FragmentManager manager = getSupportFragmentManager();
-    FragmentTransaction transaction = manager.beginTransaction();
-    transaction.replace(R.id.fragment_holder, new SettingsFragment());
-    transaction.commit();
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.fragment_holder, new SettingsFragment());
+        transaction.commit();
 
-    MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == android.R.id.home) {
-      finish();
+        MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
     }
-    return super.onOptionsItemSelected(item);
-  }
 
-  @Override
-  public void onColorSelection(@NonNull ColorChooserDialog colorChooserDialog, int i) {
-    if (!colorChooserDialog.isAccentMode()) {
-      ThemeStore.editTheme(this).primaryColor(i).commit();
-      recreate();
-    } else {
-      ThemeStore.editTheme(this).accentColor(i).commit();
-      recreate();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
-  }
 
-  @Override
-  public void onColorChooserDismissed(@NonNull ColorChooserDialog colorChooserDialog) {}
+    @Override
+    public void onColorSelection(@NonNull ColorChooserDialog colorChooserDialog, int i) {
+        if (!colorChooserDialog.isAccentMode()) {
+            ThemeStore.editTheme(this).primaryColor(i).commit();
+            recreate();
+        } else {
+            ThemeStore.editTheme(this).accentColor(i).commit();
+            recreate();
+        }
+    }
+
+    @Override
+    public void onColorChooserDismissed(@NonNull ColorChooserDialog colorChooserDialog) {
+    }
 }

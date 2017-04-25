@@ -2,24 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_play_next"
-        android:title="@string/menu_play_next"
-        android:visible="true" />
+            android:id="@+id/menu_play_next"
+            android:title="@string/menu_play_next"
+            android:visible="true"/>
     <item
-        android:id="@+id/menu_add_playing"
-        android:title="@string/menu_add_playing"
-        android:visible="true" />
+            android:id="@+id/menu_add_playing"
+            android:title="@string/menu_add_playing"
+            android:visible="true"/>
     <item
-        android:id="@+id/menu_add_playlist"
-        android:title="@string/menu_add_playlist"
-        android:visible="true" />
+            android:id="@+id/menu_add_playlist"
+            android:title="@string/menu_add_playlist"
+            android:visible="true"/>
     <item
-        android:id="@+id/menu_share"
-        android:title="@string/menu_share"
-        android:visible="true" />
+            android:id="@+id/menu_share"
+            android:title="@string/menu_share"
+            android:visible="true"/>
     <item
-        android:id="@+id/menu_delete"
-        android:title="@string/menu_delete"
-        android:visible="true" />
+            android:id="@+id/menu_delete"
+            android:title="@string/menu_delete"
+            android:visible="true"/>
 
 </menu>

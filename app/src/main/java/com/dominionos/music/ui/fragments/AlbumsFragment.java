@@ -12,13 +12,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
 import com.dominionos.music.R;
-import com.dominionos.music.utils.Utils;
 import com.dominionos.music.adapters.AlbumsAdapter;
 import com.dominionos.music.items.Album;
+import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
@@ -31,7 +30,8 @@ public class AlbumsFragment extends Fragment {
     private Context context;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_albums, container, false);
 
         context = getContext();
@@ -40,7 +40,8 @@ public class AlbumsFragment extends Fragment {
         int accentColor = ThemeStore.accentColor(context);
         gv.setPopupBgColor(accentColor);
         gv.setThumbColor(accentColor);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, Utils.calculateNoOfColumns(context));
+        GridLayoutManager gridLayoutManager =
+                new GridLayoutManager(context, Utils.calculateNoOfColumns(context));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
@@ -64,29 +65,27 @@ public class AlbumsFragment extends Fragment {
             protected ArrayList<Album> run() throws InterruptedException {
                 final ArrayList<Album> albumList = new ArrayList<>();
                 final String orderBy = MediaStore.Audio.Albums.ALBUM;
-                Cursor musicCursor = context.getContentResolver().
-                        query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, orderBy);
+                Cursor musicCursor =
+                        context
+                                .getContentResolver()
+                                .query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, orderBy);
 
                 if (musicCursor != null && musicCursor.moveToFirst()) {
-                    int titleColumn = musicCursor.getColumnIndex
-                            (MediaStore.Audio.Albums.ALBUM);
-                    int idColumn = musicCursor.getColumnIndex
-                            (MediaStore.Audio.Albums._ID);
-                    int artistColumn = musicCursor.getColumnIndex
-                            (MediaStore.Audio.Albums.ARTIST);
-                    int numOfSongsColumn = musicCursor.getColumnIndex
-                            (MediaStore.Audio.Albums.NUMBER_OF_SONGS);
-                    int albumArtColumn = musicCursor.getColumnIndex
-                            (MediaStore.Audio.Albums.ALBUM_ART);
+                    int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
+                    int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums._ID);
+                    int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST);
+                    int numOfSongsColumn =
+                            musicCursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS);
+                    int albumArtColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
                     do {
-                        albumList.add(new Album(musicCursor.getLong(idColumn),
-                                musicCursor.getString(titleColumn),
-                                musicCursor.getString(artistColumn),
-                                musicCursor.getString(albumArtColumn),
-                                musicCursor.getInt(numOfSongsColumn)
-                        ));
-                    }
-                    while (musicCursor.moveToNext());
+                        albumList.add(
+                                new Album(
+                                        musicCursor.getLong(idColumn),
+                                        musicCursor.getString(titleColumn),
+                                        musicCursor.getString(artistColumn),
+                                        musicCursor.getString(albumArtColumn),
+                                        musicCursor.getInt(numOfSongsColumn)));
+                    } while (musicCursor.moveToNext());
                 }
                 albumList.sort(Comparator.comparing(Album::getName));
 

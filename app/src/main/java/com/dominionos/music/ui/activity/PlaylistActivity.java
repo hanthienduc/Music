@@ -27,124 +27,124 @@ import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ATH;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.kabouzeid.appthemehelper.util.TintHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistActivity extends AppCompatActivity {
-  private int playlistId;
-  private CheckableSongsAdapter adapter;
-  private String title;
-  private Unbinder unbinder;
+    @BindView(R.id.playlist_toolbar)
+    Toolbar toolbar;
+    private int playlistId;
+    private CheckableSongsAdapter adapter;
+    private String title;
+    private Unbinder unbinder;
 
-  @BindView(R.id.playlist_toolbar)
-  Toolbar toolbar;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
+        ATH.setActivityToolbarColorAuto(this, toolbar);
+        ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
 
-    ATH.setActivityToolbarColorAuto(this, toolbar);
-    ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_playlist);
+        unbinder = ButterKnife.bind(this);
+        toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
+        setSupportActionBar(toolbar);
+        title = getIntent().getStringExtra("title");
+        setTitle(title);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        RecyclerView rv = (RecyclerView) findViewById(R.id.rv_playlist_activity);
+        MySQLiteHelper helper = new MySQLiteHelper(this);
+        playlistId = getIntent().getIntExtra("playlistId", -1);
+        if (playlistId == -1) {
+            finish();
+        }
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        rv.setItemAnimator(new DefaultItemAnimator());
+        rv.setAdapter(
+                new SongsAdapter(this, helper.getPlayListSongs(playlistId), Glide.with(this), true));
 
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_playlist);
-    unbinder = ButterKnife.bind(this);
-    toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
-    setSupportActionBar(toolbar);
-    title = getIntent().getStringExtra("title");
-    setTitle(title);
-    if (getSupportActionBar() != null) {
-      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        List<CheckableSong> songList = new ArrayList<>();
+        Cursor musicCursor2;
+        final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
+        final String orderBy2 = MediaStore.Audio.Media.TITLE;
+        musicCursor2 =
+                getContentResolver()
+                        .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, where2, null, orderBy2);
+        if (musicCursor2 != null && musicCursor2.moveToFirst()) {
+            int titleColumn = musicCursor2.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor2.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
+            int artistColumn =
+                    musicCursor2.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
+            int pathColumn = musicCursor2.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int albumIdColumn = musicCursor2.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int albumColumn = musicCursor2.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            int i2 = 0;
+            do {
+                i2++;
+                songList.add(
+                        new CheckableSong(
+                                musicCursor2.getLong(idColumn),
+                                musicCursor2.getString(titleColumn),
+                                musicCursor2.getString(artistColumn),
+                                musicCursor2.getString(pathColumn),
+                                musicCursor2.getLong(albumIdColumn),
+                                musicCursor2.getString(albumColumn),
+                                i2));
+            } while (musicCursor2.moveToNext());
+        }
+        if (musicCursor2 != null) {
+            musicCursor2.close();
+        }
+        adapter = new CheckableSongsAdapter(songList);
+
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.scrollToPosition(0);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.playlist_fab);
+        fab.setOnClickListener(
+                view -> {
+                    MaterialDialog dialog =
+                            new MaterialDialog.Builder(PlaylistActivity.this)
+                                    .title(getString(R.string.add_to_playlist))
+                                    .positiveText(getString(R.string.add))
+                                    .negativeText(getString(R.string.cancel))
+                                    .adapter(adapter, layoutManager)
+                                    .onPositive(
+                                            (dialog1, which) -> {
+                                                ArrayList<CheckableSong> checkedSongs = adapter.getCheckedItems();
+                                                MySQLiteHelper helper1 = new MySQLiteHelper(PlaylistActivity.this);
+                                                helper1.addSongs(checkedSongs, playlistId);
+                                                Intent i = new Intent(PlaylistActivity.this, PlaylistActivity.class);
+                                                i.putExtra("playlistId", playlistId);
+                                                i.putExtra("title", title);
+                                                finish();
+                                                startActivity(i);
+                                            })
+                                    .build();
+                    dialog.show();
+                });
+        TintHelper.setTintAuto(fab, ThemeStore.accentColor(this), true);
     }
-    RecyclerView rv = (RecyclerView) findViewById(R.id.rv_playlist_activity);
-    MySQLiteHelper helper = new MySQLiteHelper(this);
-    playlistId = getIntent().getIntExtra("playlistId", -1);
-    if (playlistId == -1) {
-      finish();
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
-    rv.setLayoutManager(new LinearLayoutManager(this));
-    rv.setItemAnimator(new DefaultItemAnimator());
-    rv.setAdapter(
-        new SongsAdapter(this, helper.getPlayListSongs(playlistId), Glide.with(this), true));
 
-    List<CheckableSong> songList = new ArrayList<>();
-    Cursor musicCursor2;
-    final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
-    final String orderBy2 = MediaStore.Audio.Media.TITLE;
-    musicCursor2 =
-        getContentResolver()
-            .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, where2, null, orderBy2);
-    if (musicCursor2 != null && musicCursor2.moveToFirst()) {
-      int titleColumn = musicCursor2.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
-      int idColumn = musicCursor2.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
-      int artistColumn =
-          musicCursor2.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
-      int pathColumn = musicCursor2.getColumnIndex(MediaStore.Audio.Media.DATA);
-      int albumIdColumn = musicCursor2.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-      int albumColumn = musicCursor2.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-      int i2 = 0;
-      do {
-        i2++;
-        songList.add(
-            new CheckableSong(
-                musicCursor2.getLong(idColumn),
-                musicCursor2.getString(titleColumn),
-                musicCursor2.getString(artistColumn),
-                musicCursor2.getString(pathColumn),
-                musicCursor2.getLong(albumIdColumn),
-                musicCursor2.getString(albumColumn),
-                i2));
-      } while (musicCursor2.moveToNext());
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
-    if (musicCursor2 != null) {
-      musicCursor2.close();
-    }
-    adapter = new CheckableSongsAdapter(songList);
-
-    final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-    layoutManager.scrollToPosition(0);
-
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.playlist_fab);
-    fab.setOnClickListener(
-        view -> {
-          MaterialDialog dialog =
-              new MaterialDialog.Builder(PlaylistActivity.this)
-                  .title(getString(R.string.add_to_playlist))
-                  .positiveText(getString(R.string.add))
-                  .negativeText(getString(R.string.cancel))
-                  .adapter(adapter, layoutManager)
-                  .onPositive(
-                      (dialog1, which) -> {
-                        ArrayList<CheckableSong> checkedSongs = adapter.getCheckedItems();
-                        MySQLiteHelper helper1 = new MySQLiteHelper(PlaylistActivity.this);
-                        helper1.addSongs(checkedSongs, playlistId);
-                        Intent i = new Intent(PlaylistActivity.this, PlaylistActivity.class);
-                        i.putExtra("playlistId", playlistId);
-                        i.putExtra("title", title);
-                        finish();
-                        startActivity(i);
-                      })
-                  .build();
-          dialog.show();
-        });
-    TintHelper.setTintAuto(fab, ThemeStore.accentColor(this), true);
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        super.onBackPressed();
-        return true;
-    }
-    return super.onOptionsItemSelected(item);
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    unbinder.unbind();
-  }
 }

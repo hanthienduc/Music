@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/play_all"
-        android:title="@string/play_all"
-        android:icon="@drawable/ic_play"
-        app:showAsAction="ifRoom"
-        android:visible="true"/>
+            android:id="@+id/play_all"
+            android:title="@string/play_all"
+            android:icon="@drawable/ic_play"
+            app:showAsAction="ifRoom"
+            android:visible="true"/>
     <item
-        android:id="@+id/shuffle_all"
-        android:title="@string/shuffle"
-        android:icon="@drawable/ic_shuffle"
-        app:showAsAction="ifRoom"
-        android:visible="true"/>
+            android:id="@+id/shuffle_all"
+            android:title="@string/shuffle"
+            android:icon="@drawable/ic_shuffle"
+            app:showAsAction="ifRoom"
+            android:visible="true"/>
 </menu>
