@@ -27,10 +27,8 @@ import java.util.Comparator;
 
 public class ArtistDetailActivity extends ATHToolbarActivity {
 
-    @BindView(R.id.artist_toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.artist_recycler_view)
-    RecyclerView rv;
+    @BindView(R.id.artist_toolbar) Toolbar toolbar;
+    @BindView(R.id.artist_recycler_view) RecyclerView rv;
     private Unbinder unbinder;
 
     @Override

@@ -499,8 +499,7 @@ public class MainActivity extends ATHToolbarActivity {
                         .withName(R.string.about)
                         .withSelectable(false)
                         .withIcon(MaterialDesignIconic.Icon.gmi_info);
-        drawer =
-                new DrawerBuilder()
+        drawer = new DrawerBuilder()
                         .withActivity(this)
                         .withToolbar(toolbar)
                         .withHeader(R.layout.header)
@@ -528,28 +527,26 @@ public class MainActivity extends ATHToolbarActivity {
                                             startActivityForResult(intent, Config.SETTINGS_REQUEST_CODE);
                                             break;
                                         case 6:
-                                            Colors colors =
-                                                    new Colors(primaryColor, Utils.getAutoStatColor(primaryColor));
-                                            LibsBuilder builder =
-                                                    new LibsBuilder()
-                                                            .withActivityStyle(
-                                                                    darkMode
-                                                                            ? Libs.ActivityStyle.DARK
-                                                                            : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
-                                                            .withSortEnabled(true)
-                                                            .withActivityColor(colors)
-                                                            .withAboutIconShown(true)
-                                                            .withAboutVersionShown(true)
-                                                            .withActivityTitle(getString(R.string.about))
-                                                            .withAboutDescription(getString(R.string.app_desc))
-                                                            .withAboutSpecial1("Changelog")
-                                                            .withAboutSpecial1Description("Button 1")
-                                                            .withAboutSpecial2("Contributors")
-                                                            .withAboutSpecial2Description("Button 2")
-                                                            .withListener(libsListener);
+                                            Colors colors = new Colors(primaryColor, Utils.getAutoStatColor(primaryColor));
+                                            LibsBuilder builder = new LibsBuilder()
+                                                    .withActivityStyle(
+                                                            darkMode
+                                                                    ? Libs.ActivityStyle.DARK
+                                                                    : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                                                    .withSortEnabled(true)
+                                                    .withActivityColor(colors)
+                                                    .withAboutIconShown(true)
+                                                    .withAboutVersionShown(true)
+                                                    .withActivityTitle(getString(R.string.about))
+                                                    .withAboutDescription(getString(R.string.app_desc))
+                                                    .withAboutSpecial1(getString(R.string.changelog))
+                                                    .withAboutSpecial1Description("Button 1")
+                                                    .withAboutSpecial2(getString(R.string.contributors))
+                                                    .withAboutSpecial2Description("Button 2")
+                                                    .withListener(libsListener);
                                             if (Utils.isGooglePlayServicesAvailable(this)) {
                                                 builder
-                                                        .withAboutSpecial3("Donate")
+                                                        .withAboutSpecial3(getString(R.string.donate))
                                                         .withAboutSpecial3Description("Button 3");
                                             }
                                             builder.start(this);

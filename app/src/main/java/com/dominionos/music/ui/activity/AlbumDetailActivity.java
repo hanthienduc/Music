@@ -38,8 +38,7 @@ import java.util.ArrayList;
 public class AlbumDetailActivity extends AppCompatActivity {
 
     private final ArrayList<Song> songList = new ArrayList<>();
-    @BindView(R.id.collapsing_toolbar_album)
-    CollapsingToolbarLayout collapsingToolbarLayout;
+    @BindView(R.id.collapsing_toolbar_album) CollapsingToolbarLayout collapsingToolbarLayout;
     private Unbinder unbinder;
     private boolean darkMode = false;
     private long albumId;
