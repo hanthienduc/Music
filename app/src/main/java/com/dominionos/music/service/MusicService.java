@@ -481,7 +481,6 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
-        //TODO Do something here
         if(intent != null &&  intent.getAction() != null) {
             switch(intent.getAction()) {
                 case Config.PLAY:
