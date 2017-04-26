@@ -428,8 +428,7 @@ public class MainActivity extends ATHToolbarActivity {
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
         viewPager.setOffscreenPageLimit(4);
-        fab.setOnClickListener(
-                v ->
+        fab.setOnClickListener(v ->
                         new MaterialDialog.Builder(MainActivity.this)
                                 .title(R.string.add_playlist)
                                 .inputType(InputType.TYPE_CLASS_TEXT)
@@ -545,8 +544,7 @@ public class MainActivity extends ATHToolbarActivity {
                                                     .withAboutSpecial2Description("Button 2")
                                                     .withListener(libsListener);
                                             if (Utils.isGooglePlayServicesAvailable(this)) {
-                                                builder
-                                                        .withAboutSpecial3(getString(R.string.donate))
+                                                builder.withAboutSpecial3(getString(R.string.donate))
                                                         .withAboutSpecial3Description("Button 3");
                                             }
                                             builder.start(this);
@@ -557,8 +555,7 @@ public class MainActivity extends ATHToolbarActivity {
                         .build();
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         drawer.getHeader().findViewById(R.id.header).setBackgroundColor(primaryColor);
-        drawer
-                .getActionBarDrawerToggle()
+        drawer.getActionBarDrawerToggle()
                 .getDrawerArrowDrawable()
                 .setColor(ToolbarContentTintHelper.toolbarContentColor(this, primaryColor));
         setStatusBarColor(Utils.getAutoStatColor(primaryColor));

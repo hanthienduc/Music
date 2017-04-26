@@ -46,40 +46,23 @@ import java.util.TimerTask;
 
 public class PlayerFragment extends Fragment {
 
-    @BindView(R.id.play)
-    FloatingActionButton play;
-    @BindView(R.id.playing_bar_action)
-    ImageButton playingAction;
-    @BindView(R.id.player_view)
-    SlidingUpPanelLayout playerView;
-    @BindView(R.id.playing_list)
-    RecyclerView playingListView;
-    @BindView(R.id.next)
-    ImageButton next;
-    @BindView(R.id.prev)
-    ImageButton prev;
-    @BindView(R.id.shuffle)
-    ImageButton shuffle;
-    @BindView(R.id.repeat)
-    ImageButton repeat;
-    @BindView(R.id.art)
-    ImageView playingArt;
-    @BindView(R.id.control_holder)
-    View controlHolder;
-    @BindView(R.id.player_seekbar)
-    SeekBar playerSeekBar;
-    @BindView(R.id.art_container)
-    View artContainer;
-    @BindView(R.id.player_sliding_panel)
-    View playerSlidingPanel;
-    @BindView(R.id.playing_bar)
-    View playingBar;
-    @BindView(R.id.playing_song_name)
-    TextView currentSongName;
-    @BindView(R.id.playing_song_desc)
-    TextView currentSongDesc;
-    @BindView(R.id.playing_art)
-    ImageView playingSongArt;
+    @BindView(R.id.play) FloatingActionButton play;
+    @BindView(R.id.playing_bar_action) ImageButton playingAction;
+    @BindView(R.id.player_view) SlidingUpPanelLayout playerView;
+    @BindView(R.id.playing_list) RecyclerView playingListView;
+    @BindView(R.id.next) ImageButton next;
+    @BindView(R.id.prev) ImageButton prev;
+    @BindView(R.id.shuffle) ImageButton shuffle;
+    @BindView(R.id.repeat) ImageButton repeat;
+    @BindView(R.id.art) ImageView playingArt;
+    @BindView(R.id.control_holder) View controlHolder;
+    @BindView(R.id.player_seekbar) SeekBar playerSeekBar;
+    @BindView(R.id.art_container) View artContainer;
+    @BindView(R.id.player_sliding_panel) View playerSlidingPanel;
+    @BindView(R.id.playing_bar) View playingBar;
+    @BindView(R.id.playing_song_name) TextView currentSongName;
+    @BindView(R.id.playing_song_desc) TextView currentSongDesc;
+    @BindView(R.id.playing_art) ImageView playingSongArt;
 
     private Unbinder unbinder;
     private PlayPauseDrawable playPauseDrawable;
@@ -111,6 +94,7 @@ public class PlayerFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         playingListView.setLayoutManager(layoutManager);
+        playingListView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> Utils.setEdgeGlowColor(playingListView, ThemeStore.primaryColor(context)));
 
         slidingUpPanelLayout = activity.getSlidingPanel();
         slidingUpPanelLayout.setAntiDragView(playerSlidingPanel);

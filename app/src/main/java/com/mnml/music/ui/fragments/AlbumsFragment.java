@@ -46,6 +46,7 @@ public class AlbumsFragment extends Fragment {
         gridLayoutManager.scrollToPosition(0);
         gv.setLayoutManager(gridLayoutManager);
         gv.setHasFixedSize(true);
+        gv.setOnScrollChangeListener((view, scrollX, scrollY, oldScrollX, oldScrollY) -> Utils.setEdgeGlowColor(gv, ThemeStore.primaryColor(context)));
 
         getAlbumList();
 
