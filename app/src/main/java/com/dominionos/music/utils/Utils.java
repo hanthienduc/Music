@@ -18,6 +18,7 @@ import com.dominionos.music.items.Song;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
@@ -51,6 +52,41 @@ public class Utils {
         Color.colorToHSV(baseColor, hsv);
         hsv[2] *= 0.8f;
         return Color.HSVToColor(hsv);
+    }
+
+    public static ArrayList<Song> getAlbumSongs(Context context, long albumId) {
+        ArrayList<Song> albumSongList = new ArrayList<>();
+        Cursor musicCursor;
+        String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
+        String whereVal[] = {String.valueOf(albumId)};
+        String orderBy = MediaStore.Audio.Media.TRACK;
+
+        musicCursor = context.getContentResolver()
+                        .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, where, whereVal, orderBy);
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            //get columns
+            int titleColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
+            int pathColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int albumNameColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            do {
+                albumSongList.add(
+                        new Song(
+                                musicCursor.getLong(idColumn),
+                                musicCursor.getString(titleColumn),
+                                musicCursor.getString(artistColumn),
+                                musicCursor.getString(pathColumn),
+                                false,
+                                musicCursor.getLong(albumIdColumn),
+                                musicCursor.getString(albumNameColumn)));
+            } while (musicCursor.moveToNext());
+        }
+        if (musicCursor != null) {
+            musicCursor.close();
+        }
+        return albumSongList;
     }
 
     public static String getAlbumArt(Context context, long albumId) {

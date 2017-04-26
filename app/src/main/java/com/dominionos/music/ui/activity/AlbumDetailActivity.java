@@ -10,10 +10,9 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -30,17 +29,15 @@ import com.dominionos.music.adapters.SongsAdapter;
 import com.dominionos.music.items.Song;
 import com.dominionos.music.service.MusicService;
 import com.dominionos.music.utils.Utils;
+import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 
-public class AlbumDetailActivity extends AppCompatActivity {
+public class AlbumDetailActivity extends ATHToolbarActivity {
 
-    private final ArrayList<Song> songList = new ArrayList<>();
     @BindView(R.id.collapsing_toolbar_album) CollapsingToolbarLayout collapsingToolbarLayout;
     private Unbinder unbinder;
-    private boolean darkMode = false;
     private long albumId;
     private MusicService service;
     private final ServiceConnection serviceConnection =
@@ -58,8 +55,6 @@ public class AlbumDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        darkMode = sharedPrefs.getBoolean("dark_theme", false);
 
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
@@ -161,49 +156,14 @@ public class AlbumDetailActivity extends AppCompatActivity {
     }
 
     private void setSongList() {
-        Cursor musicCursor;
+        ArrayList<Song> songList = Utils.getAlbumSongs(this, albumId);
 
-        String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
-        String whereVal[] = {getIntent().getLongExtra("albumId", 0) + ""};
-        String orderBy = MediaStore.Audio.Media.TRACK;
-
-        musicCursor =
-                getContentResolver()
-                        .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, where, whereVal, orderBy);
-        if (musicCursor != null && musicCursor.moveToFirst()) {
-            //get columns
-            int titleColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
-            int idColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
-            int artistColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
-            int pathColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-            int albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-            int albumNameColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-            do {
-                songList.add(
-                        new Song(
-                                musicCursor.getLong(idColumn),
-                                musicCursor.getString(titleColumn),
-                                musicCursor.getString(artistColumn),
-                                musicCursor.getString(pathColumn),
-                                false,
-                                musicCursor.getLong(albumIdColumn),
-                                musicCursor.getString(albumNameColumn)));
-            } while (musicCursor.moveToNext());
-        }
-        if (musicCursor != null) {
-            musicCursor.close();
-        }
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
-        FastScrollRecyclerView rv = (FastScrollRecyclerView) findViewById(R.id.rv_album);
+        RecyclerView rv = (RecyclerView) findViewById(R.id.rv_album);
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
-        rv.setBackgroundColor(
-                darkMode
-                        ? ContextCompat.getColor(this, R.color.darkWindowBackground)
-                        : ContextCompat.getColor(this, R.color.lightWindowBackground));
-
         rv.setAdapter(new SongsAdapter(AlbumDetailActivity.this, songList, Glide.with(this), false));
     }
 

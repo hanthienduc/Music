@@ -52,7 +52,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-base:10.2.1'
     compile 'com.android.support:customtabs:25.3.1'
     compile 'com.afollestad:async:0.2.3'
-    compile 'com.simplecityapps:recyclerview-fastscroll:1.0.14'
+    compile 'com.simplecityapps:recyclerview-fastscroll:1.0.15'
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
     compile 'com.github.kabouzeid:AndroidSlidingUpPanel:3.3.0-kmod3'
     compile 'com.github.bumptech.glide:glide:3.7.0'

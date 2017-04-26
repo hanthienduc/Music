@@ -90,8 +90,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
     public void overwriteStoredList(ArrayList<Song> playList) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_PLAYBACK);
-        for (int i = 0; i < playList.size(); i++) {
-            Song song = playList.get(i);
+        for (Song song : playList) {
             ContentValues values = new ContentValues();
             Log.v("sname", song.getName());
             values.putNull(SONG_KEY_ID);

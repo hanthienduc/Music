@@ -42,16 +42,13 @@
         </activity>
         <activity
                 android:name=".ui.activity.AlbumDetailActivity"
-                android:screenOrientation="sensorPortrait"
-                android:theme="@style/AppTheme.Light"/>
+                android:screenOrientation="sensorPortrait"/>
         <activity
                 android:name=".ui.activity.PlaylistActivity"
-                android:screenOrientation="sensorPortrait"
-                android:theme="@style/AppTheme.Light"/>
+                android:screenOrientation="sensorPortrait"/>
         <activity
                 android:name=".ui.activity.ArtistDetailActivity"
-                android:screenOrientation="sensorPortrait"
-                android:theme="@style/AppTheme.Light"/>
+                android:screenOrientation="sensorPortrait"/>
 
         <service
                 android:name=".service.MusicService"
@@ -60,8 +57,7 @@
         <activity
                 android:name=".ui.activity.SettingsActivity"
                 android:label="@string/settings"
-                android:screenOrientation="sensorPortrait"
-                android:theme="@style/AppTheme.Light"/>
+                android:screenOrientation="sensorPortrait"/>
 
         <receiver android:name=".service.MediaButtonIntentReceiver">
             <intent-filter>

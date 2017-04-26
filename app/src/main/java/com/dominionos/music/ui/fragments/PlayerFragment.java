@@ -348,13 +348,15 @@ public class PlayerFragment extends Fragment {
                     if (playingSongArt != null) playingSongArt.setImageResource(R.drawable.default_art);
                     if (playingArt != null) playingArt.setImageResource(R.drawable.default_art);
                 }
-                Display display = getActivity().getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                int height = size.y;
-                final int availablePanelHeight = height - artContainer.getWidth();
-                final int minPanelHeight = Utils.dpToPx(context, 250);
-                playerView.setPanelHeight(Math.max(minPanelHeight, availablePanelHeight));
+                if(getActivity() != null) {
+                    Display display = getActivity().getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    int height = size.y;
+                    final int availablePanelHeight = height - artContainer.getWidth();
+                    final int minPanelHeight = Utils.dpToPx(context, 250);
+                    playerView.setPanelHeight(Math.max(minPanelHeight, availablePanelHeight));
+                }
             }
         }.execute();
     }

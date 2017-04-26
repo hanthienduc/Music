@@ -100,7 +100,7 @@ public class MainActivity extends ATHToolbarActivity {
                     service = null;
                 }
             };
-    private LibsConfiguration.LibsListener libsListener =
+    private final LibsConfiguration.LibsListener libsListener =
             new LibsConfiguration.LibsListener() {
                 @Override
                 public void onIconClicked(View view) {

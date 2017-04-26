@@ -19,7 +19,6 @@ public class Config {
     public static final String STOP = "stop";
     public static final String PAUSE = "pause";
     public static final String PLAY = "play";
-    public static final String GET_PLAY_STATE = "get_play_state";
     public static final String PREV = "prev";
     public static final String NEXT = "next";
     public static final String TOGGLE_PLAY = "toggle_play";

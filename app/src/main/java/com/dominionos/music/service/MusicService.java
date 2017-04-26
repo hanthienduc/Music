@@ -2,7 +2,12 @@ package com.dominionos.music.service;
 
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.*;
+import android.content.Context;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.ComponentName;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +34,7 @@ import com.dominionos.music.utils.Config;
 import com.dominionos.music.utils.MusicPlayerDBHelper;
 import com.dominionos.music.utils.MySQLiteHelper;
 import com.dominionos.music.utils.NotificationHandler;
+import com.dominionos.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ThemeStore;
 
 import java.io.IOException;
@@ -651,44 +657,8 @@ public class MusicService extends Service {
         if (activity != null) activity.updatePlayer();
     }
 
-    private ArrayList<Song> getAlbumSongs(long albumId) {
-        ArrayList<Song> albumSongList = new ArrayList<>();
-        Cursor musicCursor;
-        String where = MediaStore.Audio.Media.ALBUM_ID + "=?";
-        String whereVal[] = {String.valueOf(albumId)};
-        String orderBy = MediaStore.Audio.Media._ID;
-
-        musicCursor =
-                getContentResolver()
-                        .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, where, whereVal, orderBy);
-        if (musicCursor != null && musicCursor.moveToFirst()) {
-            //get columns
-            int titleColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
-            int idColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
-            int artistColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
-            int pathColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-            int albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-            int albumNameColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-            do {
-                albumSongList.add(
-                        new Song(
-                                musicCursor.getLong(idColumn),
-                                musicCursor.getString(titleColumn),
-                                musicCursor.getString(artistColumn),
-                                musicCursor.getString(pathColumn),
-                                false,
-                                musicCursor.getLong(albumIdColumn),
-                                musicCursor.getString(albumNameColumn)));
-            } while (musicCursor.moveToNext());
-        }
-        if (musicCursor != null) {
-            musicCursor.close();
-        }
-        return albumSongList;
-    }
-
     public void playAlbum(long albumId) {
-        ArrayList<Song> albumSongs = getAlbumSongs(albumId);
+        ArrayList<Song> albumSongs = Utils.getAlbumSongs(this, albumId);
         if (!albumSongs.isEmpty()) {
             stopMusic();
             playingList.clear();
@@ -700,7 +670,7 @@ public class MusicService extends Service {
     }
 
     public void shuffleAlbum(long albumId) {
-        ArrayList<Song> albumSongs = getAlbumSongs(albumId);
+        ArrayList<Song> albumSongs = Utils.getAlbumSongs(this, albumId);
         if (!albumSongs.isEmpty()) {
             Collections.shuffle(albumSongs);
             stopMusic();

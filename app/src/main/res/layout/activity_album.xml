@@ -18,7 +18,6 @@
                 android:layout_height="match_parent"
                 android:elevation="6dp"
                 android:fitsSystemWindows="true"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:contentScrim="@color/colorPrimary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
@@ -36,23 +35,20 @@
             <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar_album"
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
+                    android:layout_height="?android:attr/actionBarSize"
                     app:layout_collapseMode="pin"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
+    <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_album"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:clipToPadding="false"
-            android:background="@color/lightWindowBackground"
-            app:fastScrollThumbColor="@color/colorAccent"
-            app:fastScrollPopupBgColor="@color/colorAccent"
-            app:fastScrollPopupTextColor="@android:color/primary_text_dark"
+            android:background="?attr/backgroundColor"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </android.support.design.widget.CoordinatorLayout>
