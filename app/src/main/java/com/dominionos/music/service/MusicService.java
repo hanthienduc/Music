@@ -233,7 +233,7 @@ public class MusicService extends Service {
         return isPlaying;
     }
 
-    public void pause() {
+    private void pause() {
         if (mediaPlayer != null && isPlaying) {
             mediaPlayer.pause();
             isPlaying = false;
@@ -571,37 +571,7 @@ public class MusicService extends Service {
 
             @Override
             protected ArrayList<Song> run() throws InterruptedException {
-                final ArrayList<Song> songList = new ArrayList<>();
-                final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
-                final String orderBy = MediaStore.Audio.Media.TITLE;
-                Cursor musicCursor =
-                        getContentResolver()
-                                .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, where, null, orderBy);
-                if (musicCursor != null && musicCursor.moveToFirst()) {
-                    int titleColumn =
-                            musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
-                    int idColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
-                    int artistColumn =
-                            musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
-                    int pathColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-                    int albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-                    int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-                    do {
-                        songList.add(
-                                new Song(
-                                        musicCursor.getLong(idColumn),
-                                        musicCursor.getString(titleColumn),
-                                        musicCursor.getString(artistColumn),
-                                        musicCursor.getString(pathColumn),
-                                        false,
-                                        musicCursor.getLong(albumIdColumn),
-                                        musicCursor.getString(albumColumn)));
-                    } while (musicCursor.moveToNext());
-                }
-                if (musicCursor != null) {
-                    musicCursor.close();
-                }
-                return songList;
+                return Utils.getAllSongs(MusicService.this);
             }
 
             @Override

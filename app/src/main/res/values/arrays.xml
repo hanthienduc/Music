@@ -6,6 +6,9 @@
         <item>Revamp Album detail view</item>
         <item>Wrap player controls and playing list in a sliding panel</item>
         <item>Temporarily remove drag n drop on playing list (I wasn\'t happy with the way it was implemented)</item>
+        <item>Dark mode fixes</item>
+        <item>Fix \'Play album\' function not queueing in track order</item>
+        <item>Fix headset button controls (now supports double/triple click)</item>
     </string-array>
     <string-array name="contributors">
         <item>Jack Boswell (boswelja) - Lead Developer</item>
