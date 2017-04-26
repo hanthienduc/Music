@@ -54,23 +54,20 @@ public class PlaylistActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         RecyclerView rv = (RecyclerView) findViewById(R.id.rv_playlist_activity);
-        MySQLiteHelper helper = new MySQLiteHelper(this);
+        final MySQLiteHelper helper = new MySQLiteHelper(this);
         playlistId = getIntent().getIntExtra("playlistId", -1);
         if (playlistId == -1) {
             finish();
         }
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setItemAnimator(new DefaultItemAnimator());
-        rv.setAdapter(
-                new SongsAdapter(this, helper.getPlayListSongs(playlistId), Glide.with(this), true));
+        rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), Glide.with(this), true));
 
         List<CheckableSong> songList = new ArrayList<>();
         Cursor musicCursor2;
         final String where2 = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final String orderBy2 = MediaStore.Audio.Media.TITLE;
-        musicCursor2 =
-                getContentResolver()
-                        .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, where2, null, orderBy2);
+        musicCursor2 = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, where2, null, orderBy2);
         if (musicCursor2 != null && musicCursor2.moveToFirst()) {
             int titleColumn = musicCursor2.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
             int idColumn = musicCursor2.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
@@ -114,8 +111,7 @@ public class PlaylistActivity extends AppCompatActivity {
                                     .onPositive(
                                             (dialog1, which) -> {
                                                 ArrayList<CheckableSong> checkedSongs = adapter.getCheckedItems();
-                                                MySQLiteHelper helper1 = new MySQLiteHelper(PlaylistActivity.this);
-                                                helper1.addSongs(checkedSongs, playlistId);
+                                                helper.addSongs(checkedSongs, playlistId);
                                                 Intent i = new Intent(PlaylistActivity.this, PlaylistActivity.class);
                                                 i.putExtra("playlistId", playlistId);
                                                 i.putExtra("title", title);

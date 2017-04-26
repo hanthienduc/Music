@@ -168,9 +168,7 @@ public class PlayerFragment extends Fragment {
             ArrayList<Song> playingList = service.getPlayingList();
             if (playingList.size() > 0) {
                 if (adapter == null) {
-                    adapter =
-                            new PlayingSongAdapter(
-                                    context, playingList, darkMode, currentPlaying, Glide.with(context));
+                    adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(context));
                     playingListView.setAdapter(adapter);
                     playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
                 } else {
@@ -263,7 +261,11 @@ public class PlayerFragment extends Fragment {
     private void updateSeekBar() {
         mediaPlayer = service.getMediaPlayer();
         if (mediaPlayer != null && service.isPlaying()) {
-            playerSeekBar.setMax(mediaPlayer.getDuration());
+            try {
+                playerSeekBar.setMax(mediaPlayer.getDuration());
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
 
         Timer timer = new Timer();

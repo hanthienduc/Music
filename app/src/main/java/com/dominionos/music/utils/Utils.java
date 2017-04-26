@@ -55,6 +55,39 @@ public class Utils {
         return Color.HSVToColor(hsv);
     }
 
+    public static ArrayList<Song> getArtistSongs(Context context, String artistName) {
+        final ArrayList<Song> list = new ArrayList<>();
+        final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
+        final String orderBy = MediaStore.Audio.Media.TITLE;
+        Cursor musicCursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, where, null, orderBy);
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int pathColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            do {
+                if (artistName.equals(musicCursor.getString(artistColumn))) {
+                    list.add(
+                            new Song(
+                                    musicCursor.getLong(idColumn),
+                                    musicCursor.getString(titleColumn),
+                                    musicCursor.getString(artistColumn),
+                                    musicCursor.getString(pathColumn),
+                                    false,
+                                    musicCursor.getLong(albumIdColumn),
+                                    musicCursor.getString(albumColumn)));
+                }
+            } while (musicCursor.moveToNext());
+            list.sort(Comparator.comparing(Song::getName));
+        }
+        if (musicCursor != null) {
+            musicCursor.close();
+        }
+        return list;
+    }
+
     public static ArrayList<Song> getAllSongs(Context context) {
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final String orderBy = MediaStore.Audio.Media.TITLE;
