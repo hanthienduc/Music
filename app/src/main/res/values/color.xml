@@ -2,9 +2,9 @@
 <resources>
 
     <!-- Light colour palette -->
-    <color name="colorPrimary">#212121</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#D50000</color>
+    <color name="colorPrimary">#F5F5F5</color>
+    <color name="colorPrimaryDark">#E0E0E0</color>
+    <color name="colorAccent">#424242</color>
     <color name="cardBackground">@color/colorAccent</color>
     <color name="lightWindowBackground">#FAFAFA</color>
     <color name="lightContentColor">#FFFFFF</color>

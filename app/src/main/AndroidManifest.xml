@@ -2,7 +2,7 @@
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        package="com.dominionos.music"
+        package="com.mnml.music"
         android:installLocation="auto">
 
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
@@ -27,7 +27,7 @@
                 android:value="2.1"/>
 
         <activity
-                android:name=".ui.activity.MainActivity"
+                android:name="com.mnml.music.ui.activity.MainActivity"
                 android:label="@string/app_name"
                 android:windowSoftInputMode="adjustPan"
                 android:screenOrientation="sensorPortrait"
@@ -41,29 +41,29 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".ui.activity.AlbumDetailActivity"
+                android:name="com.mnml.music.ui.activity.AlbumDetailActivity"
                 android:screenOrientation="sensorPortrait"
                 android:theme="@style/AppTheme.Light"/>
         <activity
-                android:name=".ui.activity.PlaylistActivity"
+                android:name="com.mnml.music.ui.activity.PlaylistActivity"
                 android:screenOrientation="sensorPortrait"
                 android:theme="@style/AppTheme.Light"/>
         <activity
-                android:name=".ui.activity.ArtistDetailActivity"
+                android:name="com.mnml.music.ui.activity.ArtistDetailActivity"
                 android:screenOrientation="sensorPortrait"
                 android:theme="@style/AppTheme.Light"/>
 
         <service
-                android:name=".service.MusicService"
+                android:name="com.mnml.music.service.MusicService"
                 android:enabled="true"/>
 
         <activity
-                android:name=".ui.activity.SettingsActivity"
+                android:name="com.mnml.music.ui.activity.SettingsActivity"
                 android:label="@string/settings"
                 android:screenOrientation="sensorPortrait"
                 android:theme="@style/AppTheme.Light"/>
 
-        <receiver android:name=".service.MediaButtonIntentReceiver">
+        <receiver android:name="com.mnml.music.service.MediaButtonIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
