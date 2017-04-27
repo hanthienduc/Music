@@ -33,6 +33,7 @@ import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.fragments.*;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.PlaylistHelper;
+import com.mnml.music.utils.shortcuts.ShortcutHandler;
 import com.mnml.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ATH;
 import com.kabouzeid.appthemehelper.ThemeStore;
@@ -357,6 +358,8 @@ public class MainActivity extends ATHToolbarActivity {
     }
 
     private void init() {
+        final ShortcutHandler shortcutHandler = new ShortcutHandler();
+        shortcutHandler.create(this);
         TintHelper.setTintAuto(fab, accentColor, true);
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);

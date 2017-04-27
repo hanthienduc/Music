@@ -63,6 +63,11 @@
                 android:screenOrientation="sensorPortrait"
                 android:theme="@style/AppTheme.Light"/>
 
+        <activity
+                android:name=".utils.shortcuts.ShortcutLauncherActivity"
+                android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                android:launchMode="singleInstance"/>
+
         <receiver android:name="com.mnml.music.service.MediaButtonIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />

@@ -37,6 +37,15 @@ public class Config {
     public static final String MENU_REMOVE_FROM_QUEUE = "menu_remove_from_queue";
     public static final String MENU_SHARE = "menu_share";
     public static final String MENU_DELETE = "menu_delete";
+    public static final String SHUFFLE_ALL = "shuffle_all";
+    public static final String PLAY_ALL = "play_all";
+
+    // Shortcuts
+    public static final String KEY_SHORTCUT_TYPE = "ShortcutType";
+
+    public static final int SHORTCUT_TYPE_NONE = 0;
+    public static final int SHORTCUT_TYPE_SHUFFLE_ALL = 1;
+    public static final int SHORTCUT_TYPE_PLAY_ALL = 2;
 
     static final int ANIMATION_DURATION = 500;
     public static final int NOTIFICATION_ID = 596;

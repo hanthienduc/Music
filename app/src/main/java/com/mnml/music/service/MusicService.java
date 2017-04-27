@@ -499,6 +499,15 @@ public class MusicService extends Service {
                 case Config.PREV:
                     prev();
                     break;
+                case Config.SHUFFLE_ALL:
+                    playingList = Utils.getAllSongs(this);
+                    Collections.shuffle(playingList);
+                    shuffle = true;
+                    if(!playingList.isEmpty()) playMusic(playingList.get(0));
+                    break;
+                case Config.PLAY_ALL:
+                    playingList = Utils.getAllSongs(this);
+                    if(!playingList.isEmpty()) playMusic(playingList.get(0));
             }
         }
         return START_STICKY;
@@ -644,6 +653,7 @@ public class MusicService extends Service {
             currentSong = playingList.get(0);
             playMusic(currentSong);
             updateCurrentPlaying();
+            shuffle = true;
         }
     }
     public MediaSessionCompat.Token getSessionToken() {
