@@ -14,7 +14,7 @@ import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.mnml.music.R;
 import com.mnml.music.adapters.SongsAdapter;
-import com.mnml.music.items.Song;
+import com.mnml.music.models.Song;
 import com.mnml.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;

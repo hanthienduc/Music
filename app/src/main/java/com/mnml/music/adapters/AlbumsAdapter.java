@@ -20,7 +20,7 @@ import com.bumptech.glide.BitmapRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.mnml.music.R;
-import com.mnml.music.items.Album;
+import com.mnml.music.models.Album;
 import com.mnml.music.ui.activity.AlbumDetailActivity;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.glide.PaletteBitmap;

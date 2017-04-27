@@ -6,15 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.MediaStore;
-import com.mnml.music.items.CheckableSong;
-import com.mnml.music.items.Playlist;
-import com.mnml.music.items.Song;
+import com.mnml.music.models.CheckableSong;
+import com.mnml.music.models.Playlist;
+import com.mnml.music.models.Song;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MySQLiteHelper extends SQLiteOpenHelper {
+public class PlaylistHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "PlaylistDB";
@@ -33,7 +33,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String SONG_KEY_COUNT = "song_count";
     private static final String SONG_KEY_ALBUM_NAME = "song_album_name";
     private final Context context;
-    public MySQLiteHelper(Context context) {
+    public PlaylistHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }

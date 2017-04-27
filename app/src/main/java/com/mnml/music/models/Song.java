@@ -1,4 +1,4 @@
-package com.mnml.music.items;
+package com.mnml.music.models;
 
 import java.io.Serializable;
 

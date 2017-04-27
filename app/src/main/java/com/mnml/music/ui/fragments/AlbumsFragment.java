@@ -16,7 +16,7 @@ import com.afollestad.async.Action;
 import com.bumptech.glide.Glide;
 import com.mnml.music.R;
 import com.mnml.music.adapters.AlbumsAdapter;
-import com.mnml.music.items.Album;
+import com.mnml.music.models.Album;
 import com.mnml.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;

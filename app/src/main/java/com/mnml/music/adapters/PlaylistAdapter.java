@@ -13,10 +13,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mnml.music.R;
-import com.mnml.music.items.Playlist;
+import com.mnml.music.models.Playlist;
 import com.mnml.music.ui.activity.PlaylistActivity;
 import com.mnml.music.utils.Config;
-import com.mnml.music.utils.MySQLiteHelper;
+import com.mnml.music.utils.PlaylistHelper;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                             item -> {
                                 switch (item.getItemId()) {
                                     case R.id.menu_playlist_delete:
-                                        MySQLiteHelper helper = new MySQLiteHelper(context);
+                                        PlaylistHelper helper = new PlaylistHelper(context);
                                         helper.removePlayList(items.get(finalPosition).getId());
                                         items.remove(finalPosition);
                                         notifyItemRemoved(finalPosition);
@@ -88,7 +88,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                         null,
                         (dialog, input) -> {
                             if (!input.toString().equals("")) {
-                                MySQLiteHelper helper = new MySQLiteHelper(context);
+                                PlaylistHelper helper = new PlaylistHelper(context);
                                 helper.renamePlaylist(input.toString(), items.get(pos).getId());
                                 items.get(pos).setName(input.toString());
                                 notifyItemChanged(pos);

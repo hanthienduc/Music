@@ -10,7 +10,7 @@ import android.support.v7.app.NotificationCompat;
 import android.support.v7.graphics.Palette;
 
 import com.mnml.music.R;
-import com.mnml.music.items.Song;
+import com.mnml.music.models.Song;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.activity.MainActivity;
 import com.kabouzeid.appthemehelper.ThemeStore;

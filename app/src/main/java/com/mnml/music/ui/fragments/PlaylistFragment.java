@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import com.kabouzeid.appthemehelper.ThemeStore;
 import com.mnml.music.R;
 import com.mnml.music.adapters.PlaylistAdapter;
-import com.mnml.music.items.Playlist;
-import com.mnml.music.utils.MySQLiteHelper;
+import com.mnml.music.models.Playlist;
+import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.Utils;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class PlaylistFragment extends Fragment {
 
     private View mainView;
     private RecyclerView rv;
-    private MySQLiteHelper helper;
+    private PlaylistHelper helper;
 
     @Override
     public View onCreateView(
@@ -36,7 +36,7 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void getPlaylistList() {
-        helper = new MySQLiteHelper(mainView.getContext());
+        helper = new PlaylistHelper(mainView.getContext());
         List<Playlist> playlistList = helper.getAllPlaylist();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

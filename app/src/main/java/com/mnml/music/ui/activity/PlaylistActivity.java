@@ -19,8 +19,8 @@ import com.bumptech.glide.Glide;
 import com.mnml.music.R;
 import com.mnml.music.adapters.CheckableSongsAdapter;
 import com.mnml.music.adapters.SongsAdapter;
-import com.mnml.music.items.CheckableSong;
-import com.mnml.music.utils.MySQLiteHelper;
+import com.mnml.music.models.CheckableSong;
+import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ATH;
 import com.kabouzeid.appthemehelper.ThemeStore;
@@ -54,7 +54,7 @@ public class PlaylistActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         RecyclerView rv = (RecyclerView) findViewById(R.id.rv_playlist_activity);
-        final MySQLiteHelper helper = new MySQLiteHelper(this);
+        final PlaylistHelper helper = new PlaylistHelper(this);
         playlistId = getIntent().getIntExtra("playlistId", -1);
         if (playlistId == -1) {
             finish();

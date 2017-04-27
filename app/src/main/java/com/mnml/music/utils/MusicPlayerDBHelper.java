@@ -6,13 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import com.mnml.music.items.Song;
+import com.mnml.music.models.Song;
 
 import java.util.ArrayList;
 
 public class MusicPlayerDBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "MusicPlayingDB";
     private static final String TABLE_PLAYBACK = "playback";
     private static final String SONG_KEY_ID = "song_id";
@@ -23,7 +23,6 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
     private static final String SONG_KEY_PATH = "song_path";
     private static final String SONG_KEY_NAME = "song_name";
     private static final String SONG_KEY_ALBUM_NAME = "song_album_name";
-    private static final String SONG_KEY_PLAYING = "song_playing";
     public MusicPlayerDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -40,9 +39,7 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
                         + "song_path TEXT,"
                         + "song_name TEXT,"
                         + "song_count INTEGER,"
-                        + "song_album_name TEXT,"
-                        + "song_mood TEXT,"
-                        + "song_playing INTEGER)";
+                        + "song_album_name TEXT)";
         db.execSQL(CREATE_PLAYBACK_TABLE);
     }
 
@@ -60,31 +57,20 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         Song song;
         if (cursor.moveToFirst()) {
             do {
-                song =
-                        new Song(
-                                Long.valueOf(cursor.getString(1)),
-                                cursor.getString(6),
-                                cursor.getString(3),
-                                cursor.getString(5),
-                                false,
-                                Long.parseLong(cursor.getString(2)),
-                                cursor.getString(8));
+                song = new Song(
+                        Long.valueOf(cursor.getString(1)),
+                        cursor.getString(6),
+                        cursor.getString(3),
+                        cursor.getString(5),
+                        false,
+                        Long.parseLong(cursor.getString(2)),
+                        cursor.getString(8));
                 songs.add(song);
             } while (cursor.moveToNext());
         }
         db.close();
         cursor.close();
         return songs;
-    }
-
-    public int getPlaybackTableSize() {
-        String query = "SELECT  * FROM " + TABLE_PLAYBACK;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        int count = cursor.getCount();
-        cursor.close();
-        db.close();
-        return count;
     }
 
     public void overwriteStoredList(ArrayList<Song> playList) {
@@ -101,7 +87,6 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
             values.put(SONG_KEY_PATH, song.getPath());
             values.put(SONG_KEY_NAME, song.getName());
             values.put(SONG_KEY_ALBUM_NAME, song.getAlbumName());
-            values.put(SONG_KEY_PLAYING, 0);
             db.insert(TABLE_PLAYBACK, null, values);
         }
     }

@@ -16,7 +16,7 @@ import com.afollestad.async.Action;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.mnml.music.R;
-import com.mnml.music.items.Song;
+import com.mnml.music.models.Song;
 import com.mnml.music.utils.glide.CircleTransform;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.Utils;

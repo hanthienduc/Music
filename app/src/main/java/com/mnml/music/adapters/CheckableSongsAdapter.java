@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import com.mnml.music.R;
-import com.mnml.music.items.CheckableSong;
+import com.mnml.music.models.CheckableSong;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -15,8 +15,8 @@ import android.widget.EdgeEffect;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mnml.music.R;
 import com.mnml.music.adapters.DialogPlaylistAdapter;
-import com.mnml.music.items.Playlist;
-import com.mnml.music.items.Song;
+import com.mnml.music.models.Playlist;
+import com.mnml.music.models.Song;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -162,7 +162,7 @@ public class Utils {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
-        MySQLiteHelper sqLiteHelper = new MySQLiteHelper(context);
+        PlaylistHelper sqLiteHelper = new PlaylistHelper(context);
         List<Playlist> playlist = sqLiteHelper.getAllPlaylist();
         playlist.add(new Playlist(-1, context.getString(R.string.create_new_playlist)));
         new MaterialDialog.Builder(context)

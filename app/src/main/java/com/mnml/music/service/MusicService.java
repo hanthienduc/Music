@@ -28,11 +28,11 @@ import android.widget.Toast;
 import com.afollestad.async.Action;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mnml.music.R;
-import com.mnml.music.items.Song;
+import com.mnml.music.models.Song;
 import com.mnml.music.ui.activity.MainActivity;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.MusicPlayerDBHelper;
-import com.mnml.music.utils.MySQLiteHelper;
+import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.NotificationHandler;
 import com.mnml.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ThemeStore;
@@ -131,13 +131,8 @@ public class MusicService extends Service {
                             break;
                         case Config.ADD_SONG_TO_PLAYLIST:
                             song = (Song) intent.getSerializableExtra("song");
-                            if (playerDBHelper.getPlaybackTableSize() != 0) {
-                                playingList.add(song);
-                                playerDBHelper.overwriteStoredList(playingList);
-                            } else {
-                                intent.setAction(Config.PLAY_SINGLE_SONG);
-                                sendBroadcast(intent);
-                            }
+                            playingList.add(song);
+                            playerDBHelper.overwriteStoredList(playingList);
                             break;
                         case Config.PLAY_FROM_PLAYLIST:
                             song = (Song) intent.getSerializableExtra("song");
@@ -145,7 +140,7 @@ public class MusicService extends Service {
                             updateCurrentPlaying();
                             break;
                         case Config.PLAY_PLAYLIST:
-                            MySQLiteHelper helper = new MySQLiteHelper(context);
+                            PlaylistHelper helper = new PlaylistHelper(context);
                             playingList = helper.getPlayListSongs(intent.getIntExtra("playlistId", -1));
                             playerDBHelper.overwriteStoredList(playingList);
                             playMusic(playingList.get(0));

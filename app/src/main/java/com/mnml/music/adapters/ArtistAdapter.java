@@ -1,8 +1,8 @@
 package com.mnml.music.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,17 +10,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.mnml.music.R;
-import com.mnml.music.items.Artist;
+import com.mnml.music.models.Artist;
 import com.mnml.music.ui.activity.ArtistDetailActivity;
-import com.mnml.music.utils.ArtistImgHandler;
 import com.mnml.music.utils.glide.CircleTransform;
 import com.mnml.music.utils.Utils;
+import com.mnml.music.utils.retrofit.Image;
+import com.mnml.music.utils.retrofit.LastFMApi;
+import com.mnml.music.utils.retrofit.LastFMArtist;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.io.File;
 import java.util.List;
 
 public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItemViewHolder>
@@ -28,14 +36,20 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     private final List<Artist> items;
     private final Context context;
-    private final DrawableRequestBuilder<File> glideRequest;
+    private final DrawableRequestBuilder<String> glideRequest;
 
     public ArtistAdapter(Context context, List<Artist> items, RequestManager glide) {
         this.items = items;
         this.context = context;
         final int px = Utils.dpToPx(context, 48);
-        this.glideRequest =
-                glide.fromFile().centerCrop().transform(new CircleTransform(context)).override(px, px);
+        this.glideRequest = glide
+                .fromString()
+                .centerCrop()
+                .transform(new CircleTransform(context))
+                .override(px, px)
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .placeholder(R.drawable.default_art)
+                .crossFade();
     }
 
     @NonNull
@@ -63,7 +77,6 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         int songCount = items.get(adapterPosition).getNumOfTracks();
         String artistItemsCount;
         holder.artistName.setText(items.get(adapterPosition).getName());
-        getArtistImg(holder, adapterPosition);
 
         if (albumCount == 1 && songCount == 1) {
             artistItemsCount =
@@ -104,37 +117,50 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
         }
         holder.artistDesc.setText(artistItemsCount);
 
-        holder.view.setOnClickListener(
-                view -> {
-                    Intent i = new Intent(context, ArtistDetailActivity.class);
-                    i.putExtra("artistName", items.get(adapterPosition).getName());
-                    context.startActivity(i);
-                });
-    }
+        holder.view.setOnClickListener(view -> {
+            Intent i = new Intent(context, ArtistDetailActivity.class);
+            i.putExtra("artistName", items.get(adapterPosition).getName());
+            context.startActivity(i);
+        });
 
-    private void getArtistImg(final SimpleItemViewHolder holder, int position) {
-        ArtistImgHandler imgHandler =
-                new ArtistImgHandler(context) {
-                    @Override
-                    public void onDownloadComplete(final String url) {
-                        if (url != null) ((Activity) context).runOnUiThread(() -> setImageToView(url, holder));
+        //TODO Turn this into a class we can call from anywhere
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("https://ws.audioscrobbler.com/2.0/")
+                .build();
+        LastFMApi lastFMApi = retrofit.create(LastFMApi.class);
+        final String artistName = Uri.parse(items.get(adapterPosition).getName()).toString();
+        Call<LastFMArtist> call = lastFMApi.getArtist(artistName);
+        call.enqueue(new Callback<LastFMArtist>() {
+            @Override
+            public void onResponse(Call<LastFMArtist> call, Response<LastFMArtist> response) {
+                if(response.isSuccessful()) {
+                    LastFMArtist artist = response.body();
+                    if(artist != null) {
+                        com.mnml.music.utils.retrofit.Artist artistInfo = artist.getArtist();
+                        if(artistInfo != null) {
+                            List<Image> images = artistInfo.getImage();
+                            if(images != null && !images.isEmpty()) {
+                                for(final Image image : images) {
+                                    if(image.getSize().equals("medium")) {
+                                        glideRequest
+                                                .load(image.getText())
+                                                .into(holder.artistImg);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
-                };
-        String path = imgHandler.getArtistImgFromDB("name");
-        if (path != null && !path.matches("")) {
-            setImageToView(path, holder);
-        } else {
-            String urlIfAny = imgHandler.getArtistArtWork(items.get(position).getName(), position);
-            setImageToView(urlIfAny, holder);
-        }
-    }
+                }
+            }
 
-    private void setImageToView(String url, final SimpleItemViewHolder holder) {
-        try {
-            glideRequest.load(new File(url)).into(holder.artistImg);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Call<LastFMArtist> call, Throwable throwable) {
+                Toast.makeText(context, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     @Override

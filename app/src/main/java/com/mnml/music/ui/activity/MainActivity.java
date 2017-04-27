@@ -32,7 +32,7 @@ import com.mnml.music.adapters.ViewPagerAdapter;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.fragments.*;
 import com.mnml.music.utils.Config;
-import com.mnml.music.utils.MySQLiteHelper;
+import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.Utils;
 import com.kabouzeid.appthemehelper.ATH;
 import com.kabouzeid.appthemehelper.ThemeStore;
@@ -437,7 +437,7 @@ public class MainActivity extends ATHToolbarActivity {
                                         null,
                                         (dialog, input) -> {
                                             if (!input.toString().equals("")) {
-                                                MySQLiteHelper helper = new MySQLiteHelper(MainActivity.this);
+                                                PlaylistHelper helper = new PlaylistHelper(MainActivity.this);
                                                 helper.createNewPlayList(input.toString());
                                                 playlistFragment.updateList();
                                             } else {

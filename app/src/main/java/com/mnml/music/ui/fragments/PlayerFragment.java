@@ -31,7 +31,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.mnml.music.R;
 import com.mnml.music.adapters.PlayingSongAdapter;
-import com.mnml.music.items.Song;
+import com.mnml.music.models.Song;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.activity.MainActivity;
 import com.mnml.music.utils.*;

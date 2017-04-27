@@ -26,7 +26,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.mnml.music.R;
 import com.mnml.music.adapters.SongsAdapter;
-import com.mnml.music.items.Song;
+import com.mnml.music.models.Song;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.utils.Utils;
 import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
