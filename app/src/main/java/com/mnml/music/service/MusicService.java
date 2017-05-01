@@ -46,6 +46,7 @@ public class MusicService extends Service {
     private final IBinder binder = new MyBinder();
     private MediaPlayer mediaPlayer;
     private boolean repeatOne = false, repeatAll = false, shuffle = false;
+    private float playbackSpeed = 1.0f;
     private MusicPlayerDBHelper playerDBHelper;
     private AudioManager audioManager;
     private MediaSessionCompat mediaSession;
@@ -237,7 +238,7 @@ public class MusicService extends Service {
 
     public void play() {
         if(mediaPlayer != null && !isPlaying && currentSong != null) {
-            final float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+            playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
             mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
             mediaPlayer.start();
             isPlaying = true;
@@ -328,64 +329,62 @@ public class MusicService extends Service {
     }
 
     private void playMusic(final Song song) {
-        int result =
-                audioManager.requestAudioFocus(
-                        afChangeListener,
-                        AudioManager.STREAM_MUSIC,
-                        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+        int result = audioManager.requestAudioFocus(
+                afChangeListener,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
 
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             currentSong = song;
-            if (activity != null) activity.updatePlayer();
             try {
                 stopMusic();
                 mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(song.getPath());
-                final Float playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+                playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
                 mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));
-                mediaPlayer.setOnPreparedListener(
-                        mp -> {
-                            isPlaying = true;
-                            mediaPlayer.start();
-                            updateSessionState();
-                            updateSessionMetadata();
-                            startForeground(Config.NOTIFICATION_ID, notificationHandler.startNotification(currentSong));
-                            if(activity != null) activity.updatePlayer();
-                        });
-                mediaPlayer.setOnCompletionListener(
-                        mp -> {
-                            isPlaying = false;
-                            updateSessionMetadata();
-                            updateSessionState();
-                            if (!repeatOne && !repeatAll) {
-                                Song song1 = playingList.get(playingList.indexOf(currentSong) + 1);
-                                if (song1 != null) {
-                                    playMusic(song1);
-                                } else {
-                                    stopMusic();
-                                }
-                                updateCurrentPlaying();
-                            } else if (repeatOne) {
-                                playMusic(song);
-                            } else {
-                                Song song1 = playingList.get(playingList.indexOf(currentSong) + 1);
-                                if (song1 != null) {
-                                    playMusic(song1);
-                                } else {
-                                    playMusic(playingList.get(0));
-                                }
-                                updateCurrentPlaying();
-                            }
-                        });
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                    mp.stop();
+                    return false;
+                });
+                mediaPlayer.setOnPreparedListener(mp -> {
+                    isPlaying = true;
+                    mediaPlayer.start();
+                    updateSessionState();
+                    updateSessionMetadata();
+                    startForeground(Config.NOTIFICATION_ID, notificationHandler.startNotification(currentSong));
+                    if(activity != null) activity.updatePlayer();
+                });
+                mediaPlayer.setOnCompletionListener(mp -> {
+                    isPlaying = false;
+                    updateSessionMetadata();
+                    updateSessionState();
+                    if (!repeatOne && !repeatAll) {
+                        Song nextSong = playingList.get(playingList.indexOf(currentSong) + 1);
+                        if (nextSong != null) {
+                            playMusic(nextSong);
+                        } else {
+                            stopMusic();
+                        }
+                        updateCurrentPlaying();
+                    } else if (repeatOne) {
+                        playMusic(song);
+                    } else {
+                        Song nextSong = playingList.get(playingList.indexOf(currentSong) + 1);
+                        if (nextSong != null) {
+                            playMusic(nextSong);
+                        } else {
+                            playMusic(playingList.get(0));
+                        }
+                        updateCurrentPlaying();
+                    }
+                });
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
-                Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT)
-                        .show();
+                Toast.makeText(MusicService.this, getString(R.string.file_invalid), Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(MusicService.this, getString(R.string.unable_gain_focus), Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(MusicService.this, getString(R.string.unable_gain_focus), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -478,6 +477,8 @@ public class MusicService extends Service {
             currentSong = playingList.get(0);
         }
         updateSessionState();
+
+        mediaPlayer = new MediaPlayer();
     }
 
     @Override
@@ -523,17 +524,7 @@ public class MusicService extends Service {
                         | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                         | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
 
-        float playbackSpeed;
-        if (mediaPlayer != null) {
-            try {
-                playbackSpeed = mediaPlayer.getPlaybackParams().getSpeed();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-                playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
-            }
-        } else {
-            playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
-        }
+        playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
         mediaSession.setPlaybackState(
                 new PlaybackStateCompat.Builder()
                         .setActions(playBackStateActions)

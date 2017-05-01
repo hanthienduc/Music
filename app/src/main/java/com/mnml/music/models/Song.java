@@ -10,12 +10,9 @@ public class Song implements Serializable {
     private final String desc;
     private final String path;
     private final String albumName;
-    private final Boolean fav;
 
-    public Song(
-            long id, String name, String desc, String path, Boolean fav, long albumId, String albumName) {
+    public Song(long id, String name, String desc, String path, long albumId, String albumName) {
         this.desc = desc;
-        this.fav = fav;
         this.path = path;
         this.id = id;
         this.name = name;
@@ -45,9 +42,5 @@ public class Song implements Serializable {
 
     public long getAlbumId() {
         return albumId;
-    }
-
-    public Boolean getFav() {
-        return fav;
     }
 }

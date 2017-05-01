@@ -79,7 +79,6 @@ public class Utils {
                                     musicCursor.getString(titleColumn),
                                     musicCursor.getString(artistColumn),
                                     musicCursor.getString(pathColumn),
-                                    false,
                                     musicCursor.getLong(albumIdColumn),
                                     musicCursor.getString(albumColumn)));
                 }
@@ -129,7 +128,6 @@ public class Utils {
                                 cursor.getString(titleColumn),
                                 cursor.getString(artistColumn),
                                 cursor.getString(pathColumn),
-                                false,
                                 cursor.getLong(albumIdColumn),
                                 cursor.getString(albumNameColumn)));
             } while (cursor.moveToNext());

@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.MediaStore;
-import com.mnml.music.models.CheckableSong;
 import com.mnml.music.models.Playlist;
 import com.mnml.music.models.Song;
 
@@ -27,10 +26,8 @@ public class PlaylistHelper extends SQLiteOpenHelper {
     private static final String SONG_KEY_PLAYLISTID = "song_playlist_id";
     private static final String SONG_KEY_ALBUMID = "song_album_id";
     private static final String SONG_KEY_DESC = "song_desc";
-    private static final String SONG_KEY_FAV = "song_fav";
     private static final String SONG_KEY_PATH = "song_path";
     private static final String SONG_KEY_NAME = "song_name";
-    private static final String SONG_KEY_COUNT = "song_count";
     private static final String SONG_KEY_ALBUM_NAME = "song_album_name";
     private final Context context;
     public PlaylistHelper(Context context) {
@@ -52,20 +49,17 @@ public class PlaylistHelper extends SQLiteOpenHelper {
                         + "song_playlist_id INTEGER,"
                         + "song_album_id INTEGER,"
                         + "song_desc TEXT,"
-                        + "song_fav INTEGER,"
                         + "song_path TEXT,"
                         + "song_name TEXT,"
                         + "song_count INTEGER,"
-                        + "song_album_name TEXT,"
-                        + "song_mood TEXT)";
+                        + "song_album_name TEXT)";
 
         String CREATE_MOOD_TABLE =
                 "CREATE TABLE moods ("
                         + "song_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                         + "song_artist TEXT,"
                         + "song_name TEXT,"
-                        + "song_album TEXT,"
-                        + "song_mood TEXT)";
+                        + "song_album TEXT)";
 
         db.execSQL(CREATE_MOOD_TABLE);
         db.execSQL(CREATE_PLAYLIST_TABLE);
@@ -145,35 +139,12 @@ public class PlaylistHelper extends SQLiteOpenHelper {
         values.put(SONG_KEY_PLAYLISTID, playlistId);
         values.put(SONG_KEY_ALBUMID, song.getAlbumId());
         values.put(SONG_KEY_DESC, song.getDesc());
-        values.put(SONG_KEY_FAV, song.getFav());
         values.put(SONG_KEY_PATH, song.getPath());
         values.put(SONG_KEY_NAME, song.getName());
         values.put(SONG_KEY_ALBUM_NAME, song.getAlbumName());
 
         db.insert(TABLE_SONG_FOR_PLAYLIST, null, values);
         db.close();
-    }
-
-    public void addSongs(List<CheckableSong> songList, int playlistId) {
-        int songListSize = songList.size();
-        int currentItem = 0;
-        while (currentItem < songListSize) {
-            CheckableSong item = songList.get(currentItem);
-            SQLiteDatabase db = this.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.putNull(SONG_KEY_ID);
-            values.put(SONG_KEY_REAL_ID, (int) item.getId());
-            values.put(SONG_KEY_PLAYLISTID, playlistId);
-            values.put(SONG_KEY_ALBUMID, item.getAlbumId());
-            values.put(SONG_KEY_DESC, item.getDesc());
-            values.put(SONG_KEY_PATH, item.getPath());
-            values.put(SONG_KEY_NAME, item.getName());
-            values.put(SONG_KEY_COUNT, item.getCount());
-            values.put(SONG_KEY_ALBUM_NAME, item.getAlbumName());
-            db.insert(TABLE_SONG_FOR_PLAYLIST, null, values);
-            db.close();
-            currentItem++;
-        }
     }
 
     public void addSong(String songName, int playlistId) {
@@ -207,7 +178,6 @@ public class PlaylistHelper extends SQLiteOpenHelper {
                     temp,
                     musicCursor.getString(artistColumn),
                     musicCursor.getString(pathColumn),
-                    false,
                     musicCursor.getLong(albumIdColumn),
                     musicCursor.getString(albumColumn));
         }
@@ -232,17 +202,13 @@ public class PlaylistHelper extends SQLiteOpenHelper {
         Song song;
         if (cursor.moveToFirst()) {
             do {
-                boolean fav;
-                fav = !cursor.getString(4).matches("0");
-                song =
-                        new Song(
-                                Long.valueOf(cursor.getString(1)),
-                                cursor.getString(7),
-                                cursor.getString(4),
-                                cursor.getString(6),
-                                fav,
-                                Long.parseLong(cursor.getString(3)),
-                                cursor.getString(9));
+                song = new Song(
+                        Long.valueOf(cursor.getString(1)),
+                        cursor.getString(7),
+                        cursor.getString(4),
+                        cursor.getString(6),
+                        Long.parseLong(cursor.getString(3)),
+                        cursor.getString(9));
                 songs.add(song);
             } while (cursor.moveToNext());
         }

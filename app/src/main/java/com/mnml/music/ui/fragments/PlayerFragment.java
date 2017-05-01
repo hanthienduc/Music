@@ -74,7 +74,6 @@ public class PlayerFragment extends Fragment {
     private Song currentPlaying;
     private PlayingSongAdapter adapter;
     private MediaPlayer mediaPlayer;
-    private int generatedColor;
     private boolean darkMode;
 
     @Override
@@ -113,16 +112,13 @@ public class PlayerFragment extends Fragment {
                             SlidingUpPanelLayout.PanelState newState) {
                         if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
                             if (playingBar != null) playingBar.setVisibility(View.GONE);
-                            activity.setStatusBarColor(Utils.getAutoStatColor(generatedColor));
                         } else if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED
                                 && playerView != null
                                 && playerView.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED) {
                             playerView.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                             if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
-                            activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
                         } else {
                             if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
-                            activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
                         }
                     }
                 });
@@ -318,12 +314,10 @@ public class PlayerFragment extends Fragment {
                                                 swatch = palette.getVibrantSwatch();
                                                 controlHolder.setBackgroundColor(swatch.getRgb());
                                                 play.setColorFilter(swatch.getRgb());
-                                                generatedColor = swatch.getRgb();
                                             } else if (palette.getDominantSwatch() != null) {
                                                 swatch = palette.getDominantSwatch();
                                                 controlHolder.setBackgroundColor(swatch.getRgb());
                                                 play.setColorFilter(swatch.getRgb());
-                                                generatedColor = swatch.getRgb();
                                             }
                                         }
                                     });

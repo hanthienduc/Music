@@ -15,13 +15,14 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
--keep class com.dominionos.music.adapters.*
--keep class com.dominionos.music.items.*
--keep class com.dominionos.music.service.*
--keep class com.dominionos.music.task.*
--keep class com.dominionos.music.ui.*
--keep class com.dominionos.music.utils.*
--keep class com.dominionos.music.utils.glide.*
+-keep class com.mnml.music.adapters.*
+-keep class com.mnml.music.models.*
+-keep class com.mnml.music.service.*
+-keep class com.mnml.music.task.*
+-keep class com.mnml.music.ui.*
+-keep class com.mnml.music.utils.*
+-keep class com.mnml.music.utils.glide.*
+-keep class com.boswelja.lastfm.*
 -dontwarn java.lang.invoke.*
 -dontwarn **$$Lambda$*
 -keep class .R

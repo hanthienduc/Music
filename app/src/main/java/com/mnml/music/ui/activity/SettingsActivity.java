@@ -9,6 +9,7 @@ import android.support.v7.preference.SeekBarPreference;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
+import com.kabouzeid.appthemehelper.common.prefs.supportv7.ATESwitchPreference;
 import com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEColorPreference;
 import com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceFragmentCompat;
 import com.mnml.music.R;
@@ -74,8 +75,20 @@ public class SettingsActivity extends ATHToolbarActivity
             addPreferencesFromResource(R.xml.prefs_appearance);
             configureAppearanceSettings();
 
+            addPreferencesFromResource(R.xml.prefs_general);
+            configureGeneralSettings();
+
             addPreferencesFromResource(R.xml.prefs_playback);
             configurePlaybackSettings();
+        }
+
+        private void configureGeneralSettings() {
+            final ATESwitchPreference googleServices = (ATESwitchPreference) findPreference("google_services");
+            final boolean isGoogleServicesAvailable = Utils.isGooglePlayServicesAvailable(getContext());
+            if(!isGoogleServicesAvailable) {
+                googleServices.getSharedPreferences().edit().putBoolean("google_services", false).apply();
+            }
+            googleServices.setEnabled(isGoogleServicesAvailable);
         }
 
         private void configurePlaybackSettings() {

@@ -1,18 +1,21 @@
 
-package com.mnml.music.utils.retrofit;
+package com.boswelja.lastfm.models.artist;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Artist {
+public class Artist_ {
 
     @SerializedName("name")
     @Expose
     private String name;
+    @SerializedName("url")
+    @Expose
+    private String url;
     @SerializedName("image")
     @Expose
-    private List<Image> image = null;
+    private List<Image_> image = null;
 
     public String getName() {
         return name;
@@ -22,11 +25,19 @@ public class Artist {
         this.name = name;
     }
 
-    public List<Image> getImage() {
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public List<Image_> getImage() {
         return image;
     }
 
-    public void setImage(List<Image> image) {
+    public void setImage(List<Image_> image) {
         this.image = image;
     }
 

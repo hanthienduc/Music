@@ -12,14 +12,13 @@ import java.util.ArrayList;
 
 public class MusicPlayerDBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "MusicPlayingDB";
     private static final String TABLE_PLAYBACK = "playback";
     private static final String SONG_KEY_ID = "song_id";
     private static final String SONG_KEY_REAL_ID = "song_real_id";
     private static final String SONG_KEY_ALBUMID = "song_album_id";
     private static final String SONG_KEY_DESC = "song_desc";
-    private static final String SONG_KEY_FAV = "song_fav";
     private static final String SONG_KEY_PATH = "song_path";
     private static final String SONG_KEY_NAME = "song_name";
     private static final String SONG_KEY_ALBUM_NAME = "song_album_name";
@@ -35,7 +34,6 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
                         + "song_real_id INTEGER,"
                         + "song_album_id INTEGER,"
                         + "song_desc TEXT,"
-                        + "song_fav INTEGER,"
                         + "song_path TEXT,"
                         + "song_name TEXT,"
                         + "song_count INTEGER,"
@@ -56,15 +54,20 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         Song song;
         if (cursor.moveToFirst()) {
+            int songNameIndex = cursor.getColumnIndex(SONG_KEY_NAME);
+            int songDescIndex = cursor.getColumnIndex(SONG_KEY_DESC);
+            int songIdIndex = cursor.getColumnIndex(SONG_KEY_REAL_ID);
+            int songPathIndex = cursor.getColumnIndex(SONG_KEY_PATH);
+            int albumNameIndex = cursor.getColumnIndex(SONG_KEY_ALBUM_NAME);
+            int albumIdIndex = cursor.getColumnIndex(SONG_KEY_ALBUMID);
             do {
                 song = new Song(
-                        Long.valueOf(cursor.getString(1)),
-                        cursor.getString(6),
-                        cursor.getString(3),
-                        cursor.getString(5),
-                        false,
-                        Long.parseLong(cursor.getString(2)),
-                        cursor.getString(8));
+                        Long.valueOf(cursor.getString(songIdIndex)),
+                        cursor.getString(songNameIndex),
+                        cursor.getString(songDescIndex),
+                        cursor.getString(songPathIndex),
+                        Long.parseLong(cursor.getString(albumIdIndex)),
+                        cursor.getString(albumNameIndex));
                 songs.add(song);
             } while (cursor.moveToNext());
         }
@@ -83,7 +86,6 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
             values.put(SONG_KEY_REAL_ID, (int) song.getId());
             values.put(SONG_KEY_ALBUMID, song.getAlbumId());
             values.put(SONG_KEY_DESC, song.getDesc());
-            values.put(SONG_KEY_FAV, song.getFav());
             values.put(SONG_KEY_PATH, song.getPath());
             values.put(SONG_KEY_NAME, song.getName());
             values.put(SONG_KEY_ALBUM_NAME, song.getAlbumName());
