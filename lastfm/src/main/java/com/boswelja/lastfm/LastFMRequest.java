@@ -9,48 +9,56 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LastFMRequest {
 
-    public LastFMRequest() {
+    private String query, apiKey;
+    private Retrofit.Builder retrofitBuilder;
 
+    public LastFMRequest() {
+        retrofitBuilder = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("https://ws.audioscrobbler.com/2.0/");
     }
 
-    public static final class Builder {
+    public ArtistTask setArtist() {
+        Retrofit retrofit = retrofitBuilder.build();
+        LastFMApi lastFMApi = retrofit.create(LastFMApi.class);
+        return new ArtistTask(lastFMApi, query, apiKey);
+    }
 
-        private LastFMApi lastFMApi;
-        private String mode, query;
-        private Retrofit.Builder retrofitBuilder;
-        private Callback<LastFMArtist> artistCallback;
+    public LastFMRequest setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+        return this;
+    }
 
-        public Builder() {
-            retrofitBuilder = new Retrofit.Builder()
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl("https://ws.audioscrobbler.com/2.0/");
-        }
+    public LastFMRequest setQuery(String query) {
+        this.query = query;
+        return this;
+    }
 
-        public Builder setMode(final String mode) {
-            this.mode = mode;
-            return this;
-        }
+    public LastFMRequest setCustomClient(final OkHttpClient client) {
+        retrofitBuilder.client(client);
+        return this;
+    }
 
-        public Builder queryName(String query) {
+    public static class ArtistTask {
+
+        private LastFMApi api;
+        private String query, apiKey;
+        private Callback<LastFMArtist> callback;
+
+        ArtistTask(LastFMApi api, String query, String apiKey) {
+            this.apiKey = apiKey;
+            this.api = api;
             this.query = query;
+        }
+
+        public ArtistTask setCallback(Callback<LastFMArtist> callback) {
+            this.callback = callback;
             return this;
         }
 
-        public Builder setCustomClient(final OkHttpClient client) {
-            retrofitBuilder.client(client);
-            return this;
-        }
-
-        public Builder setCallback(Callback<LastFMArtist> callback) {
-            artistCallback = callback;
-            return this;
-        }
-        public LastFMRequest build() {
-            Retrofit retrofit = retrofitBuilder.build();
-            lastFMApi = retrofit.create(LastFMApi.class);
-            Call<LastFMArtist> artistCall = lastFMApi.getArtist(query);
-            artistCall.enqueue(artistCallback);
-            return new LastFMRequest();
+        public void build() {
+            Call<LastFMArtist> artistCall = api.getArtist(query, apiKey);
+            artistCall.enqueue(callback);
         }
     }
 }

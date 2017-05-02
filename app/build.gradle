@@ -35,6 +35,7 @@ android {
 ext {
     supportLibVersion = '25.3.1'
     materialDialogsVersion = '0.9.4.4'
+    retroFitVersion = '2.2.0'
 }
 
 dependencies {
@@ -57,7 +58,9 @@ dependencies {
     compile "com.android.support:customtabs:$supportLibVersion"
     compile "com.afollestad.material-dialogs:core:$materialDialogsVersion"
     compile "com.afollestad.material-dialogs:commons:$materialDialogsVersion"
-    compile 'com.google.android.gms:play-services-base:10.2.1'
+    compile "com.squareup.retrofit2:retrofit:$retroFitVersion"
+    compile "com.squareup.retrofit2:converter-gson:$retroFitVersion"
+    compile 'com.google.android.gms:play-services-base:10.2.4'
     compile 'com.afollestad:async:0.2.3'
     compile 'com.simplecityapps:recyclerview-fastscroll:1.0.15'
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'

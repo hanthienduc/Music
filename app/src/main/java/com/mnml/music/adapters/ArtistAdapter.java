@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.boswelja.lastfm.LastFMRequest;
+import com.boswelja.lastfm.models.artist.Image;
 import com.boswelja.lastfm.models.artist.LastFMArtist;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
@@ -119,24 +121,32 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
             context.startActivity(i);
         });
 
-        LastFMRequest lastFMRequestBuilder = new LastFMRequest.Builder()
-                .queryName(Uri.parse(items.get(adapterPosition).getName()).toString())
+        new LastFMRequest()
+                .setApiKey(context.getString(R.string.lastfm_api_key))
+                .setQuery(Uri.parse(items.get(adapterPosition).getName()).toString())
+                .setArtist()
                 .setCallback(new Callback<LastFMArtist>() {
                     @Override
                     public void onResponse(Call<LastFMArtist> call, Response<LastFMArtist> response) {
                         if(response.isSuccessful()) {
-                            glideRequest
-                                    .load(response.body().getArtist().getImage().toString())
-                                    .into(holder.artistImg);
+                            List<Image> images = response.body().getArtist().getImage();
+                            if(images != null) {
+                                for (Image image : images) {
+                                    if(image.getSize().equals("medium")) {
+                                        glideRequest
+                                                .load(image.getText())
+                                                .into(holder.artistImg);
+                                    }
+                                }
+                            }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<LastFMArtist> call, Throwable throwable) {
-
+                        Toast.makeText(context, "Failed to get artist image", Toast.LENGTH_SHORT).show();
                     }
-                })
-                .build();
+                }).build();
     }
 
     @Override

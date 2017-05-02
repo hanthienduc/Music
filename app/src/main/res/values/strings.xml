@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mnml Player</string>
-    <string name="artist_fetch_url" translatable="false">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo
-    </string>
-    <string name="api" translatable="false">493fc564e6533635edcc4e0f371bf1da</string>
+    <string name="artist_fetch_url" translatable="false">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo</string>
+    <string name="lastfm_api_key" translatable="false">493fc564e6533635edcc4e0f371bf1da</string>
     <string name="artist_image">Artist Image</string>
 
     <!-- Navigation -->
@@ -49,7 +48,7 @@
     <string name="ok">OK</string>
 
     <!-- About screen -->
-    <string name="app_desc">A fast, lightweight music player with all the latest features!</string>
+    <string name="app_desc">A fast, material-design music player with all the latest features!</string>
     <string name="changelog">Changelog</string>
     <string name="donate">Donate</string>
     <string name="contributors">Contributors</string>
@@ -76,5 +75,7 @@
     <string name="primary_color">Primary color</string>
     <string name="accent_color">Accent color</string>
     <string name="search">Search</string>
+    <string name="google_services_title">Google services</string>
+    <string name="google_services_desc">Whether or not features that require Google services should be enabled</string>
 
 </resources>

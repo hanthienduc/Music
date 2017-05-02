@@ -72,18 +72,17 @@ public class MainActivity extends ATHToolbarActivity {
     private boolean darkMode = false, hasGoogleServices = false, googleServicesEnabled = false;
     private Drawer drawer;
     private IInAppBillingService billingService;
-    private ServiceConnection billingConnection =
-            new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName name, IBinder service) {
-                    billingService = IInAppBillingService.Stub.asInterface(service);
-                }
+    private ServiceConnection billingConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            billingService = IInAppBillingService.Stub.asInterface(service);
+        }
 
-                @Override
-                public void onServiceDisconnected(ComponentName name) {
-                    billingService = null;
-                }
-            };
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            billingService = null;
+        }
+    };
     private PlaylistFragment playlistFragment;
     private int primaryColor, accentColor;
     private MusicService service;
@@ -243,8 +242,7 @@ public class MainActivity extends ATHToolbarActivity {
                                     }
                                 } catch (RemoteException | JSONException | NullPointerException e) {
                                     e.printStackTrace();
-                                    Toast.makeText(view.getContext(), "Failed to get option data", Toast.LENGTH_SHORT)
-                                            .show();
+                                    Toast.makeText(view.getContext(), "Failed to get option data", Toast.LENGTH_SHORT).show();
                                 }
                             }
                             return true;
@@ -298,12 +296,9 @@ public class MainActivity extends ATHToolbarActivity {
         primaryColor = ThemeStore.primaryColor(this);
         accentColor = ThemeStore.accentColor(this);
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
-        ATH.setLightStatusbarAuto(this, Utils.getAutoStatColor(primaryColor));
-        ATH.setStatusbarColorAuto(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
-
         ATH.setActivityToolbarColorAuto(this, toolbar);
         tabLayout.setTabTextColors(
                 ToolbarContentTintHelper.toolbarSubtitleColor(this, primaryColor),
@@ -466,10 +461,16 @@ public class MainActivity extends ATHToolbarActivity {
                 .withToolbar(toolbar)
                 .withHeader(R.layout.header)
                 .withActionBarDrawerToggle(true)
-                .withCloseOnClick(true)
                 .withFullscreen(true)
+                .withCloseOnClick(true)
                 .addDrawerItems(
-                        songs, albums, artists, playlist, new DividerDrawerItem(), settings, about)
+                        songs,
+                        albums,
+                        artists,
+                        playlist,
+                        new DividerDrawerItem(),
+                        settings,
+                        about)
                 .withOnDrawerItemClickListener(
                         (view, position, drawerItem) -> {
                             switch ((int) drawerItem.getIdentifier()) {
@@ -487,15 +488,14 @@ public class MainActivity extends ATHToolbarActivity {
                                     break;
                                 case 5:
                                     Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                                    startActivityForResult(intent, Config.SETTINGS_REQUEST_CODE);
+                                    startActivity(intent);
                                     break;
                                 case 6:
                                     Colors colors = new Colors(primaryColor, Utils.getAutoStatColor(primaryColor));
                                     LibsBuilder builder = new LibsBuilder()
-                                            .withActivityStyle(
-                                                    darkMode
-                                                            ? Libs.ActivityStyle.DARK
-                                                            : Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                                            .withActivityStyle(darkMode
+                                                    ? Libs.ActivityStyle.DARK
+                                                    : Libs.ActivityStyle.LIGHT)
                                             .withSortEnabled(true)
                                             .withActivityColor(colors)
                                             .withAboutIconShown(true)
@@ -507,7 +507,7 @@ public class MainActivity extends ATHToolbarActivity {
                                             .withAboutSpecial2(getString(R.string.contributors))
                                             .withAboutSpecial2Description("Button 2")
                                             .withListener(libsListener);
-                                    if (hasGoogleServices) {
+                                    if (hasGoogleServices && googleServicesEnabled) {
                                         builder.withAboutSpecial3(getString(R.string.donate))
                                                 .withAboutSpecial3Description("Button 3");
                                     }
@@ -517,9 +517,9 @@ public class MainActivity extends ATHToolbarActivity {
                             return true;
                         })
                 .build();
-        drawer.getDrawerLayout().setFitsSystemWindows(false);
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         drawer.getHeader().findViewById(R.id.header).setBackgroundColor(primaryColor);
+        setStatusBarColor(Utils.getAutoStatColor(primaryColor));
         drawer.getActionBarDrawerToggle()
                 .getDrawerArrowDrawable()
                 .setColor(ToolbarContentTintHelper.toolbarContentColor(this, primaryColor));
@@ -537,10 +537,14 @@ public class MainActivity extends ATHToolbarActivity {
                     }
 
                     @Override
-                    public void onPageScrollStateChanged(int state) {
-                    }
+                    public void onPageScrollStateChanged(int state) {}
                 });
         drawer.setSelectionAtPosition(1);
+    }
+
+    public void setStatusBarColor(final int color) {
+        drawer.getDrawerLayout().getStatusBarBackgroundDrawable().setTint(color);
+        ATH.setLightStatusbarAuto(this, color);
     }
 
     @Override

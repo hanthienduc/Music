@@ -75,6 +75,7 @@ public class PlayerFragment extends Fragment {
     private PlayingSongAdapter adapter;
     private MediaPlayer mediaPlayer;
     private boolean darkMode;
+    private int color;
 
     @Override
     public View onCreateView(
@@ -112,13 +113,16 @@ public class PlayerFragment extends Fragment {
                             SlidingUpPanelLayout.PanelState newState) {
                         if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
                             if (playingBar != null) playingBar.setVisibility(View.GONE);
+                            activity.setStatusBarColor(Utils.getAutoStatColor(color));
                         } else if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED
                                 && playerView != null
                                 && playerView.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED) {
                             playerView.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                            activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
                             if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
                         } else {
                             if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
+                            activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
                         }
                     }
                 });
@@ -253,8 +257,7 @@ public class PlayerFragment extends Fragment {
                 new TimerTask() {
                     @Override
                     public void run() {
-                        activity.runOnUiThread(
-                                () -> {
+                        activity.runOnUiThread(() -> {
                                     if (mediaPlayer == null) mediaPlayer = service.getMediaPlayer();
                                     if (mediaPlayer != null && playerSeekBar != null && service.isPlaying()) {
                                         try {
@@ -303,8 +306,7 @@ public class PlayerFragment extends Fragment {
                             .transcode(new PaletteBitmapTranscoder(activity), PaletteBitmap.class)
                             .centerCrop()
                             .error(R.drawable.default_art)
-                            .into(
-                                    new ImageViewTarget<PaletteBitmap>(playingArt) {
+                            .into(new ImageViewTarget<PaletteBitmap>(playingArt) {
                                         @Override
                                         protected void setResource(PaletteBitmap resource) {
                                             super.view.setImageBitmap(resource.bitmap);
@@ -314,10 +316,14 @@ public class PlayerFragment extends Fragment {
                                                 swatch = palette.getVibrantSwatch();
                                                 controlHolder.setBackgroundColor(swatch.getRgb());
                                                 play.setColorFilter(swatch.getRgb());
+                                                color = swatch.getRgb();
                                             } else if (palette.getDominantSwatch() != null) {
                                                 swatch = palette.getDominantSwatch();
                                                 controlHolder.setBackgroundColor(swatch.getRgb());
                                                 play.setColorFilter(swatch.getRgb());
+                                                color = swatch.getRgb();
+                                            } else {
+                                                color = ThemeStore.primaryColor(context);
                                             }
                                         }
                                     });

@@ -60,4 +60,13 @@
         <item name="android:textColor">?attr/secondaryTextColor</item>
     </style>
 
+    <style name="PlayerButton">
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:padding">22dp</item>
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:background">@drawable/unbounded_ripple</item>
+    </style>
+
 </resources>

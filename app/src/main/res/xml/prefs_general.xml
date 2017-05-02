@@ -5,8 +5,8 @@
             android:title="General">
         <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATESwitchPreference
                 android:key="google_services"
-                android:title="Google Services"
-                android:summary="Whether or not features that require Google Services should be enabled"
+                android:title="@string/google_services_title"
+                android:summary="@string/google_services_desc"
                 android:defaultValue="true"
                 android:persistent="true"/>
     </com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
