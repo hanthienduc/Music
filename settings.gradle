@@ -1,1 +1,1 @@
-include ':app', ':lastfm'
+include ':app'

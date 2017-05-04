@@ -69,6 +69,7 @@ public class MainActivity extends ATHToolbarActivity {
     @BindView(R.id.main_tab_layout) TabLayout tabLayout;
 
     private Unbinder unbinder;
+    private Bundle savedInstance;
     private boolean darkMode = false, hasGoogleServices = false, googleServicesEnabled = false;
     private Drawer drawer;
     private IInAppBillingService billingService;
@@ -307,6 +308,7 @@ public class MainActivity extends ATHToolbarActivity {
         tabLayout.setSelectedTabIndicatorColor(accentColor);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        savedInstance = savedInstanceState;
 
         MainActivityPermissionsDispatcher.initWithCheck(this);
     }
@@ -516,6 +518,7 @@ public class MainActivity extends ATHToolbarActivity {
                             }
                             return true;
                         })
+                .withSavedInstance(savedInstance)
                 .build();
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         drawer.getHeader().findViewById(R.id.header).setBackgroundColor(primaryColor);
