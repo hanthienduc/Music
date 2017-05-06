@@ -16,12 +16,6 @@
                 android:persistent="true"
                 android:defaultValue="false"/>
 
-        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATESwitchPreference
-                android:key="substratum_theme"
-                android:title="Follow substratum theme"
-                android:defaultValue="false"
-                android:persistent="true"/>
-
         <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEColorPreference
                 android:key="primary_color"
                 android:persistent="false"
@@ -31,6 +25,11 @@
                 android:key="accent_color"
                 android:persistent="false"
                 android:title="Accent color"/>
+
+        <android.support.v7.preference.Preference
+                android:key="reset_theme"
+                android:title="Reset colors"
+                android:persistent="true"/>
     </com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

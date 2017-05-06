@@ -14,6 +14,7 @@
 
     <!-- Actions -->
     <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
     <string name="done">Done</string>
     <string name="play">Play</string>
     <string name="menu_playlist_delete">Delete</string>
@@ -75,5 +76,8 @@
     <string name="search">Search</string>
     <string name="google_services_title">Google services</string>
     <string name="google_services_desc">Whether or not features that require Google services should be enabled</string>
+    <string name="substratum_theme">Use Substratum theme colors</string>
+    <string name="reset_theme">Reset theme colors</string>
+    <string name="reset_theme_confirmation">"Are you sure? This will clear any custom colors you have set."</string>
 
 </resources>
