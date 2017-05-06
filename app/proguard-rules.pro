@@ -22,6 +22,7 @@
 -keep class com.mnml.music.ui.*
 -keep class com.mnml.music.utils.*
 -keep class com.mnml.music.utils.glide.*
+-keep class com.mnml.music.utils.shortcuts.*
 -keep class com.boswelja.lastfm.*
 -dontwarn java.lang.invoke.*
 -dontwarn **$$Lambda$*
@@ -29,6 +30,13 @@
 -keep class **.R$* {
     <fields>;
 }
+
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
 -keep class com.android.vending.billing.**
 
 # Platform calls Class.forName on types which do not exist on Android to determine platform.

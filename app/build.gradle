@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '25.0.3'
 
     defaultConfig {
         applicationId "com.mnml.music"
@@ -17,13 +17,19 @@ android {
     }
     buildTypes {
         release {
-            shrinkResources true
+            debuggable false
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
         debug {
-            applicationIdSuffix '.debug'
-            versionNameSuffix ' DEBUG'
+            debuggable true
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationIdSuffix '.test'
+            versionNameSuffix ' TEST'
         }
     }
     compileOptions {
@@ -43,12 +49,8 @@ dependencies {
     repositories {
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven {
-            url  "http://dl.bintray.com/boswelja/maven"
-        }
         jcenter()
     }
-    compile 'com.boswelja:lastfm-wrapper:0.3'
     compile "com.android.support:appcompat-v7:$supportLibVersion"
     compile "com.android.support:cardview-v7:$supportLibVersion"
     compile "com.android.support:recyclerview-v7:$supportLibVersion"
@@ -66,12 +68,12 @@ dependencies {
     compile "com.squareup.retrofit2:converter-gson:$retroFitVersion"
     compile 'com.google.android.gms:play-services-base:10.2.4'
     compile 'com.afollestad:async:0.2.3'
-    compile 'com.simplecityapps:recyclerview-fastscroll:1.0.15'
+    compile 'com.simplecityapps:recyclerview-fastscroll:1.0.16'
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
     compile 'com.github.kabouzeid:AndroidSlidingUpPanel:3.3.0-kmod3'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.github.bumptech.glide:glide:3.8.0'
     compile 'com.jakewharton:butterknife:8.5.1'
-    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.github.hotchemi:permissionsdispatcher:2.3.2'
     compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.5@aar') {
         transitive = true

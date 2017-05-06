@@ -1,8 +1,6 @@
 package com.mnml.music.utils;
 
 public class Config {
-    // Request codes
-    public static final int SETTINGS_REQUEST_CODE = 6118;
     public static final int DONATE_REQUEST_CODE = 5963;
 
     // In-App SKUs

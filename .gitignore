@@ -10,4 +10,5 @@ local.properties
 .idea/
 
 # Misc
-.DS_Store
+MnmlPlayer.apk
+app/src/main/web_hi_res_512.png

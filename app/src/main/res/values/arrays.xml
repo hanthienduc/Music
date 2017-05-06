@@ -14,4 +14,20 @@
         <item>Jack Boswell (boswelja) - Lead Developer</item>
         <item>Fauzan (F4uzan) - UI Tweaks &amp; Fixes</item>
     </string-array>
+
+    <string-array name="startPage">
+        <item>@string/songs</item>
+        <item>@string/albums</item>
+        <item>@string/artist</item>
+        <item>@string/playlist</item>
+        <item>Last open</item>
+    </string-array>
+
+    <string-array name="startPageNumber">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
 </resources>

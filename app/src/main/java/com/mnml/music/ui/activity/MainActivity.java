@@ -151,25 +151,24 @@ public class MainActivity extends ATHToolbarActivity {
                                     .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
                                     .itemsCallback(
                                             (materialDialog, view12, i, charSequence) -> {
-                                                String url;
-                                                CustomTabsIntent.Builder builder;
-                                                CustomTabsIntent customTabsIntent;
-                                                switch (charSequence.subSequence(0, 1).toString()) {
-                                                    case "J":
-                                                        url = "https://github.com/boswelja/";
-                                                        builder = new CustomTabsIntent.Builder();
-                                                        builder.setInstantAppsEnabled(true);
-                                                        builder.setToolbarColor(ThemeStore.primaryColor(view.getContext()));
-                                                        customTabsIntent = builder.build();
-                                                        customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
-                                                        break;
-                                                    case "F":
-                                                        url = "https://github.com/F4uzan/";
-                                                        builder = new CustomTabsIntent.Builder();
-                                                        builder.setInstantAppsEnabled(true);
-                                                        builder.setToolbarColor(ThemeStore.primaryColor(view.getContext()));
-                                                        customTabsIntent = builder.build();
-                                                        customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
+                                                String firstChar = charSequence.subSequence(0, 1).toString();
+                                                if(firstChar.equals("J") || firstChar.equals("F")) {
+                                                    String url;
+                                                    CustomTabsIntent.Builder builder;
+                                                    CustomTabsIntent customTabsIntent;
+                                                    builder = new CustomTabsIntent.Builder();
+                                                    builder.setInstantAppsEnabled(true);
+                                                    builder.setToolbarColor(ThemeStore.primaryColor(view.getContext()));
+                                                    customTabsIntent = builder.build();
+                                                    switch (firstChar) {
+                                                        case "J":
+                                                            url = "https://github.com/boswelja/";
+                                                            customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
+                                                            break;
+                                                        case "F":
+                                                            url = "https://github.com/F4uzan/";
+                                                            customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
+                                                    }
                                                 }
                                             })
                                     .show();
@@ -300,12 +299,12 @@ public class MainActivity extends ATHToolbarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
-        ATH.setActivityToolbarColorAuto(this, toolbar);
         tabLayout.setTabTextColors(
                 ToolbarContentTintHelper.toolbarSubtitleColor(this, primaryColor),
                 ToolbarContentTintHelper.toolbarTitleColor(this, primaryColor));
         tabLayout.setBackgroundColor(primaryColor);
         tabLayout.setSelectedTabIndicatorColor(accentColor);
+        ATH.setActivityToolbarColorAuto(this, toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         savedInstance = savedInstanceState;
@@ -330,7 +329,7 @@ public class MainActivity extends ATHToolbarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
 
         ToolbarContentTintHelper.setToolbarContentColorBasedOnToolbarColor(
@@ -339,7 +338,7 @@ public class MainActivity extends ATHToolbarActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         int id = item.getItemId();
         switch (id) {
             case R.id.play_all:
@@ -357,7 +356,7 @@ public class MainActivity extends ATHToolbarActivity {
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        Intent i = new Intent(MainActivity.this, MusicService.class);
+        final Intent i = new Intent(MainActivity.this, MusicService.class);
         bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
         startService(i);
 
@@ -368,14 +367,14 @@ public class MainActivity extends ATHToolbarActivity {
 
         setDrawer();
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         player = new PlayerFragment();
         transaction.replace(R.id.player_holder, player).commit();
 
         MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
 
         if(hasGoogleServices && googleServicesEnabled) {
-            Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
+            final Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
             serviceIntent.setPackage("com.android.vending");
             bindService(serviceIntent, billingConnection, Context.BIND_AUTO_CREATE);
         } else {
@@ -385,7 +384,7 @@ public class MainActivity extends ATHToolbarActivity {
     }
 
     private void setupViewPager() {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        final ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         playlistFragment = new PlaylistFragment();
         adapter.addFrag(new SongsFragment(), getResources().getString(R.string.songs));
         adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.album));
@@ -393,7 +392,7 @@ public class MainActivity extends ATHToolbarActivity {
         adapter.addFrag(playlistFragment, getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
-        viewPager.setOffscreenPageLimit(4);
+        viewPager.setOffscreenPageLimit(adapter.getCount());
         fab.setOnClickListener(v ->
                 new MaterialDialog.Builder(MainActivity.this)
                         .title(R.string.add_playlist)
@@ -542,7 +541,6 @@ public class MainActivity extends ATHToolbarActivity {
                     @Override
                     public void onPageScrollStateChanged(int state) {}
                 });
-        drawer.setSelectionAtPosition(1);
     }
 
     public void setStatusBarColor(final int color) {

@@ -9,6 +9,14 @@
                 android:summary="@string/google_services_desc"
                 android:defaultValue="true"
                 android:persistent="true"/>
+        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEListPreference
+                android:key="start_page"
+                android:title="Starting page"
+                android:summary="Choose which tab the app starts on"
+                android:persistent="true"
+                android:entries="@array/startPage"
+                android:entryValues="@array/startPageNumber"
+                android:defaultValue="0"/>
     </com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

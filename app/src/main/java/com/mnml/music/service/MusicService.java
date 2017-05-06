@@ -236,7 +236,7 @@ public class MusicService extends Service {
         }
     }
 
-    public void play() {
+    private void play() {
         if(mediaPlayer != null && !isPlaying && currentSong != null) {
             playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
             mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(playbackSpeed));

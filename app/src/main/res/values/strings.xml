@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mnml Player</string>
-    <string name="artist_fetch_url" translatable="false">http://ws.audioscrobbler.com/2.0/?method=artist.getinfo</string>
     <string name="lastfm_api_key" translatable="false">493fc564e6533635edcc4e0f371bf1da</string>
     <string name="artist_image">Artist Image</string>
 
@@ -14,7 +13,6 @@
     <string name="about">About</string>
 
     <!-- Actions -->
-    <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="done">Done</string>
     <string name="play">Play</string>
