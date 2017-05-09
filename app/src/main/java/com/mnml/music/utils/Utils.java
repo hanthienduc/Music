@@ -8,10 +8,8 @@ import android.graphics.Color;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.EdgeEffect;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mnml.music.R;
 import com.mnml.music.adapters.DialogPlaylistAdapter;
@@ -20,8 +18,6 @@ import com.mnml.music.models.Song;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -179,25 +175,5 @@ public class Utils {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         return (int) (dpWidth / Config.ALBUM_CARD_WIDTH);
-    }
-
-    public static void setEdgeGlowColor(final RecyclerView recyclerView, final int color) {
-        try {
-            final Class<?> clazz = RecyclerView.class;
-            for (final String name : new String[] {"ensureTopGlow", "ensureBottomGlow"}) {
-                Method method = clazz.getDeclaredMethod(name);
-                method.setAccessible(true);
-                method.invoke(recyclerView);
-            }
-            for (final String name : new String[] {"mTopGlow", "mBottomGlow"}) {
-                final Field field = clazz.getDeclaredField(name);
-                field.setAccessible(true);
-                final Object edge = field.get(recyclerView); // android.support.v4.widget.EdgeEffectCompat
-                final Field fEdgeEffect = edge.getClass().getDeclaredField("mEdgeEffect");
-                fEdgeEffect.setAccessible(true);
-                ((EdgeEffect) fEdgeEffect.get(edge)).setColor(color);
-            }
-        } catch (final Exception ignored) {}
-
     }
 }

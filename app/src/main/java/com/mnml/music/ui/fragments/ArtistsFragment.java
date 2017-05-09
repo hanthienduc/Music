@@ -17,7 +17,6 @@ import com.mnml.music.R;
 import com.mnml.music.adapters.ArtistAdapter;
 import com.mnml.music.models.Artist;
 import com.kabouzeid.appthemehelper.ThemeStore;
-import com.mnml.music.utils.Utils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ public class ArtistsFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
-        rv.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> Utils.setEdgeGlowColor(rv, ThemeStore.primaryColor(context)));
 
         getArtistList();
 

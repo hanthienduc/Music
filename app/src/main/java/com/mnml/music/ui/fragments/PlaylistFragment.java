@@ -8,12 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.kabouzeid.appthemehelper.ThemeStore;
 import com.mnml.music.R;
 import com.mnml.music.adapters.PlaylistAdapter;
 import com.mnml.music.models.Playlist;
 import com.mnml.music.utils.PlaylistHelper;
-import com.mnml.music.utils.Utils;
 
 import java.util.List;
 
@@ -44,7 +42,6 @@ public class PlaylistFragment extends Fragment {
         rv.setLayoutManager(linearLayoutManager);
         rv.setHasFixedSize(true);
         rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList));
-        rv.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> Utils.setEdgeGlowColor(rv, ThemeStore.primaryColor(getContext())));
     }
 
     public void updateList() {

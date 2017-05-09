@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -94,7 +93,6 @@ public class PlayerFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(0);
         playingListView.setLayoutManager(layoutManager);
-        playingListView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> Utils.setEdgeGlowColor(playingListView, ThemeStore.primaryColor(context)));
 
         slidingUpPanelLayout = activity.getSlidingPanel();
         slidingUpPanelLayout.setAntiDragView(playerSlidingPanel);
@@ -262,11 +260,7 @@ public class PlayerFragment extends Fragment {
                                     if (mediaPlayer != null && playerSeekBar != null && service.isPlaying()) {
                                         try {
                                             int seekProgress = mediaPlayer.getCurrentPosition();
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                                playerSeekBar.setProgress(seekProgress, true);
-                                            } else {
-                                                playerSeekBar.setProgress(seekProgress);
-                                            }
+                                            playerSeekBar.setProgress(seekProgress, true);
                                         } catch (IllegalStateException e) {
                                             e.printStackTrace();
                                         }

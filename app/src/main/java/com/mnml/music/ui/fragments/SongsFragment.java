@@ -54,6 +54,5 @@ public class SongsFragment extends Fragment {
         rv.setLayoutManager(layoutManager);
         final ArrayList<Song> songList = Utils.getAllSongs(context);
         rv.setAdapter(new SongsAdapter(context, songList, Glide.with(context), true));
-        rv.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> Utils.setEdgeGlowColor(rv, ThemeStore.primaryColor(context)));
     }
 }
