@@ -71,7 +71,9 @@ public class MainActivity extends ATHToolbarActivity {
     private Unbinder unbinder;
     private Bundle savedInstance;
     private boolean darkMode = false, hasGoogleServices = false, googleServicesEnabled = false;
+    private SharedPreferences sharedPrefs;
     private Drawer drawer;
+    private int startPage, lastPage;
     private IInAppBillingService billingService;
     private ServiceConnection billingConnection = new ServiceConnection() {
         @Override
@@ -273,7 +275,7 @@ public class MainActivity extends ATHToolbarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         hasGoogleServices = Utils.isGooglePlayServicesAvailable(this);
         if(!hasGoogleServices) {
             sharedPrefs.edit().putBoolean("google_services", false).apply();
@@ -350,6 +352,8 @@ public class MainActivity extends ATHToolbarActivity {
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     void init() {
+        startPage = Integer.decode(sharedPrefs.getString("start_page", "0"));
+        lastPage = sharedPrefs.getInt("last_page", 0);
         final ShortcutHandler shortcutHandler = new ShortcutHandler();
         shortcutHandler.create(this);
         TintHelper.setTintAuto(fab, accentColor, true);
@@ -360,12 +364,12 @@ public class MainActivity extends ATHToolbarActivity {
         bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
         startService(i);
 
+        setDrawer();
+
         setupViewPager();
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
         TintHelper.setTintAuto(tabLayout, primaryColor, true);
-
-        setDrawer();
 
         final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         player = new PlayerFragment();
@@ -391,7 +395,27 @@ public class MainActivity extends ATHToolbarActivity {
         adapter.addFrag(new ArtistsFragment(), getResources().getString(R.string.artist));
         adapter.addFrag(playlistFragment, getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(0);
+        viewPager.addOnPageChangeListener(
+                new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                        if (position == 3) fab.show();
+                        else fab.hide();
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {
+                        drawer.setSelection(position, false);
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {}
+                });
+        if(startPage != 4) {
+            viewPager.setCurrentItem(startPage);
+        } else {
+            viewPager.setCurrentItem(lastPage);
+        }
         viewPager.setOffscreenPageLimit(adapter.getCount());
         fab.setOnClickListener(v ->
                 new MaterialDialog.Builder(MainActivity.this)
@@ -525,22 +549,6 @@ public class MainActivity extends ATHToolbarActivity {
         drawer.getActionBarDrawerToggle()
                 .getDrawerArrowDrawable()
                 .setColor(ToolbarContentTintHelper.toolbarContentColor(this, primaryColor));
-        viewPager.addOnPageChangeListener(
-                new ViewPager.OnPageChangeListener() {
-                    @Override
-                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                        if (position == 3) fab.show();
-                        else fab.hide();
-                    }
-
-                    @Override
-                    public void onPageSelected(int position) {
-                        drawer.setSelection(position, false);
-                    }
-
-                    @Override
-                    public void onPageScrollStateChanged(int state) {}
-                });
     }
 
     public void setStatusBarColor(final int color) {
@@ -561,12 +569,13 @@ public class MainActivity extends ATHToolbarActivity {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        if(viewPager != null) sharedPrefs.edit().putInt("last_page", viewPager.getCurrentItem()).apply();
         unbinder.unbind();
         unbindService(serviceConnection);
         if (billingService != null) {
             unbindService(billingConnection);
         }
+        super.onDestroy();
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.mnml.music.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -10,13 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.boswelja.lastfm.LastFMRequest;
 import com.boswelja.lastfm.models.artist.Image;
 import com.boswelja.lastfm.models.artist.LastFMArtist;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.mnml.music.R;
 import com.mnml.music.models.Artist;
 import com.mnml.music.ui.activity.ArtistDetailActivity;
@@ -27,6 +31,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItemViewHolder>
@@ -39,14 +46,14 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
     public ArtistAdapter(Context context, List<Artist> items, RequestManager glide) {
         this.items = items;
         this.context = context;
-        final int px = Utils.dpToPx(context, 48);
+        final int px = Utils.dpToPx(context, 72);
         this.glideRequest = glide
                 .fromString()
                 .centerCrop()
                 .transform(new CircleTransform(context))
                 .override(px, px)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .placeholder(R.drawable.default_art)
+                .fallback(R.drawable.default_art)
                 .crossFade();
     }
 
@@ -121,9 +128,10 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
             context.startActivity(i);
         });
 
+        final String artistName = Uri.parse(items.get(adapterPosition).getName()).toString();
         new LastFMRequest()
                 .setApiKey(context.getString(R.string.lastfm_api_key))
-                .setQuery(Uri.parse(items.get(adapterPosition).getName()).toString())
+                .setQuery(artistName)
                 .setArtist()
                 .setCallback(new Callback<LastFMArtist>() {
                     @Override
@@ -135,7 +143,37 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                                     if(image.getSize().equals("medium")) {
                                         glideRequest
                                                 .load(image.getText())
+                                                .listener(new RequestListener<String, GlideDrawable>() {
+                                                    @Override
+                                                    public boolean onException(Exception e, String s, Target<GlideDrawable> target, boolean b) {
+                                                        return false;
+                                                    }
+
+                                                    @Override
+                                                    public boolean onResourceReady(GlideDrawable glideDrawable, String s, Target<GlideDrawable> target, boolean b, boolean b1) {
+                                                        GlideBitmapDrawable glideBitmapDrawable = (GlideBitmapDrawable) glideDrawable;
+                                                        Bitmap bm = glideBitmapDrawable.getBitmap();
+                                                        FileOutputStream out = null;
+                                                        try {
+                                                            File file = new File(context.getCacheDir(), artistName + ".png");
+                                                            out = new FileOutputStream(file);
+                                                            bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        } finally {
+                                                            try {
+                                                                if (out != null) {
+                                                                    out.close();
+                                                                }
+                                                            } catch (IOException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                        return false;
+                                                    }
+                                                })
                                                 .into(holder.artistImg);
+                                        return;
                                     }
                                 }
                             }
@@ -144,7 +182,10 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
                     @Override
                     public void onFailure(Call<LastFMArtist> call, Throwable throwable) {
-                        Toast.makeText(context, "Failed to get artist image", Toast.LENGTH_SHORT).show();
+                        File file = new File(context.getCacheDir(), artistName + ".png");
+                        glideRequest
+                                .load(file.getAbsolutePath())
+                                .into(holder.artistImg);
                     }
                 }).build();
     }

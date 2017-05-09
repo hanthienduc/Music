@@ -25,9 +25,6 @@ android {
 
         debug {
             debuggable true
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix '.test'
             versionNameSuffix ' TEST'
         }
