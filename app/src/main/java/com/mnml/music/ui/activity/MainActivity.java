@@ -346,6 +346,8 @@ public class MainActivity extends ATHToolbarActivity {
             case R.id.play_all:
                 if (service != null) service.playAllSongs();
                 return true;
+            case R.id.action_search:
+                startActivity(new Intent(MainActivity.this, SearchActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }

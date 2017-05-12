@@ -18,6 +18,7 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="primaryTextColor">@color/primaryTextLight</item>
         <item name="secondaryTextColor">@color/secondaryTextLight</item>
+        <item name="search_background_color">@color/lightContentColor</item>
     </style>
 
     <style name="AppTheme.Dark" parent="MaterialDrawerTheme">
@@ -36,6 +37,7 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="primaryTextColor">@color/primaryTextDark</item>
         <item name="secondaryTextColor">@color/secondaryTextDark</item>
+        <item name="search_background_color">@color/darkContentColour</item>
     </style>
 
     <style name="AppTheme.BrandedLaunch" parent="AppTheme.Light">

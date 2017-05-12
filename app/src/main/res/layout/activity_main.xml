@@ -35,7 +35,7 @@
         <android.support.design.widget.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="4dp">
+                android:elevation="4dp" android:id="@+id/main_appbar">
 
             <android.support.v7.widget.Toolbar
                     android:id="@+id/main_toolbar"
@@ -46,8 +46,7 @@
             <android.support.design.widget.TabLayout
                     android:id="@+id/main_tab_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:tabIndicatorColor="#fff"/>
+                    android:layout_height="wrap_content"/>
         </android.support.design.widget.AppBarLayout>
 
     </android.support.design.widget.CoordinatorLayout>
