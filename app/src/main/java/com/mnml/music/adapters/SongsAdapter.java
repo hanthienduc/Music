@@ -99,10 +99,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                                         File file = new File(items.get(adapterPosition).getPath());
                                         boolean deleted = file.delete();
                                         if (deleted) {
-                                            Toast.makeText(context, R.string.song_delete_success, Toast.LENGTH_SHORT)
-                                                    .show();
-                                            context
-                                                    .getContentResolver()
+                                            context.getContentResolver()
                                                     .delete(
                                                             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                                                             MediaStore.MediaColumns._ID
@@ -111,6 +108,8 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                                                                     + "'",
                                                             null);
                                             notifyItemRemoved(adapterPosition);
+                                            Toast.makeText(context, R.string.song_delete_success, Toast.LENGTH_SHORT)
+                                                    .show();
                                         } else
                                             Toast.makeText(context, R.string.song_delete_fail, Toast.LENGTH_SHORT).show();
                                         return true;
@@ -120,8 +119,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                     popupMenu.inflate(R.menu.song_popup_menu);
                     popupMenu.show();
                 });
-        holder.view.setOnClickListener(
-                v -> {
+        holder.view.setOnClickListener(v -> {
                     Intent a = new Intent();
                     a.setAction(Config.PLAY_SINGLE_SONG);
                     a.putExtra("song", items.get(adapterPosition));
