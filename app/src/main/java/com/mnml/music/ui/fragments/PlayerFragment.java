@@ -260,7 +260,7 @@ public class PlayerFragment extends Fragment {
                                     if (mediaPlayer != null && playerSeekBar != null && service.isPlaying()) {
                                         try {
                                             int seekProgress = mediaPlayer.getCurrentPosition();
-                                            playerSeekBar.setProgress(seekProgress, true);
+                                            playerSeekBar.setProgress(seekProgress);
                                         } catch (IllegalStateException e) {
                                             e.printStackTrace();
                                         }

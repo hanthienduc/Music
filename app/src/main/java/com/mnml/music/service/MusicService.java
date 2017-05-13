@@ -360,20 +360,28 @@ public class MusicService extends Service {
                     updateSessionMetadata();
                     updateSessionState();
                     if (!repeatOne && !repeatAll) {
-                        Song nextSong = playingList.get(playingList.indexOf(currentSong) + 1);
-                        if (nextSong != null) {
-                            playMusic(nextSong);
-                        } else {
+                        try {
+                            Song nextSong = playingList.get(playingList.indexOf(currentSong) + 1);
+                            if (nextSong != null) {
+                                playMusic(nextSong);
+                            } else {
+                                stopMusic();
+                            }
+                        } catch (IndexOutOfBoundsException ignored) {
                             stopMusic();
                         }
                         updateCurrentPlaying();
                     } else if (repeatOne) {
                         playMusic(song);
                     } else {
-                        Song nextSong = playingList.get(playingList.indexOf(currentSong) + 1);
-                        if (nextSong != null) {
-                            playMusic(nextSong);
-                        } else {
+                        try {
+                            Song nextSong = playingList.get(playingList.indexOf(currentSong) + 1);
+                            if (nextSong != null) {
+                                playMusic(nextSong);
+                            } else {
+                                playMusic(playingList.get(0));
+                            }
+                        } catch (IndexOutOfBoundsException ignored) {
                             playMusic(playingList.get(0));
                         }
                         updateCurrentPlaying();
@@ -525,12 +533,18 @@ public class MusicService extends Service {
                         | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
 
         playbackSpeed = sharedPrefs.getFloat("playback_speed_float", 1.0f);
+        int currentPosition;
+        try {
+            currentPosition = mediaPlayer.getCurrentPosition();
+        } catch (NullPointerException | IllegalStateException ignored) {
+            currentPosition = 0;
+        }
         mediaSession.setPlaybackState(
                 new PlaybackStateCompat.Builder()
                         .setActions(playBackStateActions)
                         .setState(
                                 playState,
-                                mediaPlayer != null ? mediaPlayer.getCurrentPosition() : 0,
+                                currentPosition,
                                 playbackSpeed)
                         .build());
     }

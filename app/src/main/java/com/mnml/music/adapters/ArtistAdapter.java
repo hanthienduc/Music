@@ -34,12 +34,13 @@ import retrofit2.Response;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItemViewHolder>
         implements FastScrollRecyclerView.SectionedAdapter {
 
-    private final List<Artist> items;
+    private List<Artist> items;
     private final Context context;
     private final DrawableRequestBuilder<String> glideRequest;
 
@@ -136,7 +137,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                 .setCallback(new Callback<LastFMArtist>() {
                     @Override
                     public void onResponse(Call<LastFMArtist> call, Response<LastFMArtist> response) {
-                        if(response.isSuccessful()) {
+                        if(response.isSuccessful() && response.body().getArtist() != null) {
                             List<Image> images = response.body().getArtist().getImage();
                             if(images != null) {
                                 for (Image image : images) {
@@ -188,6 +189,11 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                                 .into(holder.artistImg);
                     }
                 }).build();
+    }
+
+    public void updateData(ArrayList<Artist> newList) {
+        items = newList;
+        notifyDataSetChanged();
     }
 
     @Override

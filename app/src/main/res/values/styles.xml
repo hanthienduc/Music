@@ -19,6 +19,7 @@
         <item name="primaryTextColor">@color/primaryTextLight</item>
         <item name="secondaryTextColor">@color/secondaryTextLight</item>
         <item name="search_background_color">@color/lightContentColor</item>
+        <item name="search_theme">light</item>
     </style>
 
     <style name="AppTheme.Dark" parent="MaterialDrawerTheme">
@@ -38,6 +39,7 @@
         <item name="primaryTextColor">@color/primaryTextDark</item>
         <item name="secondaryTextColor">@color/secondaryTextDark</item>
         <item name="search_background_color">@color/darkContentColour</item>
+        <item name="search_theme">dark</item>
     </style>
 
     <style name="AppTheme.BrandedLaunch" parent="AppTheme.Light">
@@ -69,6 +71,12 @@
         <item name="android:layout_width">72dp</item>
         <item name="android:layout_height">72dp</item>
         <item name="android:background">@drawable/unbounded_ripple</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
     </style>
 
 </resources>

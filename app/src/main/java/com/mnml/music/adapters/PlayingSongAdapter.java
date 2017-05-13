@@ -17,7 +17,6 @@ import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.mnml.music.R;
 import com.mnml.music.models.Song;
-import com.mnml.music.utils.glide.CircleTransform;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.Utils;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder;
@@ -43,12 +42,10 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         this.darkMode = darkMode;
         this.currentSong = currentSong;
         final int px = Utils.dpToPx(context, 72);
-        this.glideRequest =
-                glide
+        this.glideRequest = glide
                         .fromString()
                         .centerCrop()
                         .crossFade()
-                        .transform(new CircleTransform(context))
                         .override(px, px);
         setHasStableIds(true);
     }
@@ -102,10 +99,13 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         }
         holder.view.setOnClickListener(
                 v -> {
+                    final Song song = songs.get(adapterPosition);
                     Intent a = new Intent();
                     a.setAction(Config.PLAY_FROM_PLAYLIST);
-                    a.putExtra("song", songs.get(adapterPosition));
+                    a.putExtra("song", song);
                     context.sendBroadcast(a);
+                    currentSong = song;
+                    notifyDataSetChanged();
                 });
         holder.menu.setOnClickListener(
                 v -> {

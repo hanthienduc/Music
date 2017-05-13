@@ -54,14 +54,6 @@ public class PlaylistHelper extends SQLiteOpenHelper {
                         + "song_count INTEGER,"
                         + "song_album_name TEXT)";
 
-        String CREATE_MOOD_TABLE =
-                "CREATE TABLE moods ("
-                        + "song_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                        + "song_artist TEXT,"
-                        + "song_name TEXT,"
-                        + "song_album TEXT)";
-
-        db.execSQL(CREATE_MOOD_TABLE);
         db.execSQL(CREATE_PLAYLIST_TABLE);
         db.execSQL(CREATE_SONGS_FOR_PLAYLIST_TABLE);
     }
@@ -200,15 +192,21 @@ public class PlaylistHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         Song song;
+        int titleColumn = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
+        int idColumn = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
+        int artistColumn = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
+        int pathColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+        int albumIdColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+        int albumColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
         if (cursor.moveToFirst()) {
             do {
                 song = new Song(
-                        Long.valueOf(cursor.getString(1)),
-                        cursor.getString(7),
-                        cursor.getString(4),
-                        cursor.getString(6),
-                        Long.parseLong(cursor.getString(3)),
-                        cursor.getString(9));
+                        cursor.getLong(idColumn),
+                        cursor.getString(titleColumn),
+                        cursor.getString(artistColumn),
+                        cursor.getString(pathColumn),
+                        cursor.getLong(albumIdColumn),
+                        cursor.getString(albumColumn));
                 songs.add(song);
             } while (cursor.moveToNext());
         }

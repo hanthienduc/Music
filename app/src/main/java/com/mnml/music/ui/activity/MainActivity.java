@@ -393,7 +393,7 @@ public class MainActivity extends ATHToolbarActivity {
         final ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         playlistFragment = new PlaylistFragment();
         adapter.addFrag(new SongsFragment(), getResources().getString(R.string.songs));
-        adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.album));
+        adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.albums));
         adapter.addFrag(new ArtistsFragment(), getResources().getString(R.string.artist));
         adapter.addFrag(playlistFragment, getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);

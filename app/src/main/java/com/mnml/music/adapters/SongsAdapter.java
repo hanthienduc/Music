@@ -24,12 +24,13 @@ import com.mnml.music.utils.Utils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemViewHolder>
         implements FastScrollRecyclerView.SectionedAdapter {
 
-    private final List<Song> items;
+    private List<Song> items;
     private final Context context;
     private final boolean shouldHaveArt;
     private final Intent i;
@@ -54,6 +55,11 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         } else {
             return "\u2605";
         }
+    }
+
+    public void updateData(ArrayList<Song> newList) {
+        items = newList;
+        notifyDataSetChanged();
     }
 
     @Override

@@ -28,21 +28,23 @@ import com.mnml.music.utils.glide.PaletteBitmapTranscoder;
 import com.mnml.music.utils.Utils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItemViewHolder>
         implements FastScrollRecyclerView.SectionedAdapter {
 
-    private final List<Album> items;
+    private List<Album> items;
     private final Context context;
     private final BitmapRequestBuilder<String, PaletteBitmap> glideRequest;
+    private final boolean isSearchLayout;
 
-    public AlbumsAdapter(Context context, List<Album> items, RequestManager glide) {
+    public AlbumsAdapter(Context context, List<Album> items, RequestManager glide, boolean isSearchLayout) {
         this.context = context;
         this.items = items;
         final int px = Utils.dpToPx(context, Config.ALBUM_CARD_WIDTH);
-        this.glideRequest =
-                glide
+        this.isSearchLayout = isSearchLayout;
+        this.glideRequest = glide
                         .fromString()
                         .asBitmap()
                         .transcode(new PaletteBitmapTranscoder(context), PaletteBitmap.class)
@@ -64,9 +66,14 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
 
     @Override
     public AlbumsAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.album, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(isSearchLayout ? R.layout.album_search : R.layout.album, parent, false);
 
         return new SimpleItemViewHolder(itemView);
+    }
+
+    public void updateData(ArrayList<Album> newList) {
+        items = newList;
+        notifyDataSetChanged();
     }
 
     @Override

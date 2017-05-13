@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -26,6 +27,7 @@ public class SongsFragment extends Fragment {
     private Context context;
     private Unbinder unbinder;
     @BindView(R.id.songs_fragment_list) FastScrollRecyclerView rv;
+    @BindView(R.id.no_songs) TextView noSongs;
 
     @Override
     public View onCreateView(
@@ -41,7 +43,11 @@ public class SongsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unbinder.unbind();
+        try {
+            unbinder.unbind();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
     private void init() {
@@ -53,6 +59,7 @@ public class SongsFragment extends Fragment {
         layoutManager.scrollToPosition(0);
         rv.setLayoutManager(layoutManager);
         final ArrayList<Song> songList = Utils.getAllSongs(context);
+        if(songList.isEmpty()) noSongs.setVisibility(View.VISIBLE);
         rv.setAdapter(new SongsAdapter(context, songList, Glide.with(context), true));
     }
 }

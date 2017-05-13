@@ -35,19 +35,21 @@ public class PlaylistFragment extends Fragment {
 
     private void getPlaylistList() {
         helper = new PlaylistHelper(mainView.getContext());
-        List<Playlist> playlistList = helper.getAllPlaylist();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         linearLayoutManager.scrollToPosition(0);
         rv.setLayoutManager(linearLayoutManager);
         rv.setHasFixedSize(true);
-        rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList));
+        updateList();
     }
 
     public void updateList() {
         PlaylistAdapter adapter = (PlaylistAdapter) rv.getAdapter();
+        List<Playlist> playlistList = helper.getAllPlaylist();
         if (adapter != null) {
-            adapter.updateData(helper.getAllPlaylist());
+            adapter.updateData(playlistList);
+        } else {
+            rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList));
         }
     }
 }

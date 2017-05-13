@@ -13,6 +13,8 @@ import android.view.View;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mnml.music.R;
 import com.mnml.music.adapters.DialogPlaylistAdapter;
+import com.mnml.music.models.Album;
+import com.mnml.music.models.Artist;
 import com.mnml.music.models.Playlist;
 import com.mnml.music.models.Song;
 import com.google.android.gms.common.ConnectionResult;
@@ -85,6 +87,80 @@ public class Utils {
             musicCursor.close();
         }
         return list;
+    }
+
+    public static ArrayList<Artist> getArtists(final Context context) {
+        final ArrayList<Artist> artistList = new ArrayList<>();
+        final String orderBy = MediaStore.Audio.Artists.ARTIST;
+        Cursor musicCursor =
+                context
+                        .getContentResolver()
+                        .query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, null, null, null, orderBy);
+
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST);
+            int numOfAlbumsColumn =
+                    musicCursor.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS);
+            int numOfTracksColumn =
+                    musicCursor.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_TRACKS);
+            do {
+                artistList.add(
+                        new Artist(
+                                musicCursor.getString(titleColumn),
+                                musicCursor.getInt(numOfTracksColumn),
+                                musicCursor.getInt(numOfAlbumsColumn)));
+            } while (musicCursor.moveToNext());
+        }
+        artistList.sort(Comparator.comparing(Artist::getName));
+
+        if (musicCursor != null) {
+            musicCursor.close();
+        }
+        return artistList;
+    }
+
+    public static boolean containsIgnoreCase(String str, String searchStr) {
+        if(str == null || searchStr == null) return false;
+
+        final int length = searchStr.length();
+        if (length == 0)
+            return true;
+
+        for (int i = str.length() - length; i >= 0; i--) {
+            if (str.regionMatches(true, i, searchStr, 0, length))
+                return true;
+        }
+        return false;
+    }
+
+    public static ArrayList<Album> getAlbums(Context context) {
+        final ArrayList<Album> albumList = new ArrayList<>();
+        final String orderBy = MediaStore.Audio.Albums.ALBUM;
+        final Cursor musicCursor =
+                context.getContentResolver()
+                        .query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, orderBy);
+
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
+            int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums._ID);
+            int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST);
+            int numOfSongsColumn =
+                    musicCursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS);
+            int albumArtColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
+            do {
+                albumList.add(
+                        new Album(
+                                musicCursor.getLong(idColumn),
+                                musicCursor.getString(titleColumn),
+                                musicCursor.getString(artistColumn),
+                                musicCursor.getString(albumArtColumn),
+                                musicCursor.getInt(numOfSongsColumn)));
+            } while (musicCursor.moveToNext());
+        }
+        albumList.sort(Comparator.comparing(Album::getName));
+
+        if (musicCursor != null) musicCursor.close();
+        return albumList;
     }
 
     public static ArrayList<Song> getAllSongs(final Context context) {

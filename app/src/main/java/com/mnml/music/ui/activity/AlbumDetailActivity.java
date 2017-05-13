@@ -171,6 +171,7 @@ public class AlbumDetailActivity extends ATHToolbarActivity {
     public void onDestroy() {
         super.onDestroy();
         unbinder.unbind();
+        unbindService(serviceConnection);
     }
 
     @Override
