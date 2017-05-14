@@ -35,7 +35,6 @@ import com.mnml.music.utils.MusicPlayerDBHelper;
 import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.NotificationHandler;
 import com.mnml.music.utils.Utils;
-import com.kabouzeid.appthemehelper.ThemeStore;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -568,7 +567,6 @@ public class MusicService extends Service {
                 new MaterialDialog.Builder(activity)
                         .title("Please wait")
                         .progress(true, 0)
-                        .widgetColor(ThemeStore.accentColor(this))
                         .show();
         new Action<ArrayList<Song>>() {
 

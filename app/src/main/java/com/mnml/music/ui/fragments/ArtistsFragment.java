@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,6 @@ import com.bumptech.glide.Glide;
 import com.mnml.music.R;
 import com.mnml.music.adapters.ArtistAdapter;
 import com.mnml.music.models.Artist;
-import com.kabouzeid.appthemehelper.ThemeStore;
 import com.mnml.music.utils.Utils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
@@ -38,7 +38,7 @@ public class ArtistsFragment extends Fragment {
 
         context = view.getContext();
 
-        final int accentColor = ThemeStore.accentColor(context);
+        final int accentColor = ContextCompat.getColor(context, R.color.colorAccent);
 
         rv.setPopupBgColor(accentColor);
         rv.setThumbColor(accentColor);

@@ -10,9 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.afollestad.aesthetic.AestheticActivity;
 import com.bumptech.glide.Glide;
-import com.kabouzeid.appthemehelper.ThemeStore;
-import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 import com.lapism.searchview.SearchFilter;
 import com.lapism.searchview.SearchView;
 import com.mnml.music.R;
@@ -27,7 +26,7 @@ import com.mnml.music.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends ATHToolbarActivity {
+public class SearchActivity extends AestheticActivity {
 
     @BindView(R.id.search_view)
     SearchView searchView;
@@ -120,10 +119,6 @@ public class SearchActivity extends ATHToolbarActivity {
     }
 
     private void init() {
-        final int color = ThemeStore.accentColor(this);
-        songHeader.setTextColor(color);
-        albumHeader.setTextColor(color);
-        artistHeader.setTextColor(color);
 
         final ArrayList<SearchFilter> searchFilters = new ArrayList<>();
         searchFilters.add(new SearchFilter(getString(R.string.songs), true));

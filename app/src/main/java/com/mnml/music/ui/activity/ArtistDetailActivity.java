@@ -8,18 +8,16 @@ import android.view.MenuItem;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.afollestad.aesthetic.AestheticActivity;
 import com.bumptech.glide.Glide;
 import com.mnml.music.R;
 import com.mnml.music.adapters.SongsAdapter;
 import com.mnml.music.models.Song;
 import com.mnml.music.utils.Utils;
-import com.kabouzeid.appthemehelper.ATH;
-import com.kabouzeid.appthemehelper.ThemeStore;
-import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
 
 import java.util.ArrayList;
 
-public class ArtistDetailActivity extends ATHToolbarActivity {
+public class ArtistDetailActivity extends AestheticActivity {
 
     @BindView(R.id.artist_toolbar) Toolbar toolbar;
     @BindView(R.id.artist_recycler_view) RecyclerView rv;
@@ -28,16 +26,12 @@ public class ArtistDetailActivity extends ATHToolbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        ATH.setActivityToolbarColorAuto(this, toolbar);
-        ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist);
         unbinder = ButterKnife.bind(this);
 
         String artistName = getIntent().getStringExtra("artistName");
 
-        toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -12,29 +12,22 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.afollestad.aesthetic.AestheticActivity;
 import com.bumptech.glide.Glide;
 import com.mnml.music.R;
 import com.mnml.music.adapters.SongsAdapter;
 import com.mnml.music.utils.PlaylistHelper;
-import com.mnml.music.utils.Utils;
-import com.kabouzeid.appthemehelper.ATH;
-import com.kabouzeid.appthemehelper.ThemeStore;
-import com.kabouzeid.appthemehelper.util.TintHelper;
 
-public class PlaylistActivity extends AppCompatActivity {
+public class PlaylistActivity extends AestheticActivity {
     @BindView(R.id.playlist_toolbar) Toolbar toolbar;
     private Unbinder unbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        ATH.setActivityToolbarColorAuto(this, toolbar);
-        ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
         unbinder = ButterKnife.bind(this);
-        toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
         setSupportActionBar(toolbar);
         String title = getIntent().getStringExtra("title");
         setTitle(title);
@@ -57,7 +50,6 @@ public class PlaylistActivity extends AppCompatActivity {
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.playlist_fab);
         fab.setOnClickListener(view -> Toast.makeText(this, "Coming soon", Toast.LENGTH_SHORT).show());
-        TintHelper.setTintAuto(fab, ThemeStore.accentColor(this), true);
     }
 
     @Override

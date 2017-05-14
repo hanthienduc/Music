@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.afollestad.aesthetic.AestheticActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -29,12 +30,10 @@ import com.mnml.music.adapters.SongsAdapter;
 import com.mnml.music.models.Song;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.utils.Utils;
-import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
-import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
 
 import java.util.ArrayList;
 
-public class AlbumDetailActivity extends ATHToolbarActivity {
+public class AlbumDetailActivity extends AestheticActivity {
 
     @BindView(R.id.collapsing_toolbar_album) CollapsingToolbarLayout collapsingToolbarLayout;
     private Unbinder unbinder;
@@ -134,12 +133,6 @@ public class AlbumDetailActivity extends ATHToolbarActivity {
                                         collapsingToolbarLayout.setStatusBarScrimColor(
                                                 Utils.getAutoStatColor(vibrantRgb));
                                         collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
-                                        ToolbarContentTintHelper.setToolbarContentColorBasedOnToolbarColor(
-                                                AlbumDetailActivity.this, toolbar, vibrantRgb);
-                                        int toolbarColor =
-                                                ToolbarContentTintHelper.toolbarTitleColor(
-                                                        AlbumDetailActivity.this, vibrantRgb);
-                                        collapsingToolbarLayout.setCollapsedTitleTextColor(toolbarColor);
                                     } catch (NullPointerException e) {
                                         Log.i(
                                                 "AlbumDetailActivity",

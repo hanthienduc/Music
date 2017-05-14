@@ -24,6 +24,8 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.afollestad.aesthetic.Aesthetic;
+import com.afollestad.aesthetic.AestheticActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.mnml.music.R;
@@ -34,17 +36,10 @@ import com.mnml.music.utils.Config;
 import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.shortcuts.ShortcutHandler;
 import com.mnml.music.utils.Utils;
-import com.kabouzeid.appthemehelper.ATH;
-import com.kabouzeid.appthemehelper.ThemeStore;
-import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
-import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
-import com.kabouzeid.appthemehelper.util.TintHelper;
-import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.LibsConfiguration;
 import com.mikepenz.aboutlibraries.entity.Library;
-import com.mikepenz.aboutlibraries.util.Colors;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -60,7 +55,7 @@ import permissions.dispatcher.RuntimePermissions;
 import java.util.ArrayList;
 
 @RuntimePermissions
-public class MainActivity extends ATHToolbarActivity {
+public class MainActivity extends AestheticActivity {
 
     @BindView(R.id.main_toolbar) Toolbar toolbar;
     @BindView(R.id.main_viewpager) ViewPager viewPager;
@@ -87,7 +82,6 @@ public class MainActivity extends ATHToolbarActivity {
         }
     };
     private PlaylistFragment playlistFragment;
-    private int primaryColor, accentColor;
     private MusicService service;
     private PlayerFragment player;
     private final ServiceConnection serviceConnection =
@@ -110,7 +104,6 @@ public class MainActivity extends ATHToolbarActivity {
                     String url = "https://github.com/MnmlOS/Music";
                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                     builder.setInstantAppsEnabled(true);
-                    builder.setToolbarColor(ThemeStore.primaryColor(view.getContext()));
                     CustomTabsIntent customTabsIntent = builder.build();
                     customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
                 }
@@ -139,7 +132,6 @@ public class MainActivity extends ATHToolbarActivity {
                                     .items(R.array.changelog)
                                     .autoDismiss(false)
                                     .positiveText(getString(R.string.done))
-                                    .positiveColor(ThemeStore.accentColor(view.getContext()))
                                     .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
                                     .show();
                             return true;
@@ -149,7 +141,6 @@ public class MainActivity extends ATHToolbarActivity {
                                     .items(R.array.contributors)
                                     .autoDismiss(false)
                                     .positiveText(getString(R.string.done))
-                                    .positiveColor(ThemeStore.accentColor(view.getContext()))
                                     .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
                                     .itemsCallback(
                                             (materialDialog, view12, i, charSequence) -> {
@@ -160,7 +151,6 @@ public class MainActivity extends ATHToolbarActivity {
                                                     CustomTabsIntent customTabsIntent;
                                                     builder = new CustomTabsIntent.Builder();
                                                     builder.setInstantAppsEnabled(true);
-                                                    builder.setToolbarColor(ThemeStore.primaryColor(view.getContext()));
                                                     customTabsIntent = builder.build();
                                                     switch (firstChar) {
                                                         case "J":
@@ -237,7 +227,6 @@ public class MainActivity extends ATHToolbarActivity {
                                                             })
                                                     .autoDismiss(false)
                                                     .positiveText(getString(R.string.done))
-                                                    .positiveColor(ThemeStore.accentColor(view.getContext()))
                                                     .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
                                                     .show();
                                         }
@@ -282,36 +271,32 @@ public class MainActivity extends ATHToolbarActivity {
         }
         googleServicesEnabled = sharedPrefs.getBoolean("google_services", false);
         boolean subsTheme = sharedPrefs.getBoolean("substratum_theme", false);
-        if (!ThemeStore.isConfigured(this, 1)) {
-            ThemeStore.editTheme(this)
-                    .activityTheme(R.style.AppTheme_Light)
-                    .primaryColorRes(R.color.colorPrimary)
-                    .accentColorRes(R.color.colorAccent)
-                    .commit();
-        }
-        if (subsTheme) {
-            ThemeStore.editTheme(this)
-                    .primaryColorRes(R.color.colorPrimary)
-                    .accentColorRes(R.color.colorAccent)
-                    .commit();
-        }
-        primaryColor = ThemeStore.primaryColor(this);
-        accentColor = ThemeStore.accentColor(this);
         darkMode = sharedPrefs.getBoolean("dark_theme", false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
-        tabLayout.setTabTextColors(
-                ToolbarContentTintHelper.toolbarSubtitleColor(this, primaryColor),
-                ToolbarContentTintHelper.toolbarTitleColor(this, primaryColor));
-        tabLayout.setBackgroundColor(primaryColor);
-        tabLayout.setSelectedTabIndicatorColor(accentColor);
-        ATH.setActivityToolbarColorAuto(this, toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         savedInstance = savedInstanceState;
 
         MainActivityPermissionsDispatcher.initWithCheck(this);
+
+        if (Aesthetic.isFirstTime()) {
+            Aesthetic.get()
+                    .activityTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light)
+                    .primaryColorRes(R.color.colorPrimary)
+                    .accentColorRes(R.color.colorAccent)
+                    .statusBarColorAuto()
+                    .isDark(darkMode)
+                    .apply();
+        }
+        if (subsTheme) {
+            Aesthetic.get()
+                    .primaryColorRes(R.color.colorPrimary)
+                    .accentColorRes(R.color.colorAccent)
+                    .statusBarColorAuto()
+                    .apply();
+        }
     }
 
     public MusicService getService() {
@@ -334,8 +319,6 @@ public class MainActivity extends ATHToolbarActivity {
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
 
-        ToolbarContentTintHelper.setToolbarContentColorBasedOnToolbarColor(
-                this, toolbar, menu, primaryColor);
         return true;
     }
 
@@ -358,7 +341,6 @@ public class MainActivity extends ATHToolbarActivity {
         lastPage = sharedPrefs.getInt("last_page", 0);
         final ShortcutHandler shortcutHandler = new ShortcutHandler();
         shortcutHandler.create(this);
-        TintHelper.setTintAuto(fab, accentColor, true);
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -371,13 +353,10 @@ public class MainActivity extends ATHToolbarActivity {
         setupViewPager();
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
-        TintHelper.setTintAuto(tabLayout, primaryColor, true);
 
         final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         player = new PlayerFragment();
         transaction.replace(R.id.player_holder, player).commit();
-
-        MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
 
         if(hasGoogleServices && googleServicesEnabled) {
             final Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
@@ -450,26 +429,18 @@ public class MainActivity extends ATHToolbarActivity {
 
     private void setDrawer() {
         final PrimaryDrawerItem songs = new PrimaryDrawerItem()
-                .withSelectedTextColor(accentColor)
-                .withSelectedIconColor(accentColor)
                 .withIdentifier(0)
                 .withName(R.string.songs)
                 .withIcon(MaterialDesignIconic.Icon.gmi_audio);
         final PrimaryDrawerItem albums = new PrimaryDrawerItem()
-                .withSelectedTextColor(accentColor)
-                .withSelectedIconColor(accentColor)
                 .withIdentifier(1)
                 .withName(R.string.albums)
                 .withIcon(MaterialDesignIconic.Icon.gmi_album);
         final PrimaryDrawerItem artists = new PrimaryDrawerItem()
-                .withSelectedTextColor(accentColor)
-                .withSelectedIconColor(accentColor)
                 .withIdentifier(2)
                 .withName(R.string.artist)
                 .withIcon(MaterialDesignIconic.Icon.gmi_account);
         final PrimaryDrawerItem playlist = new PrimaryDrawerItem()
-                .withSelectedTextColor(accentColor)
-                .withSelectedIconColor(accentColor)
                 .withIdentifier(3)
                 .withName(R.string.playlist)
                 .withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
@@ -518,13 +489,11 @@ public class MainActivity extends ATHToolbarActivity {
                                     startActivity(intent);
                                     break;
                                 case 6:
-                                    Colors colors = new Colors(primaryColor, Utils.getAutoStatColor(primaryColor));
                                     LibsBuilder builder = new LibsBuilder()
                                             .withActivityStyle(darkMode
                                                     ? Libs.ActivityStyle.DARK
                                                     : Libs.ActivityStyle.LIGHT)
                                             .withSortEnabled(true)
-                                            .withActivityColor(colors)
                                             .withAboutIconShown(true)
                                             .withAboutVersionShown(true)
                                             .withActivityTitle(getString(R.string.about))
@@ -546,16 +515,10 @@ public class MainActivity extends ATHToolbarActivity {
                 .withSavedInstance(savedInstance)
                 .build();
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-        drawer.getHeader().findViewById(R.id.header).setBackgroundColor(primaryColor);
-        setStatusBarColor(Utils.getAutoStatColor(primaryColor));
-        drawer.getActionBarDrawerToggle()
-                .getDrawerArrowDrawable()
-                .setColor(ToolbarContentTintHelper.toolbarContentColor(this, primaryColor));
     }
 
     public void setStatusBarColor(final int color) {
         drawer.getDrawerLayout().getStatusBarBackgroundDrawable().setTint(color);
-        ATH.setLightStatusbarAuto(this, color);
     }
 
     @Override
@@ -583,7 +546,7 @@ public class MainActivity extends ATHToolbarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (service != null) player.updatePlayer();
+        if (service != null && player != null) player.updatePlayer();
     }
 
     @Override

@@ -1,15 +1,15 @@
 <android.support.v7.preference.PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory
+    <android.support.v7.preference.PreferenceCategory
             android:title="General">
-        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATESwitchPreference
+        <android.support.v7.preference.SwitchPreference
                 android:key="google_services"
                 android:title="@string/google_services_title"
                 android:summary="@string/google_services_desc"
                 android:defaultValue="true"
                 android:persistent="true"/>
-        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEListPreference
+        <android.support.v7.preference.ListPreference
                 android:key="start_page"
                 android:title="Starting page"
                 android:summary="Choose which tab the app starts on"
@@ -17,6 +17,6 @@
                 android:entries="@array/startPage"
                 android:entryValues="@array/startPageNumber"
                 android:defaultValue="0"/>
-    </com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
+    </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

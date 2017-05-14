@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.graphics.Palette;
 
@@ -13,7 +14,6 @@ import com.mnml.music.R;
 import com.mnml.music.models.Song;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.activity.MainActivity;
-import com.kabouzeid.appthemehelper.ThemeStore;
 
 import java.io.File;
 
@@ -87,7 +87,7 @@ public class NotificationHandler {
                                 .setMediaSession(service.getSessionToken())
                                 .setShowActionsInCompactView(1))
                 .setShowWhen(false)
-                .setColor(p.getVibrantColor(ThemeStore.accentColor(service)))
+                .setColor(p.getVibrantColor(ContextCompat.getColor(service, R.color.colorAccent)))
                 .setContentIntent(launchAppIntent)
                 .setSmallIcon(R.drawable.ic_audiotrack)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

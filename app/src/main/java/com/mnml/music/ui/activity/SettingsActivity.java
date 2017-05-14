@@ -6,36 +6,29 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SeekBarPreference;
+import android.support.v7.preference.SwitchPreferenceCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import com.afollestad.aesthetic.Aesthetic;
+import com.afollestad.aesthetic.AestheticActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
-import com.kabouzeid.appthemehelper.common.prefs.supportv7.ATESwitchPreference;
-import com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEColorPreference;
-import com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceFragmentCompat;
 import com.mnml.music.R;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.Utils;
-import com.kabouzeid.appthemehelper.ATH;
-import com.kabouzeid.appthemehelper.ThemeStore;
-import com.kabouzeid.appthemehelper.common.ATHToolbarActivity;
-import com.kabouzeid.appthemehelper.util.MaterialDialogsUtil;
 
-public class SettingsActivity extends ATHToolbarActivity
+public class SettingsActivity extends AestheticActivity
         implements ColorChooserDialog.ColorCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        ATH.setActivityToolbarColorAuto(this, getATHToolbar());
-        ATH.setStatusbarColor(this, Utils.getAutoStatColor(ThemeStore.primaryColor(this)));
-        setTheme(ThemeStore.activityTheme(this));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        toolbar.setBackgroundColor(ThemeStore.primaryColor(this));
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -45,7 +38,6 @@ public class SettingsActivity extends ATHToolbarActivity
         transaction.replace(R.id.fragment_holder, new SettingsFragment());
         transaction.commit();
 
-        MaterialDialogsUtil.updateMaterialDialogsThemeSingleton(this);
     }
 
     @Override
@@ -59,10 +51,15 @@ public class SettingsActivity extends ATHToolbarActivity
     @Override
     public void onColorSelection(@NonNull ColorChooserDialog colorChooserDialog, int i) {
         if (!colorChooserDialog.isAccentMode()) {
-            ThemeStore.editTheme(this).primaryColor(i).commit();
+            Aesthetic.get()
+                    .primaryColor(i)
+                    .statusBarColorAuto()
+                    .apply();
             recreate();
         } else {
-            ThemeStore.editTheme(this).accentColor(i).commit();
+            Aesthetic.get()
+                    .accentColor(i)
+                    .apply();
             recreate();
         }
     }
@@ -72,7 +69,7 @@ public class SettingsActivity extends ATHToolbarActivity
     }
 
 
-    public static class SettingsFragment extends ATEPreferenceFragmentCompat implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    public static class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
         private static final String KEY_DARK_MODE = "dark_theme";
         private static final String KEY_RESET_THEME = "reset_theme";
         private static final String KEY_COLOR_PRIMARY = "primary_color";
@@ -96,7 +93,7 @@ public class SettingsActivity extends ATHToolbarActivity
         }
 
         private void configureGeneralSettings() {
-            final ATESwitchPreference googleServices = (ATESwitchPreference) findPreference(KEY_GOOGLE_SERVICES);
+            final SwitchPreferenceCompat googleServices = (SwitchPreferenceCompat) findPreference(KEY_GOOGLE_SERVICES);
             final boolean isGoogleServicesAvailable = Utils.isGooglePlayServicesAvailable(context);
             if(!isGoogleServicesAvailable) {
                 googleServices.getSharedPreferences().edit().putBoolean(KEY_GOOGLE_SERVICES, false).apply();
@@ -115,12 +112,10 @@ public class SettingsActivity extends ATHToolbarActivity
             darkMode.setOnPreferenceChangeListener(this);
             darkMode.callChangeListener(darkMode.getSharedPreferences().getBoolean(KEY_DARK_MODE, false));
 
-            final ATEColorPreference colorPrimaryPref = (ATEColorPreference) findPreference(KEY_COLOR_PRIMARY);
-            colorPrimaryPref.setColor(ThemeStore.primaryColor(getActivity()), ThemeStore.primaryColor(getActivity()));
+            final Preference colorPrimaryPref = findPreference(KEY_COLOR_PRIMARY);
             colorPrimaryPref.setOnPreferenceClickListener(this);
 
-            final ATEColorPreference colorAccentPref = (ATEColorPreference) findPreference(KEY_COLOR_ACCENT);
-            colorAccentPref.setColor(ThemeStore.accentColor(getActivity()), ThemeStore.accentColor(getActivity()));
+            final Preference colorAccentPref = findPreference(KEY_COLOR_ACCENT);
             colorAccentPref.setOnPreferenceClickListener(this);
 
             final Preference resetTheme = findPreference(KEY_RESET_THEME);
@@ -133,13 +128,12 @@ public class SettingsActivity extends ATHToolbarActivity
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             switch(preference.getKey()) {
                 case KEY_DARK_MODE:
-                    preference.setSummary(newValue.equals(true) ? getString(R.string.dark_mode_enabled) : getString(R.string.dark_mode_disabled));
-                    if(!newValue.equals(preference.getSharedPreferences().getBoolean(KEY_DARK_MODE, false))) {
-                        ThemeStore.editTheme(getActivity())
-                                .activityTheme(((Boolean) newValue) ? R.style.AppTheme_Dark : R.style.AppTheme_Light)
-                                .commit();
-                        getActivity().recreate();
-                    }
+                    final boolean darkMode = (Boolean) newValue;
+                    preference.setSummary(darkMode ? getString(R.string.dark_mode_enabled) : getString(R.string.dark_mode_disabled));
+                    Aesthetic.get()
+                            .activityTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light)
+                            .isDark(darkMode)
+                            .apply();
                     return true;
                 case KEY_PLAYBACK_SPEED:
                     float value = ((int) newValue) / 10.0f;
@@ -155,7 +149,6 @@ public class SettingsActivity extends ATHToolbarActivity
             switch(preference.getKey()) {
                 case KEY_COLOR_PRIMARY:
                     new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.primary_color)
-                            .preselect(ThemeStore.primaryColor(getActivity()))
                             .accentMode(false)
                             .allowUserColorInput(true)
                             .dynamicButtonColor(false)
@@ -164,7 +157,6 @@ public class SettingsActivity extends ATHToolbarActivity
                     return true;
                 case KEY_COLOR_ACCENT:
                     new ColorChooserDialog.Builder((SettingsActivity) getActivity(), R.string.accent_color)
-                            .preselect(ThemeStore.accentColor(getActivity()))
                             .accentMode(true)
                             .allowUserColorInput(true)
                             .customColors(Config.ACCENT_COLORS, Config.ACCENT_COLORS_SUB)
@@ -178,13 +170,13 @@ public class SettingsActivity extends ATHToolbarActivity
                             .content(getString(R.string.reset_theme_confirmation))
                             .positiveText(getString(R.string.yes))
                             .negativeText(getString(R.string.cancel))
-                            .onPositive((materialDialog, dialogAction) -> {
-                                ThemeStore.editTheme(context)
-                                        .primaryColor(context.getColor(R.color.colorPrimary))
-                                        .accentColor(context.getColor(R.color.colorAccent))
-                                        .commit();
-                                getActivity().recreate();
-                            })
+                            .onPositive((materialDialog, dialogAction) -> Aesthetic.get()
+                                    .isDark(false)
+                                    .activityTheme(R.style.AppTheme_Light)
+                                    .primaryColorRes(R.color.colorPrimary)
+                                    .statusBarColorAuto()
+                                    .accentColorRes(R.color.colorAccent)
+                                    .apply())
                             .show();
                     return true;
             }

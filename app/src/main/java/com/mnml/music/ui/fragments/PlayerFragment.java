@@ -36,7 +36,6 @@ import com.mnml.music.ui.activity.MainActivity;
 import com.mnml.music.utils.*;
 import com.mnml.music.utils.glide.PaletteBitmap;
 import com.mnml.music.utils.glide.PaletteBitmapTranscoder;
-import com.kabouzeid.appthemehelper.ThemeStore;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -116,11 +115,9 @@ public class PlayerFragment extends Fragment {
                                 && playerView != null
                                 && playerView.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED) {
                             playerView.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                            activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
                             if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
                         } else {
                             if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
-                            activity.setStatusBarColor(Utils.getAutoStatColor(ThemeStore.primaryColor(context)));
                         }
                     }
                 });
@@ -317,7 +314,7 @@ public class PlayerFragment extends Fragment {
                                                 play.setColorFilter(swatch.getRgb());
                                                 color = swatch.getRgb();
                                             } else {
-                                                color = ThemeStore.primaryColor(context);
+                                                color = ContextCompat.getColor(context, R.color.colorAccent);
                                             }
                                         }
                                     });

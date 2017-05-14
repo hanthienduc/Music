@@ -1,27 +1,27 @@
 <android.support.v7.preference.PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory
+    <android.support.v7.preference.PreferenceCategory
             android:title="@string/appearance">
-        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATESwitchPreference
+        <android.support.v7.preference.SwitchPreference
                 android:key="lock_screen_art"
                 android:title="@string/lock_screen_art"
                 android:summary="@string/lock_screen_art_summary"
                 android:defaultValue="true"
                 android:persistent="true"/>
 
-        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATESwitchPreference
+        <android.support.v7.preference.SwitchPreference
                 android:key="dark_theme"
                 android:title="@string/dark_mode"
                 android:persistent="true"
                 android:defaultValue="false"/>
 
-        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEColorPreference
+        <android.support.v7.preference.Preference
                 android:key="primary_color"
                 android:persistent="false"
                 android:title="Primary color"/>
 
-        <com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEColorPreference
+        <android.support.v7.preference.Preference
                 android:key="accent_color"
                 android:persistent="false"
                 android:title="Accent color"/>
@@ -30,6 +30,6 @@
                 android:key="reset_theme"
                 android:title="Reset colors"
                 android:persistent="true"/>
-    </com.kabouzeid.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
+    </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

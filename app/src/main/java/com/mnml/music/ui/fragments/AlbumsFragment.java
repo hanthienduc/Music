@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -14,8 +15,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
-import com.kabouzeid.appthemehelper.ThemeStore;
-import com.kabouzeid.appthemehelper.util.ToolbarContentTintHelper;
 import com.mnml.music.R;
 import com.mnml.music.adapters.AlbumsAdapter;
 import com.mnml.music.models.Album;
@@ -39,11 +38,10 @@ public class AlbumsFragment extends Fragment {
 
         context = getContext();
 
-        final int accentColor = ThemeStore.accentColor(context);
+        final int accentColor = ContextCompat.getColor(context, R.color.colorAccent);
 
         albumGrid.setPopupBgColor(accentColor);
         albumGrid.setThumbColor(accentColor);
-        albumGrid.setPopupTextColor(ToolbarContentTintHelper.toolbarTitleColor(context, accentColor));
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, Utils.calculateNoOfColumns(context));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         gridLayoutManager.scrollToPosition(0);
