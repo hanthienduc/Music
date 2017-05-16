@@ -284,17 +284,17 @@ public class MainActivity extends AestheticActivity {
         if (Aesthetic.isFirstTime()) {
             Aesthetic.get()
                     .activityTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light)
-                    .primaryColorRes(R.color.colorPrimary)
-                    .accentColorRes(R.color.colorAccent)
-                    .statusBarColorAuto()
+                    .colorPrimaryRes(R.color.colorPrimary)
+                    .colorAccentRes(R.color.colorAccent)
+                    .colorStatusBarAuto()
                     .isDark(darkMode)
                     .apply();
         }
         if (subsTheme) {
             Aesthetic.get()
-                    .primaryColorRes(R.color.colorPrimary)
-                    .accentColorRes(R.color.colorAccent)
-                    .statusBarColorAuto()
+                    .colorPrimaryRes(R.color.colorPrimary)
+                    .colorAccentRes(R.color.colorAccent)
+                    .colorStatusBarAuto()
                     .apply();
         }
     }

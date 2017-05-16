@@ -84,7 +84,7 @@ dependencies {
     compile 'com.github.hotchemi:permissionsdispatcher:2.3.2'
     compile 'com.lapism:searchview:4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.afollestad:aesthetic:0.0.5'
+    compile 'com.afollestad:aesthetic:0.2.0'
 
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.3.2'

@@ -52,13 +52,13 @@ public class SettingsActivity extends AestheticActivity
     public void onColorSelection(@NonNull ColorChooserDialog colorChooserDialog, int i) {
         if (!colorChooserDialog.isAccentMode()) {
             Aesthetic.get()
-                    .primaryColor(i)
-                    .statusBarColorAuto()
+                    .colorPrimary(i)
+                    .colorStatusBarAuto()
                     .apply();
             recreate();
         } else {
             Aesthetic.get()
-                    .accentColor(i)
+                    .colorAccent(i)
                     .apply();
             recreate();
         }
@@ -173,9 +173,9 @@ public class SettingsActivity extends AestheticActivity
                             .onPositive((materialDialog, dialogAction) -> Aesthetic.get()
                                     .isDark(false)
                                     .activityTheme(R.style.AppTheme_Light)
-                                    .primaryColorRes(R.color.colorPrimary)
-                                    .statusBarColorAuto()
-                                    .accentColorRes(R.color.colorAccent)
+                                    .colorPrimaryRes(R.color.colorPrimary)
+                                    .colorStatusBarAuto()
+                                    .colorAccentRes(R.color.colorAccent)
                                     .apply())
                             .show();
                     return true;
