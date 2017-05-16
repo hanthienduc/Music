@@ -3,13 +3,13 @@
 
     <android.support.v7.preference.PreferenceCategory
             android:title="General">
-        <android.support.v7.preference.SwitchPreference
+        <SwitchPreferenceCompat
                 android:key="google_services"
                 android:title="@string/google_services_title"
                 android:summary="@string/google_services_desc"
                 android:defaultValue="true"
                 android:persistent="true"/>
-        <android.support.v7.preference.ListPreference
+        <ListPreference
                 android:key="start_page"
                 android:title="Starting page"
                 android:summary="Choose which tab the app starts on"

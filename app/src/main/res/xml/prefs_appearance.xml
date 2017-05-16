@@ -3,30 +3,30 @@
 
     <android.support.v7.preference.PreferenceCategory
             android:title="@string/appearance">
-        <android.support.v7.preference.SwitchPreference
+        <SwitchPreferenceCompat
                 android:key="lock_screen_art"
                 android:title="@string/lock_screen_art"
                 android:summary="@string/lock_screen_art_summary"
                 android:defaultValue="true"
                 android:persistent="true"/>
 
-        <android.support.v7.preference.SwitchPreference
+        <SwitchPreferenceCompat
                 android:key="dark_theme"
                 android:title="@string/dark_mode"
                 android:persistent="true"
                 android:defaultValue="false"/>
 
-        <android.support.v7.preference.Preference
+        <Preference
                 android:key="primary_color"
                 android:persistent="false"
                 android:title="Primary color"/>
 
-        <android.support.v7.preference.Preference
+        <Preference
                 android:key="accent_color"
                 android:persistent="false"
                 android:title="Accent color"/>
 
-        <android.support.v7.preference.Preference
+        <Preference
                 android:key="reset_theme"
                 android:title="Reset colors"
                 android:persistent="true"/>
