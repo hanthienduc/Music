@@ -430,18 +430,26 @@ public class MainActivity extends AestheticActivity {
     private void setDrawer() {
         final PrimaryDrawerItem songs = new PrimaryDrawerItem()
                 .withIdentifier(0)
+                .withSelectedTextColor(Aesthetic.get().getColorAccent())
+                .withSelectedIconColor(Aesthetic.get().getColorAccent())
                 .withName(R.string.songs)
                 .withIcon(MaterialDesignIconic.Icon.gmi_audio);
         final PrimaryDrawerItem albums = new PrimaryDrawerItem()
                 .withIdentifier(1)
+                .withSelectedTextColor(Aesthetic.get().getColorAccent())
+                .withSelectedIconColor(Aesthetic.get().getColorAccent())
                 .withName(R.string.albums)
                 .withIcon(MaterialDesignIconic.Icon.gmi_album);
         final PrimaryDrawerItem artists = new PrimaryDrawerItem()
                 .withIdentifier(2)
+                .withSelectedTextColor(Aesthetic.get().getColorAccent())
+                .withSelectedIconColor(Aesthetic.get().getColorAccent())
                 .withName(R.string.artist)
                 .withIcon(MaterialDesignIconic.Icon.gmi_account);
         final PrimaryDrawerItem playlist = new PrimaryDrawerItem()
                 .withIdentifier(3)
+                .withSelectedTextColor(Aesthetic.get().getColorAccent())
+                .withSelectedIconColor(Aesthetic.get().getColorAccent())
                 .withName(R.string.playlist)
                 .withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
         final SecondaryDrawerItem settings = new SecondaryDrawerItem()

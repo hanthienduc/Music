@@ -91,7 +91,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'com.f2prateek.rx.preferences:rx-preferences:1.0.2'
     dependencies {
-        compile(name:'aesthetic-release', ext:'aar')
+        compile(name:'aesthetic-debug', ext:'aar')
     }
 
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
