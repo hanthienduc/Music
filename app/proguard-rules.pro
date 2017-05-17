@@ -25,7 +25,6 @@
 -keep class com.mnml.music.utils.shortcuts.*
 -keep class com.boswelja.lastfm.*
 
--keep class com.afollestad.aesthetic.rx.**
 -keep class com.afollestad.aesthetic.**
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
@@ -43,3 +42,4 @@
 -dontwarn okio.*
 -dontwarn java.lang.invoke.*
 -dontwarn **$$Lambda$*
+-dontwarn rx.**

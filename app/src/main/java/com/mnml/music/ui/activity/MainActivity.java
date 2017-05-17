@@ -1,15 +1,11 @@
 package com.mnml.music.ui.activity;
 
 import android.Manifest;
-import android.app.PendingIntent;
 import android.content.*;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
-import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
@@ -19,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,7 +22,6 @@ import butterknife.Unbinder;
 import com.afollestad.aesthetic.Aesthetic;
 import com.afollestad.aesthetic.AestheticActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.android.vending.billing.IInAppBillingService;
 import com.mnml.music.R;
 import com.mnml.music.adapters.ViewPagerAdapter;
 import com.mnml.music.service.MusicService;
@@ -36,10 +30,6 @@ import com.mnml.music.utils.Config;
 import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.shortcuts.ShortcutHandler;
 import com.mnml.music.utils.Utils;
-import com.mikepenz.aboutlibraries.Libs;
-import com.mikepenz.aboutlibraries.LibsBuilder;
-import com.mikepenz.aboutlibraries.LibsConfiguration;
-import com.mikepenz.aboutlibraries.entity.Library;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -51,8 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
-
-import java.util.ArrayList;
+import rx.Subscription;
 
 @RuntimePermissions
 public class MainActivity extends AestheticActivity {
@@ -63,24 +52,13 @@ public class MainActivity extends AestheticActivity {
     @BindView(R.id.sliding_layout) SlidingUpPanelLayout slidingUpPanelLayout;
     @BindView(R.id.main_tab_layout) TabLayout tabLayout;
 
+    private Subscription accentSubscription;
+    private int accentColor;
+    private PrimaryDrawerItem songs, albums, artists, playlists;
     private Unbinder unbinder;
-    private Bundle savedInstance;
-    private boolean darkMode = false, hasGoogleServices = false, googleServicesEnabled = false;
     private SharedPreferences sharedPrefs;
     private Drawer drawer;
     private int startPage, lastPage;
-    private IInAppBillingService billingService;
-    private ServiceConnection billingConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            billingService = IInAppBillingService.Stub.asInterface(service);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            billingService = null;
-        }
-    };
     private PlaylistFragment playlistFragment;
     private MusicService service;
     private PlayerFragment player;
@@ -97,191 +75,22 @@ public class MainActivity extends AestheticActivity {
                     service = null;
                 }
             };
-    private final LibsConfiguration.LibsListener libsListener =
-            new LibsConfiguration.LibsListener() {
-                @Override
-                public void onIconClicked(View view) {
-                    String url = "https://github.com/MnmlOS/Music";
-                    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                    builder.setInstantAppsEnabled(true);
-                    CustomTabsIntent customTabsIntent = builder.build();
-                    customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
-                }
-
-                @Override
-                public boolean onLibraryAuthorClicked(View view, Library library) {
-                    return false;
-                }
-
-                @Override
-                public boolean onLibraryContentClicked(View view, Library library) {
-                    return false;
-                }
-
-                @Override
-                public boolean onLibraryBottomClicked(View view, Library library) {
-                    return false;
-                }
-
-                @Override
-                public boolean onExtraClicked(View view, Libs.SpecialButton specialButton) {
-                    switch (specialButton.toString()) {
-                        case "SPECIAL1":
-                            new MaterialDialog.Builder(view.getContext())
-                                    .title(getString(R.string.changelog))
-                                    .items(R.array.changelog)
-                                    .autoDismiss(false)
-                                    .positiveText(getString(R.string.done))
-                                    .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
-                                    .show();
-                            return true;
-                        case "SPECIAL2":
-                            new MaterialDialog.Builder(view.getContext())
-                                    .title(getString(R.string.contributors))
-                                    .items(R.array.contributors)
-                                    .autoDismiss(false)
-                                    .positiveText(getString(R.string.done))
-                                    .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
-                                    .itemsCallback(
-                                            (materialDialog, view12, i, charSequence) -> {
-                                                String firstChar = charSequence.subSequence(0, 1).toString();
-                                                if(firstChar.equals("J") || firstChar.equals("F")) {
-                                                    String url;
-                                                    CustomTabsIntent.Builder builder;
-                                                    CustomTabsIntent customTabsIntent;
-                                                    builder = new CustomTabsIntent.Builder();
-                                                    builder.setInstantAppsEnabled(true);
-                                                    customTabsIntent = builder.build();
-                                                    switch (firstChar) {
-                                                        case "J":
-                                                            url = "https://github.com/boswelja/";
-                                                            customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
-                                                            break;
-                                                        case "F":
-                                                            url = "https://github.com/F4uzan/";
-                                                            customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
-                                                    }
-                                                }
-                                            })
-                                    .show();
-                            return true;
-                        case "SPECIAL3":
-                            if(hasGoogleServices && googleServicesEnabled) {
-                                ArrayList<String> skuList = new ArrayList<>();
-                                skuList.add(Config.DONATE_10);
-                                skuList.add(Config.DONATE_5);
-                                skuList.add(Config.DONATE_2);
-                                Bundle querySkus = new Bundle();
-                                querySkus.putStringArrayList("ITEM_ID_LIST", skuList);
-                                try {
-                                    Bundle skuDetails =
-                                            billingService.getSkuDetails(3, getPackageName(), "inapp", querySkus);
-                                    int response = skuDetails.getInt("RESPONSE_CODE");
-                                    if (response == 0) {
-                                        ArrayList<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
-
-                                        if (responseList != null) {
-                                            ArrayList<String> optionsList = new ArrayList<>();
-                                            for (String thisResponse : responseList) {
-                                                JSONObject object = new JSONObject(thisResponse);
-                                                String sku = object.getString("title");
-                                                if (sku != null) optionsList.add(sku.substring(0, sku.indexOf("(") - 1));
-                                            }
-                                            new MaterialDialog.Builder(view.getContext())
-                                                    .title("Donate")
-                                                    .items(optionsList)
-                                                    .itemsCallback(
-                                                            (materialDialog, view1, i, charSequence) -> {
-                                                                try {
-                                                                    String sku =
-                                                                            charSequence
-                                                                                    .toString()
-                                                                                    .toLowerCase()
-                                                                                    .replaceAll(" ", "")
-                                                                                    .replace("$", "");
-                                                                    if (sku.equals(Config.DONATE_2)
-                                                                            || sku.equals(Config.DONATE_5)
-                                                                            || sku.equals(Config.DONATE_10)) {
-                                                                        Bundle buyIntentBundle =
-                                                                                billingService.getBuyIntent(
-                                                                                        3, getPackageName(), sku, "inapp", "");
-                                                                        PendingIntent pendingIntent =
-                                                                                buyIntentBundle.getParcelable("BUY_INTENT");
-                                                                        if (pendingIntent != null)
-                                                                            startIntentSenderForResult(
-                                                                                    pendingIntent.getIntentSender(),
-                                                                                    Config.DONATE_REQUEST_CODE,
-                                                                                    new Intent(),
-                                                                                    0,
-                                                                                    0,
-                                                                                    0);
-                                                                    }
-                                                                } catch (RemoteException | IntentSender.SendIntentException e) {
-                                                                    e.printStackTrace();
-                                                                    Toast.makeText(
-                                                                            view.getContext(),
-                                                                            "Failed to send request",
-                                                                            Toast.LENGTH_SHORT)
-                                                                            .show();
-                                                                }
-                                                            })
-                                                    .autoDismiss(false)
-                                                    .positiveText(getString(R.string.done))
-                                                    .onPositive((materialDialog, dialogAction) -> materialDialog.dismiss())
-                                                    .show();
-                                        }
-                                    }
-                                } catch (RemoteException | JSONException | NullPointerException e) {
-                                    e.printStackTrace();
-                                    Toast.makeText(view.getContext(), "Failed to get option data", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            return true;
-                    }
-                    return false;
-                }
-
-                @Override
-                public boolean onIconLongClicked(View view) {
-                    return false;
-                }
-
-                @Override
-                public boolean onLibraryAuthorLongClicked(View view, Library library) {
-                    return false;
-                }
-
-                @Override
-                public boolean onLibraryContentLongClicked(View view, Library library) {
-                    return false;
-                }
-
-                @Override
-                public boolean onLibraryBottomLongClicked(View view, Library library) {
-                    return false;
-                }
-            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        hasGoogleServices = Utils.isGooglePlayServicesAvailable(this);
+        boolean hasGoogleServices = Utils.isGooglePlayServicesAvailable(this);
         if(!hasGoogleServices) {
             sharedPrefs.edit().putBoolean("google_services", false).apply();
         }
-        googleServicesEnabled = sharedPrefs.getBoolean("google_services", false);
-        boolean subsTheme = sharedPrefs.getBoolean("substratum_theme", false);
-        darkMode = sharedPrefs.getBoolean("dark_theme", false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        savedInstance = savedInstanceState;
-
-        MainActivityPermissionsDispatcher.initWithCheck(this);
 
         if (Aesthetic.isFirstTime()) {
+            final boolean darkMode = sharedPrefs.getBoolean("dark_theme", false);
             Aesthetic.get()
                     .activityTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light)
                     .colorPrimaryRes(R.color.colorPrimary)
@@ -290,13 +99,13 @@ public class MainActivity extends AestheticActivity {
                     .isDark(darkMode)
                     .apply();
         }
-        if (subsTheme) {
-            Aesthetic.get()
-                    .colorPrimaryRes(R.color.colorPrimary)
-                    .colorAccentRes(R.color.colorAccent)
-                    .colorStatusBarAuto()
-                    .apply();
-        }
+
+        MainActivityPermissionsDispatcher.initWithCheck(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     public MusicService getService() {
@@ -339,8 +148,10 @@ public class MainActivity extends AestheticActivity {
     void init() {
         startPage = Integer.decode(sharedPrefs.getString("start_page", "0"));
         lastPage = sharedPrefs.getInt("last_page", 0);
-        final ShortcutHandler shortcutHandler = new ShortcutHandler();
-        shortcutHandler.create(this);
+
+        initColorSubscribers();
+
+        initShortcuts();
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -348,24 +159,29 @@ public class MainActivity extends AestheticActivity {
         bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
         startService(i);
 
-        setDrawer();
+        initDrawer();
 
         setupViewPager();
-        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        tabLayout.setupWithViewPager(viewPager);
 
+        initPlayer();
+    }
+
+    private void initColorSubscribers() {
+        accentSubscription = Aesthetic.get().colorAccent().subscribe(integer -> {
+            accentColor = integer;
+            if(drawer != null && accentColor != 0) updateDrawerColors();
+        });
+    }
+
+    private void initShortcuts() {
+        final ShortcutHandler shortcutHandler = new ShortcutHandler();
+        shortcutHandler.create(this);
+    }
+
+    private void initPlayer() {
         final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         player = new PlayerFragment();
         transaction.replace(R.id.player_holder, player).commit();
-
-        if(hasGoogleServices && googleServicesEnabled) {
-            final Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
-            serviceIntent.setPackage("com.android.vending");
-            bindService(serviceIntent, billingConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            billingConnection = null;
-            billingService = null;
-        }
     }
 
     private void setupViewPager() {
@@ -398,6 +214,8 @@ public class MainActivity extends AestheticActivity {
             viewPager.setCurrentItem(lastPage);
         }
         viewPager.setOffscreenPageLimit(adapter.getCount());
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        tabLayout.setupWithViewPager(viewPager);
         fab.setOnClickListener(v ->
                 new MaterialDialog.Builder(MainActivity.this)
                         .title(R.string.add_playlist)
@@ -427,21 +245,48 @@ public class MainActivity extends AestheticActivity {
         return slidingUpPanelLayout;
     }
 
-    private void setDrawer() {
-        final PrimaryDrawerItem songs = new PrimaryDrawerItem()
+    private void updateDrawerColors() {
+        songs
+                .withSelectedIconColor(accentColor)
+                .withSelectedTextColor(accentColor);
+        albums
+                .withSelectedIconColor(accentColor)
+                .withSelectedTextColor(accentColor);
+        artists
+                .withSelectedIconColor(accentColor)
+                .withSelectedTextColor(accentColor);
+        playlists
+                .withSelectedIconColor(accentColor)
+                .withSelectedTextColor(accentColor);
+        drawer.updateItem(songs);
+        drawer.updateItem(albums);
+        drawer.updateItem(artists);
+        drawer.updateItem(playlists);
+    }
+
+    private void initDrawer() {
+        songs = new PrimaryDrawerItem()
                 .withIdentifier(0)
+                .withSelectedTextColor(accentColor)
+                .withSelectedIconColor(accentColor)
                 .withName(R.string.songs)
                 .withIcon(MaterialDesignIconic.Icon.gmi_audio);
-        final PrimaryDrawerItem albums = new PrimaryDrawerItem()
+        albums = new PrimaryDrawerItem()
                 .withIdentifier(1)
+                .withSelectedTextColor(accentColor)
+                .withSelectedIconColor(accentColor)
                 .withName(R.string.albums)
                 .withIcon(MaterialDesignIconic.Icon.gmi_album);
-        final PrimaryDrawerItem artists = new PrimaryDrawerItem()
+        artists = new PrimaryDrawerItem()
                 .withIdentifier(2)
+                .withSelectedTextColor(accentColor)
+                .withSelectedIconColor(accentColor)
                 .withName(R.string.artist)
                 .withIcon(MaterialDesignIconic.Icon.gmi_account);
-        final PrimaryDrawerItem playlist = new PrimaryDrawerItem()
+        playlists = new PrimaryDrawerItem()
                 .withIdentifier(3)
+                .withSelectedTextColor(accentColor)
+                .withSelectedIconColor(accentColor)
                 .withName(R.string.playlist)
                 .withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
         final SecondaryDrawerItem settings = new SecondaryDrawerItem()
@@ -465,7 +310,7 @@ public class MainActivity extends AestheticActivity {
                         songs,
                         albums,
                         artists,
-                        playlist,
+                        playlists,
                         new DividerDrawerItem(),
                         settings,
                         about)
@@ -489,30 +334,11 @@ public class MainActivity extends AestheticActivity {
                                     startActivity(intent);
                                     break;
                                 case 6:
-                                    LibsBuilder builder = new LibsBuilder()
-                                            .withActivityStyle(darkMode
-                                                    ? Libs.ActivityStyle.DARK
-                                                    : Libs.ActivityStyle.LIGHT)
-                                            .withSortEnabled(true)
-                                            .withAboutIconShown(true)
-                                            .withAboutVersionShown(true)
-                                            .withActivityTitle(getString(R.string.about))
-                                            .withAboutDescription(getString(R.string.app_desc))
-                                            .withAboutSpecial1(getString(R.string.changelog))
-                                            .withAboutSpecial1Description("Button 1")
-                                            .withAboutSpecial2(getString(R.string.contributors))
-                                            .withAboutSpecial2Description("Button 2")
-                                            .withListener(libsListener);
-                                    if (hasGoogleServices && googleServicesEnabled) {
-                                        builder.withAboutSpecial3(getString(R.string.donate))
-                                                .withAboutSpecial3Description("Button 3");
-                                    }
-                                    builder.start(this);
+                                    startActivity(new Intent(MainActivity.this, AboutActivity.class));
                                     break;
                             }
                             return true;
                         })
-                .withSavedInstance(savedInstance)
                 .build();
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
     }
@@ -537,9 +363,7 @@ public class MainActivity extends AestheticActivity {
         if(viewPager != null) sharedPrefs.edit().putInt("last_page", viewPager.getCurrentItem()).apply();
         unbinder.unbind();
         unbindService(serviceConnection);
-        if (billingService != null) {
-            unbindService(billingConnection);
-        }
+        if(!accentSubscription.isUnsubscribed()) accentSubscription.unsubscribe();
         super.onDestroy();
     }
 
