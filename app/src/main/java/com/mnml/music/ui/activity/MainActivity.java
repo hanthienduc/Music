@@ -26,7 +26,6 @@ import com.mnml.music.R;
 import com.mnml.music.adapters.ViewPagerAdapter;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.fragments.*;
-import com.mnml.music.utils.Config;
 import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.shortcuts.ShortcutHandler;
 import com.mnml.music.utils.Utils;
@@ -38,8 +37,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import io.reactivex.disposables.Disposable;
-import org.json.JSONException;
-import org.json.JSONObject;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
@@ -378,32 +375,5 @@ public class MainActivity extends AestheticActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // NOTE: delegate the permission handling to generated method
         MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Config.DONATE_REQUEST_CODE) {
-            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-
-            if (resultCode == RESULT_OK) {
-                try {
-                    JSONObject jo = new JSONObject(purchaseData);
-                    String sku = jo.getString("productId");
-                    switch (sku) {
-                        case "donate2":
-                            Toast.makeText(this, "Thanks for donating $2", Toast.LENGTH_SHORT).show();
-                            break;
-                        case "donate5":
-                            Toast.makeText(this, "Thanks for donating $5", Toast.LENGTH_SHORT).show();
-                            break;
-                        case "donate10":
-                            Toast.makeText(this, "Thanks for donating $10", Toast.LENGTH_SHORT).show();
-                            break;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }

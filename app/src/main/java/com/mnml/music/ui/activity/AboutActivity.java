@@ -291,4 +291,31 @@ public class AboutActivity extends AestheticActivity {
             unbindService(billingConnection);
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Config.DONATE_REQUEST_CODE) {
+            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+
+            if (resultCode == RESULT_OK) {
+                try {
+                    JSONObject jo = new JSONObject(purchaseData);
+                    String sku = jo.getString("productId");
+                    switch (sku) {
+                        case "donate2":
+                            Toast.makeText(this, "Thanks for donating $2", Toast.LENGTH_SHORT).show();
+                            break;
+                        case "donate5":
+                            Toast.makeText(this, "Thanks for donating $5", Toast.LENGTH_SHORT).show();
+                            break;
+                        case "donate10":
+                            Toast.makeText(this, "Thanks for donating $10", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
