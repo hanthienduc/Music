@@ -112,8 +112,7 @@ public class PlayerFragment extends Fragment {
                             if (playingBar != null) playingBar.setVisibility(View.GONE);
                             activity.setStatusBarColor(Utils.getAutoStatColor(color));
                         } else if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED
-                                && playerView != null
-                                && playerView.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                                && playerView != null) {
                             playerView.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                             if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
                         } else {

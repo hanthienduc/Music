@@ -1,6 +1,5 @@
 package com.mnml.music.ui.activity;
 
-import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.content.*;
 import android.net.Uri;
@@ -9,12 +8,14 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.afollestad.aesthetic.Aesthetic;
 import com.afollestad.aesthetic.AestheticActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -23,12 +24,13 @@ import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.LibsConfiguration;
 import com.mikepenz.aboutlibraries.entity.Library;
+import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
 import com.mnml.music.R;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.Utils;
+import io.reactivex.disposables.Disposable;
 import org.json.JSONException;
 import org.json.JSONObject;
-import rx.Subscription;
 
 import java.util.ArrayList;
 
@@ -36,7 +38,8 @@ public class AboutActivity extends AestheticActivity {
 
     @BindView(R.id.about_toolbar) Toolbar toolbar;
     private boolean darkMode = false, hasGoogleServices = false, googleServicesEnabled;
-    private Subscription darkModeSubscription, primaryColorSubscription;
+    private Unbinder unbinder;
+    private Disposable darkModeSubscription, primaryColorSubscription;
     private int primaryColor;
     private ServiceConnection billingConnection = new ServiceConnection() {
         @Override
@@ -243,9 +246,10 @@ public class AboutActivity extends AestheticActivity {
         darkModeSubscription = Aesthetic.get().isDark().subscribe(aBoolean -> darkMode = aBoolean);
         primaryColorSubscription = Aesthetic.get().colorPrimary().subscribe(integer -> primaryColor = integer);
         setContentView(R.layout.activity_about);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         LibsBuilder builder = new LibsBuilder()
                 .withActivityStyle(darkMode
@@ -264,11 +268,6 @@ public class AboutActivity extends AestheticActivity {
         if (hasGoogleServices && googleServicesEnabled) {
             builder.withAboutSpecial3(getString(R.string.donate))
                     .withAboutSpecial3Description("Button 3");
-        }
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.add(R.id.about_libs_holder, builder.fragment()).commit();
-        if (hasGoogleServices && googleServicesEnabled) {
             final Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
             serviceIntent.setPackage("com.android.vending");
             bindService(serviceIntent, billingConnection, Context.BIND_AUTO_CREATE);
@@ -276,13 +275,18 @@ public class AboutActivity extends AestheticActivity {
             billingConnection = null;
             billingService = null;
         }
+
+        LibsSupportFragment libsFragment = builder.supportFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.about_libs_holder, libsFragment).commit();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (!darkModeSubscription.isUnsubscribed()) darkModeSubscription.unsubscribe();
-        if (!primaryColorSubscription.isUnsubscribed()) primaryColorSubscription.unsubscribe();
+        unbinder.unbind();
+        if (!darkModeSubscription.isDisposed()) darkModeSubscription.dispose();
+        if (!primaryColorSubscription.isDisposed()) primaryColorSubscription.dispose();
         if (billingService != null) {
             unbindService(billingConnection);
         }

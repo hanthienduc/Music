@@ -74,7 +74,7 @@ dependencies {
         transitive = true
     }
     compile 'com.boswelja:lastfm-wrapper:0.3'
-    compile 'com.google.android.gms:play-services-base:10.2.4'
+    compile 'com.google.android.gms:play-services-base:10.2.6'
     compile 'com.afollestad:async:0.2.3'
     compile 'com.simplecityapps:recyclerview-fastscroll:1.0.16'
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
@@ -84,7 +84,7 @@ dependencies {
     compile 'com.github.hotchemi:permissionsdispatcher:2.3.2'
     compile 'com.lapism:searchview:4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.afollestad:aesthetic:0.3.0'
+    compile 'com.afollestad:aesthetic:0.4.0'
 
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.3.2'

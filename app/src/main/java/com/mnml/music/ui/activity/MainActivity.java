@@ -37,11 +37,11 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import io.reactivex.disposables.Disposable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
-import rx.Subscription;
 
 @RuntimePermissions
 public class MainActivity extends AestheticActivity {
@@ -52,7 +52,7 @@ public class MainActivity extends AestheticActivity {
     @BindView(R.id.sliding_layout) SlidingUpPanelLayout slidingUpPanelLayout;
     @BindView(R.id.main_tab_layout) TabLayout tabLayout;
 
-    private Subscription accentSubscription;
+    private Disposable accentSubscription;
     private int accentColor;
     private PrimaryDrawerItem songs, albums, artists, playlists;
     private Unbinder unbinder;
@@ -363,7 +363,7 @@ public class MainActivity extends AestheticActivity {
         if(viewPager != null) sharedPrefs.edit().putInt("last_page", viewPager.getCurrentItem()).apply();
         unbinder.unbind();
         unbindService(serviceConnection);
-        if(!accentSubscription.isUnsubscribed()) accentSubscription.unsubscribe();
+        if(!accentSubscription.isDisposed()) accentSubscription.dispose();
         super.onDestroy();
     }
 
