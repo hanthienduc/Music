@@ -19,9 +19,8 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@drawable/unbounded_ripple"
-            android:focusable="false"
-            android:tint="?attr/secondaryTextColor"
-            android:focusableInTouchMode="false"
+            android:focusable="true"
+            android:tint="?android:textColorPrimary"
             android:src="@drawable/ic_overflow_dark"
             android:contentDescription="@string/menu"/>
 

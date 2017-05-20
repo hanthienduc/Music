@@ -50,6 +50,10 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         setHasStableIds(true);
     }
 
+    public ArrayList<Song> getData() {
+        return songs;
+    }
+
     public void updateData(ArrayList<Song> newSongList, Song currentSong) {
         songs = newSongList;
         this.currentSong = currentSong;

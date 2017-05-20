@@ -132,6 +132,11 @@ public class SettingsActivity extends AestheticActivity
                     preference.setSummary(darkMode ? getString(R.string.dark_mode_enabled) : getString(R.string.dark_mode_disabled));
                     Aesthetic.get()
                             .activityTheme(darkMode ? R.style.AppTheme_Dark : R.style.AppTheme_Light)
+                            .textColorPrimaryRes(darkMode ? R.color.primaryTextDark : R.color.primaryTextLight)
+                            .textColorPrimaryInverseRes(darkMode ? R.color.primaryTextLight : R.color.primaryTextDark)
+                            .textColorSecondaryRes(darkMode ? R.color.secondaryTextDark : R.color.secondaryTextLight)
+                            .textColorSecondaryInverseRes(darkMode ? R.color.secondaryTextLight : R.color.secondaryTextDark)
+                            .colorWindowBackgroundRes(darkMode ? R.color.darkWindowBackground : R.color.lightWindowBackground)
                             .isDark(darkMode)
                             .apply();
                     return true;

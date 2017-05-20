@@ -64,12 +64,13 @@ public class MainActivity extends AestheticActivity {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder binder) {
                     service = ((MusicService.MyBinder) binder).getService(MainActivity.this);
-                    updatePlayer();
+                    player.activatePlayer(service);
                 }
 
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
                     service = null;
+                    player.deactivatePlayer();
                 }
             };
 
@@ -94,6 +95,10 @@ public class MainActivity extends AestheticActivity {
                     .colorAccentRes(R.color.colorAccent)
                     .colorStatusBarAuto()
                     .isDark(darkMode)
+                    .textColorPrimaryRes(darkMode ? R.color.primaryTextDark : R.color.primaryTextLight)
+                    .textColorPrimaryInverseRes(darkMode ? R.color.primaryTextLight : R.color.primaryTextDark)
+                    .textColorSecondaryRes(darkMode ? R.color.secondaryTextDark : R.color.secondaryTextLight)
+                    .textColorSecondaryInverseRes(darkMode ? R.color.secondaryTextLight : R.color.secondaryTextDark)
                     .apply();
         }
 
@@ -103,6 +108,13 @@ public class MainActivity extends AestheticActivity {
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     public MusicService getService() {
@@ -152,10 +164,6 @@ public class MainActivity extends AestheticActivity {
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        final Intent i = new Intent(MainActivity.this, MusicService.class);
-        bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
-        startService(i);
-
         initDrawer();
 
         setupViewPager();
@@ -179,6 +187,9 @@ public class MainActivity extends AestheticActivity {
         final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         player = new PlayerFragment();
         transaction.replace(R.id.player_holder, player).commit();
+        final Intent i = new Intent(MainActivity.this, MusicService.class);
+        bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
+        startService(i);
     }
 
     private void setupViewPager() {
@@ -367,13 +378,6 @@ public class MainActivity extends AestheticActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (service != null && player != null) player.updatePlayer();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // NOTE: delegate the permission handling to generated method
-        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        if (player != null) player.updatePlayer();
     }
 }

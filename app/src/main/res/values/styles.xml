@@ -11,13 +11,10 @@
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowNoTitle">true</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="backgroundColor">@color/lightWindowBackground</item>
         <item name="android:windowBackground">@color/lightWindowBackground</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="primaryTextColor">@color/primaryTextLight</item>
-        <item name="secondaryTextColor">@color/secondaryTextLight</item>
         <item name="search_background_color">@color/lightContentColor</item>
         <item name="search_theme">light</item>
     </style>
@@ -31,13 +28,10 @@
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowNoTitle">true</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="backgroundColor">@color/darkWindowBackground</item>
         <item name="android:windowBackground">@color/darkWindowBackground</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="primaryTextColor">@color/primaryTextDark</item>
-        <item name="secondaryTextColor">@color/secondaryTextDark</item>
         <item name="search_background_color">@color/darkContentColour</item>
         <item name="search_theme">dark</item>
     </style>
@@ -52,7 +46,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?attr/primaryTextColor</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
     <style name="DescText">
@@ -61,7 +55,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?attr/secondaryTextColor</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
     <style name="PlayerButton">
