@@ -36,7 +36,6 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import io.reactivex.disposables.Disposable;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
@@ -49,8 +48,6 @@ public class MainActivity extends AestheticActivity {
     @BindView(R.id.sliding_layout) SlidingUpPanelLayout slidingUpPanelLayout;
     @BindView(R.id.main_tab_layout) TabLayout tabLayout;
 
-    private Disposable accentSubscription;
-    private int accentColor;
     private PrimaryDrawerItem songs, albums, artists, playlists;
     private Unbinder unbinder;
     private SharedPreferences sharedPrefs;
@@ -158,8 +155,6 @@ public class MainActivity extends AestheticActivity {
         startPage = Integer.decode(sharedPrefs.getString("start_page", "0"));
         lastPage = sharedPrefs.getInt("last_page", 0);
 
-        initColorSubscribers();
-
         initShortcuts();
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -169,13 +164,6 @@ public class MainActivity extends AestheticActivity {
         setupViewPager();
 
         initPlayer();
-    }
-
-    private void initColorSubscribers() {
-        accentSubscription = Aesthetic.get().colorAccent().subscribe(integer -> {
-            accentColor = integer;
-            if(drawer != null && accentColor != 0) updateDrawerColors();
-        });
     }
 
     private void initShortcuts() {
@@ -253,7 +241,7 @@ public class MainActivity extends AestheticActivity {
         return slidingUpPanelLayout;
     }
 
-    private void updateDrawerColors() {
+    private void updateDrawerColors(final int accentColor) {
         songs
                 .withSelectedIconColor(accentColor)
                 .withSelectedTextColor(accentColor);
@@ -275,26 +263,18 @@ public class MainActivity extends AestheticActivity {
     private void initDrawer() {
         songs = new PrimaryDrawerItem()
                 .withIdentifier(0)
-                .withSelectedTextColor(accentColor)
-                .withSelectedIconColor(accentColor)
                 .withName(R.string.songs)
                 .withIcon(MaterialDesignIconic.Icon.gmi_audio);
         albums = new PrimaryDrawerItem()
                 .withIdentifier(1)
-                .withSelectedTextColor(accentColor)
-                .withSelectedIconColor(accentColor)
                 .withName(R.string.albums)
                 .withIcon(MaterialDesignIconic.Icon.gmi_album);
         artists = new PrimaryDrawerItem()
                 .withIdentifier(2)
-                .withSelectedTextColor(accentColor)
-                .withSelectedIconColor(accentColor)
                 .withName(R.string.artist)
                 .withIcon(MaterialDesignIconic.Icon.gmi_account);
         playlists = new PrimaryDrawerItem()
                 .withIdentifier(3)
-                .withSelectedTextColor(accentColor)
-                .withSelectedIconColor(accentColor)
                 .withName(R.string.playlist)
                 .withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
         final SecondaryDrawerItem settings = new SecondaryDrawerItem()
@@ -349,6 +329,7 @@ public class MainActivity extends AestheticActivity {
                         })
                 .build();
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+        Aesthetic.get().colorAccent().take(1).subscribe(this::updateDrawerColors);
     }
 
     public void setStatusBarColor(final int color) {
@@ -371,7 +352,6 @@ public class MainActivity extends AestheticActivity {
         if(viewPager != null) sharedPrefs.edit().putInt("last_page", viewPager.getCurrentItem()).apply();
         unbinder.unbind();
         unbindService(serviceConnection);
-        if(!accentSubscription.isDisposed()) accentSubscription.dispose();
         super.onDestroy();
     }
 

@@ -2,7 +2,6 @@ package com.mnml.music.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,26 +13,18 @@ import android.widget.TextView;
 import com.boswelja.lastfm.LastFMRequest;
 import com.boswelja.lastfm.models.artist.Image;
 import com.boswelja.lastfm.models.artist.LastFMArtist;
-import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.mnml.music.R;
 import com.mnml.music.models.Artist;
 import com.mnml.music.ui.activity.ArtistDetailActivity;
-import com.mnml.music.utils.glide.CircleTransform;
 import com.mnml.music.utils.Utils;
+import com.mnml.music.utils.glide.GlideUtils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,20 +33,13 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
 
     private List<Artist> items;
     private final Context context;
-    private final DrawableRequestBuilder<String> glideRequest;
+    private RequestManager glide;
 
     public ArtistAdapter(Context context, List<Artist> items, RequestManager glide) {
         this.items = items;
         this.context = context;
         final int px = Utils.dpToPx(context, 72);
-        this.glideRequest = glide
-                .fromString()
-                .centerCrop()
-                .transform(new CircleTransform(context))
-                .override(px, px)
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .fallback(R.drawable.default_art)
-                .crossFade();
+        this.glide = glide.applyDefaultRequestOptions(GlideUtils.glideOptions(px, true, R.drawable.default_art));
     }
 
     @NonNull
@@ -137,56 +121,26 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                 .setCallback(new Callback<LastFMArtist>() {
                     @Override
                     public void onResponse(Call<LastFMArtist> call, Response<LastFMArtist> response) {
-                        if(response.isSuccessful() && response.body().getArtist() != null) {
+                        if(response.isSuccessful() && response.body() != null && response.body().getArtist() != null) {
                             List<Image> images = response.body().getArtist().getImage();
                             if(images != null) {
                                 for (Image image : images) {
                                     if(image.getSize().equals("medium")) {
-                                        glideRequest
-                                                .load(image.getText())
-                                                .listener(new RequestListener<String, GlideDrawable>() {
-                                                    @Override
-                                                    public boolean onException(Exception e, String s, Target<GlideDrawable> target, boolean b) {
-                                                        return false;
-                                                    }
-
-                                                    @Override
-                                                    public boolean onResourceReady(GlideDrawable glideDrawable, String s, Target<GlideDrawable> target, boolean b, boolean b1) {
-                                                        GlideBitmapDrawable glideBitmapDrawable = (GlideBitmapDrawable) glideDrawable;
-                                                        Bitmap bm = glideBitmapDrawable.getBitmap();
-                                                        FileOutputStream out = null;
-                                                        try {
-                                                            File file = new File(context.getCacheDir(), artistName + ".png");
-                                                            out = new FileOutputStream(file);
-                                                            bm.compress(Bitmap.CompressFormat.PNG, 100, out);
-                                                        } catch (Exception e) {
-                                                            e.printStackTrace();
-                                                        } finally {
-                                                            try {
-                                                                if (out != null) {
-                                                                    out.close();
-                                                                }
-                                                            } catch (IOException e) {
-                                                                e.printStackTrace();
-                                                            }
-                                                        }
-                                                        return false;
-                                                    }
-                                                })
-                                                .into(holder.artistImg);
+                                        glide.load(image.getText()).into(holder.artistImg);
                                         return;
                                     }
                                 }
                             }
+                        } else {
+                            File file = new File(context.getCacheDir(), artistName + ".png");
+                            glide.load(file).into(holder.artistImg);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<LastFMArtist> call, Throwable throwable) {
                         File file = new File(context.getCacheDir(), artistName + ".png");
-                        glideRequest
-                                .load(file.getAbsolutePath())
-                                .into(holder.artistImg);
+                        glide.load(file).into(holder.artistImg);
                     }
                 }).build();
     }

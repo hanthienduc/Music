@@ -7,16 +7,6 @@
                 tools:ignore="Overdraw">
 
     <ImageView
-            android:id="@+id/song_item_art"
-            android:layout_width="72dp"
-            android:layout_height="match_parent"
-            android:padding="16dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/default_art"
-            tools:ignore="ContentDescription"/>
-
-    <ImageView
             android:id="@+id/song_overflow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,12 +26,12 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:orientation="vertical"
-            android:layout_toEndOf="@id/song_item_art"
+            android:paddingStart="16dp"
+            android:paddingEnd="0dp"
             android:layout_toStartOf="@id/playing_bar_action">
         <TextView
                 android:id="@+id/song_item_name"
                 style="@style/TitleText"/>
-
         <TextView
                 android:id="@+id/song_item_desc"
                 style="@style/DescText"/>

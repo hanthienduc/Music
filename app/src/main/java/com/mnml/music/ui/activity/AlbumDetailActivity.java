@@ -1,30 +1,20 @@
 package com.mnml.music.ui.activity;
 
 import android.content.*;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.afollestad.aesthetic.AestheticActivity;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.mnml.music.R;
 import com.mnml.music.adapters.SongsAdapter;
 import com.mnml.music.models.Song;
@@ -80,70 +70,6 @@ public class AlbumDetailActivity extends AestheticActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        ImageView albumArt = (ImageView) findViewById(R.id.album_art);
-
-        Cursor cursor =
-                getContentResolver()
-                        .query(
-                                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                                MediaStore.Audio.Albums._ID + "=?",
-                                new String[]{String.valueOf(albumId)},
-                                null);
-        if (cursor != null && cursor.moveToFirst()) {
-            String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-            Glide.with(AlbumDetailActivity.this)
-                    .load(imagePath)
-                    .asBitmap()
-                    .error(R.drawable.default_art)
-                    .listener(
-                            new RequestListener<String, Bitmap>() {
-                                @Override
-                                public boolean onException(
-                                        Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
-                                    return false;
-                                }
-
-                                @Override
-                                public boolean onResourceReady(
-                                        Bitmap resource,
-                                        String model,
-                                        Target<Bitmap> target,
-                                        boolean isFromMemoryCache,
-                                        boolean isFirstResource) {
-                                    Palette palette = new Palette.Builder(resource).generate();
-                                    try {
-                                        Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
-                                        Palette.Swatch altSwatch = palette.getDominantSwatch();
-                                        int vibrantRgb;
-                                        int vibrantTitleText;
-                                        if (vibrantSwatch != null) {
-                                            vibrantRgb = vibrantSwatch.getRgb();
-                                            vibrantTitleText = vibrantSwatch.getTitleTextColor();
-                                        } else if (altSwatch != null) {
-                                            vibrantRgb = altSwatch.getRgb();
-                                            vibrantTitleText = altSwatch.getTitleTextColor();
-                                        } else {
-                                            vibrantRgb =
-                                                    ContextCompat.getColor(AlbumDetailActivity.this, R.color.cardBackground);
-                                            vibrantTitleText =
-                                                    ContextCompat.getColor(AlbumDetailActivity.this, R.color.primaryTextDark);
-                                        }
-                                        collapsingToolbarLayout.setExpandedTitleColor(vibrantTitleText);
-                                        collapsingToolbarLayout.setStatusBarScrimColor(
-                                                Utils.getAutoStatColor(vibrantRgb));
-                                        collapsingToolbarLayout.setContentScrimColor(vibrantRgb);
-                                    } catch (NullPointerException e) {
-                                        Log.i(
-                                                "AlbumDetailActivity",
-                                                "Palette.Builder could not generate swatches, falling back to default colours");
-                                    }
-                                    return false;
-                                }
-                            })
-                    .into(albumArt);
-        }
-        if (cursor != null) cursor.close();
 
         setSongList();
     }
@@ -157,7 +83,7 @@ public class AlbumDetailActivity extends AestheticActivity {
         RecyclerView rv = (RecyclerView) findViewById(R.id.rv_album);
         rv.setLayoutManager(layoutManager);
         rv.setHasFixedSize(true);
-        rv.setAdapter(new SongsAdapter(AlbumDetailActivity.this, songList, Glide.with(this), false));
+        rv.setAdapter(new SongsAdapter(AlbumDetailActivity.this, songList));
     }
 
     @Override

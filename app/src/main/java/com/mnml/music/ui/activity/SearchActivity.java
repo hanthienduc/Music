@@ -132,7 +132,7 @@ public class SearchActivity extends AestheticActivity {
         LinearLayoutManager songsLayoutAdapter = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         songsRv.setLayoutManager(songsLayoutAdapter);
         songsRv.setNestedScrollingEnabled(false);
-        songsAdapter = new SongsAdapter(this, allSongs, Glide.with(this), true);
+        songsAdapter = new SongsAdapter(this, allSongs);
         songsRv.setAdapter(songsAdapter);
 
         allAlbums = Utils.getAlbums(this);
@@ -140,7 +140,7 @@ public class SearchActivity extends AestheticActivity {
         GridLayoutManager albumsLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
         albumsRv.setLayoutManager(albumsLayoutManager);
         albumsRv.setNestedScrollingEnabled(false);
-        albumsAdapter = new AlbumsAdapter(this, allAlbums, Glide.with(this), true);
+        albumsAdapter = new AlbumsAdapter(this, allAlbums, true, Glide.with(this));
         albumsRv.setAdapter(albumsAdapter);
 
         allArtists = Utils.getArtists(this);

@@ -44,7 +44,7 @@ public class ArtistDetailActivity extends AestheticActivity {
         rv.setLayoutManager(layoutManager);
 
         final ArrayList<Song> artistSongs = Utils.getArtistSongs(this, artistName);
-        rv.setAdapter(new SongsAdapter(this, artistSongs, Glide.with(this), true));
+        rv.setAdapter(new SongsAdapter(this, artistSongs));
     }
 
     @Override

@@ -60,6 +60,6 @@ public class SongsFragment extends Fragment {
         rv.setLayoutManager(layoutManager);
         final ArrayList<Song> songList = Utils.getAllSongs(context);
         if(songList.isEmpty()) noSongs.setVisibility(View.VISIBLE);
-        rv.setAdapter(new SongsAdapter(context, songList, Glide.with(context), true));
+        rv.setAdapter(new SongsAdapter(context, songList));
     }
 }

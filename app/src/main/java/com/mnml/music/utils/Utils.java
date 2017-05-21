@@ -144,8 +144,7 @@ public class Utils {
             int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
             int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums._ID);
             int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST);
-            int numOfSongsColumn =
-                    musicCursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS);
+            int numOfSongsColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS);
             int albumArtColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
             do {
                 albumList.add(

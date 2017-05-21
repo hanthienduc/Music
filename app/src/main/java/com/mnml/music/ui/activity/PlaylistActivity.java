@@ -42,7 +42,7 @@ public class PlaylistActivity extends AestheticActivity {
         }
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setItemAnimator(new DefaultItemAnimator());
-        rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId), Glide.with(this), true));
+        rv.setAdapter(new SongsAdapter(this, helper.getPlayListSongs(playlistId)));
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

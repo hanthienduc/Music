@@ -2,9 +2,6 @@ package com.mnml.music.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,41 +9,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.afollestad.async.Action;
-import com.bumptech.glide.DrawableRequestBuilder;
-import com.bumptech.glide.RequestManager;
 import com.mnml.music.R;
 import com.mnml.music.models.Song;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.Utils;
-import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder;
 
 import java.util.ArrayList;
 
 public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.ViewHolder> {
 
     private final Context context;
-    private final boolean darkMode;
-    private final DrawableRequestBuilder<String> glideRequest;
     private ArrayList<Song> songs;
-    private Song currentSong;
 
     public PlayingSongAdapter(
             Context context,
-            ArrayList<Song> songs,
-            boolean darkMode,
-            Song currentSong,
-            RequestManager glide) {
+            ArrayList<Song> songs) {
         this.context = context;
         this.songs = songs;
-        this.darkMode = darkMode;
-        this.currentSong = currentSong;
-        final int px = Utils.dpToPx(context, 72);
-        this.glideRequest = glide
-                        .fromString()
-                        .centerCrop()
-                        .crossFade()
-                        .override(px, px);
         setHasStableIds(true);
     }
 
@@ -54,9 +33,8 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         return songs;
     }
 
-    public void updateData(ArrayList<Song> newSongList, Song currentSong) {
+    public void updateData(ArrayList<Song> newSongList) {
         songs = newSongList;
-        this.currentSong = currentSong;
         notifyDataSetChanged();
     }
 
@@ -72,34 +50,6 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         if (adapterPosition != -1) {
             holder.title.setText(songs.get(adapterPosition).getName());
             holder.desc.setText(songs.get(adapterPosition).getDesc());
-            if (songs.get(adapterPosition) != currentSong) {
-                new Action<String>() {
-
-                    @NonNull
-                    @Override
-                    public String id() {
-                        return "song_art";
-                    }
-
-                    @Nullable
-                    @Override
-                    protected String run() throws InterruptedException {
-                        return Utils.getAlbumArt(context, songs.get(adapterPosition).getAlbumId());
-                    }
-
-                    @Override
-                    protected void done(String result) {
-                        holder.art.clearColorFilter();
-                        glideRequest.load(result).into(holder.art);
-                    }
-                }.execute();
-            } else {
-                holder.art.setImageResource(R.drawable.ic_audiotrack);
-                holder.art.setColorFilter(
-                        darkMode
-                                ? ContextCompat.getColor(context, R.color.primaryTextDark)
-                                : ContextCompat.getColor(context, R.color.primaryTextLight));
-            }
         }
         holder.view.setOnClickListener(
                 v -> {
@@ -108,7 +58,6 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
                     a.setAction(Config.PLAY_FROM_PLAYLIST);
                     a.putExtra("song", song);
                     context.sendBroadcast(a);
-                    currentSong = song;
                     notifyDataSetChanged();
                 });
         holder.menu.setOnClickListener(
@@ -169,12 +118,11 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
         return songs.get(position).getId();
     }
 
-    static final class ViewHolder extends AbstractDraggableItemViewHolder {
+    static final class ViewHolder extends RecyclerView.ViewHolder {
         public final View view;
         public final ImageView menu;
         final TextView title;
         final TextView desc;
-        final ImageView art;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -182,7 +130,6 @@ public class PlayingSongAdapter extends RecyclerView.Adapter<PlayingSongAdapter.
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
             view = itemView;
             menu = (ImageView) itemView.findViewById(R.id.song_overflow);
-            art = (ImageView) itemView.findViewById(R.id.song_item_art);
         }
     }
 }

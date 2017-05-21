@@ -18,14 +18,11 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.widget.Toast;
 
-import com.afollestad.async.Action;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mnml.music.R;
 import com.mnml.music.models.Song;
@@ -568,33 +565,16 @@ public class MusicService extends Service {
                         .title("Please wait")
                         .progress(true, 0)
                         .show();
-        new Action<ArrayList<Song>>() {
-
-            @NonNull
-            @Override
-            public String id() {
-                return "play_all";
-            }
-
-            @Override
-            protected ArrayList<Song> run() throws InterruptedException {
-                return Utils.getAllSongs(MusicService.this);
-            }
-
-            @Override
-            protected void done(@Nullable ArrayList<Song> result) {
-                super.done(result);
-                if (result != null && !result.isEmpty()) {
-                    playingList = result;
-                    playMusic(playingList.get(0));
-                    updateCurrentPlaying();
-                    updatePlayState();
-                    activity.updatePlayingList();
-                    activity.updatePlayer();
-                }
-                progressDialog.dismiss();
-            }
-        }.execute();
+        ArrayList<Song> result = Utils.getAllSongs(MusicService.this);
+        if (result != null && !result.isEmpty()) {
+            playingList = result;
+            playMusic(playingList.get(0));
+            updateCurrentPlaying();
+            updatePlayState();
+            activity.updatePlayingList();
+            activity.updatePlayer();
+        }
+        progressDialog.dismiss();
     }
 
     private Bitmap getAlbumArt() {

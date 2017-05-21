@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,9 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.afollestad.async.Action;
-import com.bumptech.glide.DrawableRequestBuilder;
-import com.bumptech.glide.RequestManager;
 import com.mnml.music.R;
 import com.mnml.music.models.Song;
 import com.mnml.music.utils.Config;
@@ -32,18 +28,13 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
 
     private List<Song> items;
     private final Context context;
-    private final boolean shouldHaveArt;
-    private final Intent i;
-    private final DrawableRequestBuilder<String> glideRequest;
+    private final Intent intent;
 
     public SongsAdapter(
-            Context context, List<Song> items, RequestManager glide, boolean shouldHaveArt) {
+            Context context, List<Song> items) {
         this.context = context;
         this.items = items;
-        i = new Intent();
-        final int px = Utils.dpToPx(context, 48);
-        this.glideRequest = glide.fromString().centerCrop().override(px, px).crossFade();
-        this.shouldHaveArt = shouldHaveArt;
+        intent = new Intent();
     }
 
     @NonNull
@@ -69,10 +60,10 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     }
 
     @Override
-    public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
-        final int adapterPosition = holder.getAdapterPosition();
-        holder.title.setText(items.get(adapterPosition).getName());
-        holder.desc.setText(items.get(adapterPosition).getDesc());
+    public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
+        final int absolutePosition = holder.getAdapterPosition();
+        holder.title.setText(items.get(absolutePosition).getName());
+        holder.desc.setText(items.get(absolutePosition).getDesc());
         holder.menu.setOnClickListener(
                 v -> {
                     PopupMenu popupMenu = new PopupMenu(context, v);
@@ -80,29 +71,29 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                             item -> {
                                 switch (item.getItemId()) {
                                     case R.id.menu_play_next:
-                                        i.setAction(Config.PLAY_NEXT);
-                                        i.putExtra("song", items.get(adapterPosition));
-                                        context.sendBroadcast(i);
+                                        intent.setAction(Config.PLAY_NEXT);
+                                        intent.putExtra("song", items.get(absolutePosition));
+                                        context.sendBroadcast(intent);
                                         return true;
                                     case R.id.menu_add_playing:
-                                        i.setAction(Config.ADD_SONG_TO_PLAYLIST);
-                                        i.putExtra("song", items.get(adapterPosition));
-                                        context.sendBroadcast(i);
+                                        intent.setAction(Config.ADD_SONG_TO_PLAYLIST);
+                                        intent.putExtra("song", items.get(absolutePosition));
+                                        context.sendBroadcast(intent);
                                         return true;
                                     case R.id.menu_add_playlist:
-                                        Utils.addToPlaylistDialog(context, items.get(adapterPosition));
+                                        Utils.addToPlaylistDialog(context, items.get(absolutePosition));
                                         return true;
                                     case R.id.menu_share:
                                         Intent share = new Intent(Intent.ACTION_SEND);
                                         share.setType("audio/*");
                                         share.putExtra(
                                                 Intent.EXTRA_STREAM,
-                                                Uri.parse("file:///" + items.get(adapterPosition).getPath()));
+                                                Uri.parse("file:///" + items.get(absolutePosition).getPath()));
                                         context.startActivity(
                                                 Intent.createChooser(share, context.getString(R.string.share_song)));
                                         return true;
                                     case R.id.menu_delete:
-                                        File file = new File(items.get(adapterPosition).getPath());
+                                        File file = new File(items.get(absolutePosition).getPath());
                                         boolean deleted = file.delete();
                                         if (deleted) {
                                             context.getContentResolver()
@@ -110,10 +101,10 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                                                             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                                                             MediaStore.MediaColumns._ID
                                                                     + "='"
-                                                                    + items.get(adapterPosition).getId()
+                                                                    + items.get(absolutePosition).getId()
                                                                     + "'",
                                                             null);
-                                            notifyItemRemoved(adapterPosition);
+                                            notifyItemRemoved(absolutePosition);
                                             Toast.makeText(context, R.string.song_delete_success, Toast.LENGTH_SHORT)
                                                     .show();
                                         } else
@@ -126,49 +117,24 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                     popupMenu.show();
                 });
         holder.view.setOnClickListener(v -> {
-                    Intent a = new Intent();
-                    a.setAction(Config.PLAY_SINGLE_SONG);
-                    a.putExtra("song", items.get(adapterPosition));
-                    context.sendBroadcast(a);
-                });
-        if (shouldHaveArt) {
-            new Action<String>() {
-
-                @NonNull
-                @Override
-                public String id() {
-                    return "set_song_art";
-                }
-
-                @Nullable
-                @Override
-                protected String run() throws InterruptedException {
-                    return Utils.getAlbumArt(context, items.get(adapterPosition).getAlbumId());
-                }
-
-                @Override
-                protected void done(String result) {
-                    glideRequest.load(result).into(holder.art);
-                }
-            }.execute();
-            holder.art.setContentDescription(items.get(adapterPosition).getAlbumName());
-        } else {
-            holder.art.setVisibility(View.GONE);
-            holder.textHolder.setPaddingRelative(Utils.dpToPx(context, 16), 0, 0, 0);
-        }
+            Intent a = new Intent();
+            a.setAction(Config.PLAY_SINGLE_SONG);
+            a.putExtra("song", items.get(absolutePosition));
+            context.sendBroadcast(a);
+        });
     }
 
     @Override
     public int getItemCount() {
-        return this.items.size();
+        return items.size();
     }
 
-    static final class SimpleItemViewHolder extends RecyclerView.ViewHolder {
+    static final class SimpleItemViewHolder
+            extends RecyclerView.ViewHolder {
         final TextView title;
         final TextView desc;
         final View view;
         final ImageView menu;
-        final ImageView art;
         final View textHolder;
 
         SimpleItemViewHolder(View itemView) {
@@ -177,7 +143,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
             menu = (ImageView) itemView.findViewById(R.id.song_overflow);
-            art = (ImageView) itemView.findViewById(R.id.song_item_art);
             textHolder = itemView.findViewById(R.id.song_text_holder);
         }
     }
