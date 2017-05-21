@@ -72,7 +72,8 @@ public class PlayerFragment extends Fragment {
     private Song currentPlaying;
     private PlayingSongAdapter adapter;
     private MediaPlayer mediaPlayer;
-    private boolean darkMode;
+    private long currentPlayingId = 0;
+    private boolean darkMode, isActivated = false;
     private int color;
 
     @Override
@@ -112,8 +113,7 @@ public class PlayerFragment extends Fragment {
                             if (playingBar != null) playingBar.setVisibility(View.GONE);
                             activity.setStatusBarColor(Utils.getAutoStatColor(color));
                         } else if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED
-                                && playerView != null
-                                && playerView.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                                && playerView != null) {
                             playerView.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                             if (playingBar != null) playingBar.setVisibility(View.VISIBLE);
                         } else {
@@ -124,17 +124,36 @@ public class PlayerFragment extends Fragment {
         return view;
     }
 
+    public void activatePlayer(MusicService service) {
+        this.service = service;
+        isActivated = true;
+        updatePlayer();
+    }
+
+    public void deactivatePlayer() {
+        this.service = null;
+        isActivated = false;
+        updatePlayer();
+    }
+
     public void updatePlayer() {
-        if (service == null) service = activity.getService();
-        currentPlaying = service.getCurrentSong();
-        if (currentPlaying != null) {
-            updatePlayingList();
-            updatePlayState();
-            setShuffleState(service.getShuffleState());
-            setRepeatState(service.getRepeatState());
-            updateSeekBar();
-            if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
-                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        if(isActivated) {
+            currentPlaying = service.getCurrentSong();
+            if (currentPlaying != null) {
+                updatePlayingList();
+                updatePlayState();
+                setShuffleState(service.getShuffleState());
+                setRepeatState(service.getRepeatState());
+                updateSeekBar();
+                if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            } else {
+                if (slidingUpPanelLayout.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN)
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            }
+        } else {
+            if (slidingUpPanelLayout.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN)
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         }
     }
 
@@ -145,6 +164,9 @@ public class PlayerFragment extends Fragment {
     public void updatePlayingList() {
         if (currentPlaying != null) {
             ArrayList<Song> playingList = service.getPlayingList();
+            if(adapter != null && adapter.getData() == playingList) {
+                return;
+            }
             if (playingList.size() > 0) {
                 if (adapter == null) {
                     adapter = new PlayingSongAdapter(context, playingList, darkMode, currentPlaying, Glide.with(context));
@@ -156,9 +178,12 @@ public class PlayerFragment extends Fragment {
                         playingListView.scrollToPosition(playingList.indexOf(currentPlaying));
                 }
             }
-            if (currentSongName != null) currentSongName.setText(currentPlaying.getName());
-            if (currentSongDesc != null) currentSongDesc.setText(currentPlaying.getDesc());
-            setArt();
+            if(currentPlaying.getId() != currentPlayingId) {
+                if (currentSongName != null) currentSongName.setText(currentPlaying.getName());
+                if (currentSongDesc != null) currentSongDesc.setText(currentPlaying.getDesc());
+                setArt();
+            }
+            currentPlayingId = currentPlaying.getId();
         }
     }
 
