@@ -64,8 +64,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                                     case R.id.menu_playlist_rename:
                                         showRenamePlaylistPrompt(finalPosition);
                                         return true;
+                                    default:
+                                        return false;
                                 }
-                                return false;
                             });
                     popupMenu.inflate(R.menu.playlist_popup_menu);
                     popupMenu.show();

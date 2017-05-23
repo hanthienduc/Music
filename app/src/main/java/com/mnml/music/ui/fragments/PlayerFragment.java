@@ -22,7 +22,6 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.bumptech.glide.Glide;
 import com.mnml.music.R;
 import com.mnml.music.adapters.PlayingSongAdapter;
 import com.mnml.music.models.Song;

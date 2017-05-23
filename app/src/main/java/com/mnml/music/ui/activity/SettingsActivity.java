@@ -65,8 +65,7 @@ public class SettingsActivity extends AestheticActivity
     }
 
     @Override
-    public void onColorChooserDismissed(@NonNull ColorChooserDialog colorChooserDialog) {
-    }
+    public void onColorChooserDismissed(@NonNull ColorChooserDialog colorChooserDialog) { }
 
 
     public static class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {

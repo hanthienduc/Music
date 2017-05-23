@@ -117,39 +117,35 @@ public class MediaButtonIntentReceiver extends WakefulBroadcastReceiver {
                     command = Config.PLAY;
                     break;
             }
-            if (command != null) {
-                if (action == KeyEvent.ACTION_DOWN) {
-                    if (event.getRepeatCount() == 0) {
-                        // Only consider the first event in a sequence, not the repeat events,
-                        // so that we don't trigger in cases where the first event went to
-                        // a different app (e.g. when the user ends a phone call by
-                        // long pressing the headset button)
+            if (command != null && action == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                // Only consider the first event in a sequence, not the repeat events,
+                // so that we don't trigger in cases where the first event went to
+                // a different app (e.g. when the user ends a phone call by
+                // long pressing the headset button)
 
-                        // The service may or may not be running, but we need to send it
-                        // a command.
-                        if (keycode == KeyEvent.KEYCODE_HEADSETHOOK) {
-                            if (eventTime - mLastClickTime >= DOUBLE_CLICK) {
-                                mClickCounter = 0;
-                            }
-
-                            mClickCounter++;
-                            mHandler.removeMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT);
-
-                            Message msg = mHandler.obtainMessage(
-                                    MSG_HEADSET_DOUBLE_CLICK_TIMEOUT, mClickCounter, 0, context);
-
-                            long delay = mClickCounter < 3 ? DOUBLE_CLICK : 0;
-                            if (mClickCounter >= 3) {
-                                mClickCounter = 0;
-                            }
-                            mLastClickTime = eventTime;
-                            acquireWakeLockAndSendMessage(context, msg, delay);
-                        } else {
-                            startService(context, command);
-                        }
-                        return true;
+                // The service may or may not be running, but we need to send it
+                // a command.
+                if (keycode == KeyEvent.KEYCODE_HEADSETHOOK) {
+                    if (eventTime - mLastClickTime >= DOUBLE_CLICK) {
+                        mClickCounter = 0;
                     }
+
+                    mClickCounter++;
+                    mHandler.removeMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT);
+
+                    Message msg = mHandler.obtainMessage(
+                            MSG_HEADSET_DOUBLE_CLICK_TIMEOUT, mClickCounter, 0, context);
+
+                    long delay = mClickCounter < 3 ? DOUBLE_CLICK : 0;
+                    if (mClickCounter >= 3) {
+                        mClickCounter = 0;
+                    }
+                    mLastClickTime = eventTime;
+                    acquireWakeLockAndSendMessage(context, msg, delay);
+                } else {
+                    startService(context, command);
                 }
+                return true;
             }
         }
         return false;

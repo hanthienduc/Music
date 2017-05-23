@@ -9,7 +9,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.afollestad.aesthetic.AestheticActivity;
-import com.bumptech.glide.Glide;
 import com.mnml.music.R;
 import com.mnml.music.adapters.SongsAdapter;
 import com.mnml.music.models.Song;

@@ -513,6 +513,7 @@ public class MusicService extends Service {
                 case Config.PLAY_ALL:
                     playingList = Utils.getAllSongs(this);
                     if(!playingList.isEmpty()) playMusic(playingList.get(0));
+                    break;
             }
         }
         return START_STICKY;

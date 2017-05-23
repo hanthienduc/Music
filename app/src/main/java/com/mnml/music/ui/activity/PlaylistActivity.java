@@ -2,7 +2,6 @@ package com.mnml.music.ui.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +12,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.afollestad.aesthetic.AestheticActivity;
-import com.bumptech.glide.Glide;
 import com.mnml.music.R;
 import com.mnml.music.adapters.SongsAdapter;
 import com.mnml.music.utils.PlaylistHelper;

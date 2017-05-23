@@ -3,6 +3,7 @@ package com.mnml.music.utils.shortcuts;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.utils.Config;
 
@@ -29,6 +30,8 @@ public class ShortcutLauncherActivity extends Activity {
             case Config.SHORTCUT_TYPE_PLAY_ALL:
                 startService(Config.PLAY_ALL);
                 break;
+            default:
+                Toast.makeText(this, "Unknown shortcut", Toast.LENGTH_SHORT).show();
         }
 
         finish();

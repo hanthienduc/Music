@@ -311,6 +311,8 @@ public class AboutActivity extends AestheticActivity {
                         case "donate10":
                             Toast.makeText(this, "Thanks for donating $10", Toast.LENGTH_SHORT).show();
                             break;
+                        default:
+                            Toast.makeText(this, "Unknown SKU", Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
