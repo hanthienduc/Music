@@ -18,7 +18,7 @@ import com.mnml.music.R;
 import com.mnml.music.models.Artist;
 import com.mnml.music.ui.activity.ArtistDetailActivity;
 import com.mnml.music.utils.Utils;
-import com.mnml.music.utils.glide.GlideUtils;
+import com.mnml.music.utils.GlideUtils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -145,21 +145,16 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                 }).build();
     }
 
-    public void updateData(ArrayList<Artist> newList) {
-        items = newList;
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getItemCount() {
         return this.items.size();
     }
 
     static final class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        final TextView artistName;
-        final TextView artistDesc;
-        final ImageView artistImg;
-        final View view;
+        private final TextView artistName;
+        private final TextView artistDesc;
+        private final ImageView artistImg;
+        private final View view;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);

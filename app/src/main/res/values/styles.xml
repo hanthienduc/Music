@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--suppress AndroidDomInspection -->
 <resources>
 
     <style name="AppTheme.Light" parent="MaterialDrawerTheme.Light">
@@ -10,13 +9,11 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowNoTitle">true</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="android:windowBackground">@color/lightWindowBackground</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="search_background_color">@color/lightContentColor</item>
-        <item name="search_theme">light</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="AppTheme.Dark" parent="MaterialDrawerTheme">
@@ -27,13 +24,11 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowNoTitle">true</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="android:windowBackground">@color/darkWindowBackground</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="search_background_color">@color/darkContentColour</item>
-        <item name="search_theme">dark</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="AppTheme.BrandedLaunch" parent="AppTheme.Light">

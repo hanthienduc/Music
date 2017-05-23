@@ -65,7 +65,7 @@ public class AlbumsFragment extends Fragment {
 
     private void getAlbumList() {
         final ArrayList<Album> albumList = Utils.getAlbums(context);
-        albumGrid.setAdapter(new AlbumsAdapter(context, albumList, false, Glide.with(this)));
+        albumGrid.setAdapter(new AlbumsAdapter(context, albumList, Glide.with(this)));
         if (albumList.isEmpty()) noAlbums.setVisibility(View.VISIBLE);
     }
 

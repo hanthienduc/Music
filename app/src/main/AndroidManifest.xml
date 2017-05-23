@@ -77,8 +77,6 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.activity.SearchActivity">
-        </activity>
     </application>
 
 </manifest>

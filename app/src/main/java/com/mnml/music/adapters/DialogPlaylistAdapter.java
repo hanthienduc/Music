@@ -158,10 +158,10 @@ public class DialogPlaylistAdapter
     }
 
     static final class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        public final TextView title;
-        public final TextView add;
-        public final View view;
-        public final ImageView menu;
+        private final TextView title;
+        private final TextView add;
+        private final View view;
+        private final ImageView menu;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);

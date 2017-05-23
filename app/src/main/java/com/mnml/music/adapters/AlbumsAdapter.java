@@ -21,10 +21,9 @@ import com.mnml.music.models.Album;
 import com.mnml.music.ui.activity.AlbumDetailActivity;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.Utils;
-import com.mnml.music.utils.glide.GlideUtils;
+import com.mnml.music.utils.GlideUtils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItemViewHolder>
@@ -32,14 +31,12 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
 
     private List<Album> items;
     private final Context context;
-    private final boolean isSearchLayout;
     private final RequestManager glide;
 
-    public AlbumsAdapter(Context context, List<Album> items, boolean isSearchLayout, RequestManager glide) {
+    public AlbumsAdapter(Context context, List<Album> items, RequestManager glide) {
         this.context = context;
         this.items = items;
         final int px = Utils.dpToPx(context, Config.ALBUM_CARD_WIDTH);
-        this.isSearchLayout = isSearchLayout;
         this.glide = glide.applyDefaultRequestOptions(GlideUtils.glideOptions(px, false, R.drawable.default_art));
     }
 
@@ -56,14 +53,9 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
 
     @Override
     public AlbumsAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(isSearchLayout ? R.layout.album_search : R.layout.album, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.album, parent, false);
 
         return new SimpleItemViewHolder(itemView);
-    }
-
-    public void updateData(ArrayList<Album> newList) {
-        items = newList;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -105,11 +97,11 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
     }
 
     static final class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        final TextView albumName;
-        final TextView albumDesc;
-        final ImageView albumArt;
-        final View background;
-        final View textHolder;
+        private final TextView albumName;
+        private final TextView albumDesc;
+        private final ImageView albumArt;
+        private final View background;
+        private final View textHolder;
 
         SimpleItemViewHolder(View view) {
             super(view);

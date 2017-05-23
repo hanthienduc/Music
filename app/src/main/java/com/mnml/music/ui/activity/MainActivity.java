@@ -22,6 +22,7 @@ import butterknife.Unbinder;
 import com.afollestad.aesthetic.Aesthetic;
 import com.afollestad.aesthetic.AestheticActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mnml.music.R;
 import com.mnml.music.adapters.ViewPagerAdapter;
 import com.mnml.music.service.MusicService;
@@ -29,7 +30,6 @@ import com.mnml.music.ui.fragments.*;
 import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.shortcuts.ShortcutHandler;
 import com.mnml.music.utils.Utils;
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -73,12 +73,12 @@ public class MainActivity extends AestheticActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hasGoogleServices = Utils.isGooglePlayServicesAvailable(this);
         if(!hasGoogleServices) {
             sharedPrefs.edit().putBoolean("google_services", false).apply();
         }
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -110,7 +110,6 @@ public class MainActivity extends AestheticActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // NOTE: delegate the permission handling to generated method
         MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
@@ -144,8 +143,6 @@ public class MainActivity extends AestheticActivity {
             case R.id.play_all:
                 if (service != null) service.playAllSongs();
                 return true;
-            case R.id.action_search:
-                startActivity(new Intent(MainActivity.this, SearchActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -264,29 +261,29 @@ public class MainActivity extends AestheticActivity {
         songs = new PrimaryDrawerItem()
                 .withIdentifier(0)
                 .withName(R.string.songs)
-                .withIcon(MaterialDesignIconic.Icon.gmi_audio);
+                .withIcon(GoogleMaterial.Icon.gmd_audiotrack);
         albums = new PrimaryDrawerItem()
                 .withIdentifier(1)
                 .withName(R.string.albums)
-                .withIcon(MaterialDesignIconic.Icon.gmi_album);
+                .withIcon(GoogleMaterial.Icon.gmd_album);
         artists = new PrimaryDrawerItem()
                 .withIdentifier(2)
                 .withName(R.string.artist)
-                .withIcon(MaterialDesignIconic.Icon.gmi_account);
+                .withIcon(GoogleMaterial.Icon.gmd_person);
         playlists = new PrimaryDrawerItem()
                 .withIdentifier(3)
                 .withName(R.string.playlist)
-                .withIcon(MaterialDesignIconic.Icon.gmi_playlist_audio);
+                .withIcon(GoogleMaterial.Icon.gmd_playlist_play);
         final SecondaryDrawerItem settings = new SecondaryDrawerItem()
                 .withIdentifier(5)
                 .withName(getString(R.string.settings))
                 .withSelectable(false)
-                .withIcon(MaterialDesignIconic.Icon.gmi_settings);
+                .withIcon(GoogleMaterial.Icon.gmd_settings);
         final SecondaryDrawerItem about = new SecondaryDrawerItem()
                 .withIdentifier(6)
                 .withName(R.string.about)
                 .withSelectable(false)
-                .withIcon(MaterialDesignIconic.Icon.gmi_info);
+                .withIcon(GoogleMaterial.Icon.gmd_info);
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -330,10 +327,6 @@ public class MainActivity extends AestheticActivity {
                 .build();
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         Aesthetic.get().colorAccent().take(1).subscribe(this::updateDrawerColors);
-    }
-
-    public void setStatusBarColor(final int color) {
-        drawer.getDrawerLayout().getStatusBarBackgroundDrawable().setTint(color);
     }
 
     @Override

@@ -113,9 +113,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
     }
 
     static final class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        final TextView gridName;
-        final ImageView overflow;
-        final View mainView;
+        private final TextView gridName;
+        private final ImageView overflow;
+        private final View mainView;
 
         SimpleItemViewHolder(View view) {
             super(view);
