@@ -25,7 +25,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItemViewHolder>
@@ -121,18 +120,21 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                 .setCallback(new Callback<LastFMArtist>() {
                     @Override
                     public void onResponse(Call<LastFMArtist> call, Response<LastFMArtist> response) {
-                        if(response.isSuccessful() && response.body() != null && response.body().getArtist() != null) {
-                            List<Image> images = response.body().getArtist().getImage();
-                            if(images != null) {
-                                for (Image image : images) {
-                                    if(image.getSize().equals("medium")) {
-                                        glide.load(image.getText()).into(holder.artistImg);
-                                        return;
+                        if(response.isSuccessful()) {
+                            final LastFMArtist responseBody = response.body();
+                            if(responseBody != null && responseBody.getArtist() != null) {
+                                final List<Image> images = responseBody.getArtist().getImage();
+                                if(images != null) {
+                                    for (Image image : images) {
+                                        if(image.getSize().equals("medium")) {
+                                            glide.load(image.getText()).into(holder.artistImg);
+                                            return;
+                                        }
                                     }
                                 }
                             }
                         } else {
-                            File file = new File(context.getCacheDir(), artistName + ".png");
+                            final File file = new File(context.getCacheDir(), artistName + ".png");
                             glide.load(file).into(holder.artistImg);
                         }
                     }

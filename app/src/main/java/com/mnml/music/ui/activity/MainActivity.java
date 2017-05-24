@@ -12,22 +12,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.afollestad.aesthetic.Aesthetic;
 import com.afollestad.aesthetic.AestheticActivity;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mnml.music.R;
 import com.mnml.music.adapters.ViewPagerAdapter;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.fragments.*;
-import com.mnml.music.utils.PlaylistHelper;
+import com.mnml.music.utils.PlaylistUtils;
 import com.mnml.music.utils.shortcuts.ShortcutHandler;
 import com.mnml.music.utils.Utils;
 import com.mikepenz.materialdrawer.Drawer;
@@ -209,29 +206,7 @@ public class MainActivity extends AestheticActivity {
         viewPager.setOffscreenPageLimit(adapter.getCount());
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
-        fab.setOnClickListener(v ->
-                new MaterialDialog.Builder(MainActivity.this)
-                        .title(R.string.add_playlist)
-                        .inputType(InputType.TYPE_CLASS_TEXT)
-                        .input(
-                                getString(R.string.playlist_example),
-                                null,
-                                (dialog, input) -> {
-                                    if (!input.toString().equals("")) {
-                                        PlaylistHelper helper = new PlaylistHelper(MainActivity.this);
-                                        helper.createNewPlayList(input.toString());
-                                        playlistFragment.updateList();
-                                    } else {
-                                        Toast.makeText(
-                                                MainActivity.this,
-                                                R.string.playlist_name_empty_warning,
-                                                Toast.LENGTH_SHORT)
-                                                .show();
-                                    }
-                                })
-                        .positiveText(getString(R.string.ok))
-                        .negativeText(getString(R.string.cancel))
-                        .show());
+        fab.setOnClickListener(v -> PlaylistUtils.createPlaylist(this, playlistFragment.getAdapter()));
     }
 
     public SlidingUpPanelLayout getSlidingPanel() {

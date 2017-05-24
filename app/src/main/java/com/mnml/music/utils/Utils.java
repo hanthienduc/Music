@@ -7,22 +7,17 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
 import android.view.View;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.mnml.music.R;
-import com.mnml.music.adapters.DialogPlaylistAdapter;
 import com.mnml.music.models.Album;
 import com.mnml.music.models.Artist;
-import com.mnml.music.models.Playlist;
 import com.mnml.music.models.Song;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 public class Utils {
 
@@ -119,19 +114,6 @@ public class Utils {
         return artistList;
     }
 
-    public static boolean containsIgnoreCase(String str, String searchStr) {
-        if(str == null || searchStr == null) return false;
-
-        final int length = searchStr.length();
-        if (length == 0)
-            return true;
-
-        for (int i = str.length() - length; i >= 0; i--) {
-            if (str.regionMatches(true, i, searchStr, 0, length))
-                return true;
-        }
-        return false;
-    }
 
     public static ArrayList<Album> getAlbums(Context context) {
         final ArrayList<Album> albumList = new ArrayList<>();
@@ -209,7 +191,7 @@ public class Utils {
         return list;
     }
 
-    public static String getAlbumArt(final Context context, final long albumId) {
+    static String getAlbumArt(final Context context, final long albumId) {
         Cursor cursor =
                 context
                         .getContentResolver()
@@ -225,20 +207,6 @@ public class Utils {
             cursor.close();
         }
         return imagePath;
-    }
-
-    public static void addToPlaylistDialog(final Context context, final Song position) {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        layoutManager.scrollToPosition(0);
-        PlaylistHelper sqLiteHelper = new PlaylistHelper(context);
-        List<Playlist> playlist = sqLiteHelper.getAllPlaylist();
-        playlist.add(new Playlist(-1, context.getString(R.string.create_new_playlist)));
-        new MaterialDialog.Builder(context)
-                .title(context.getString(R.string.add_to_playlist))
-                .positiveText(context.getString(R.string.done))
-                .adapter(new DialogPlaylistAdapter(context, playlist, position), layoutManager)
-                .show();
     }
 
     public static int dpToPx(final Context context, final int dp) {

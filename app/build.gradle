@@ -8,8 +8,8 @@ android {
         applicationId "com.mnml.music"
         minSdkVersion 24
         targetSdkVersion 25
-        versionCode 252
-        versionName "2.5.2"
+        versionCode 253
+        versionName "2.5.3"
     }
     configurations {
         all*.exclude group: 'com.google.firebase', module: 'firebase-core'
@@ -75,7 +75,7 @@ dependencies {
     compile 'com.github.kabouzeid:AndroidSlidingUpPanel:3.3.0-kmod3'
     compile 'com.github.bumptech.glide:glide:4.0.0-RC0'
     compile "com.jakewharton:butterknife:$butterKnifeVersion"
-    compile 'com.afollestad:aesthetic:0.4.6'
+    compile 'com.afollestad:aesthetic:0.4.7'
     compile 'com.github.hotchemi:permissionsdispatcher:2.4.0'
 
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"

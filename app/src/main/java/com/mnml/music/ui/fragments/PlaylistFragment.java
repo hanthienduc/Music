@@ -13,13 +13,14 @@ import com.mnml.music.adapters.PlaylistAdapter;
 import com.mnml.music.models.Playlist;
 import com.mnml.music.utils.PlaylistHelper;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class PlaylistFragment extends Fragment {
 
     private View mainView;
     private RecyclerView rv;
     private PlaylistHelper helper;
+    private PlaylistAdapter adapter;
 
     @Override
     public View onCreateView(
@@ -43,13 +44,19 @@ public class PlaylistFragment extends Fragment {
         updateList();
     }
 
-    public void updateList() {
-        PlaylistAdapter adapter = (PlaylistAdapter) rv.getAdapter();
-        List<Playlist> playlistList = helper.getAllPlaylist();
+    public PlaylistAdapter getAdapter() {
+        return adapter;
+    }
+
+    private void updateList() {
+        adapter = (PlaylistAdapter) rv.getAdapter();
+        ArrayList<Playlist> playlistList = new ArrayList<>();
+        playlistList.addAll(helper.getAllPlaylist());
         if (adapter != null) {
             adapter.updateData(playlistList);
         } else {
-            rv.setAdapter(new PlaylistAdapter(mainView.getContext(), playlistList));
+            adapter = new PlaylistAdapter(mainView.getContext(), playlistList);
+            rv.setAdapter(adapter);
         }
     }
 }

@@ -6,7 +6,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import com.mnml.music.R;
 import com.mnml.music.models.Song;
@@ -69,14 +72,12 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         private final TextView title;
         private final TextView desc;
         private final View view;
-        private final View textHolder;
 
         SimpleItemViewHolder(View itemView) {
             super(itemView);
             view = itemView;
             title = (TextView) itemView.findViewById(R.id.song_item_name);
             desc = (TextView) itemView.findViewById(R.id.song_item_desc);
-            textHolder = itemView.findViewById(R.id.song_text_holder);
             itemView.setOnCreateContextMenuListener(this);
         }
 

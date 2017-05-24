@@ -18,14 +18,14 @@ import com.mnml.music.ui.activity.PlaylistActivity;
 import com.mnml.music.utils.Config;
 import com.mnml.music.utils.PlaylistHelper;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.SimpleItemViewHolder> {
 
     private final Context context;
-    private List<Playlist> items;
+    private ArrayList<Playlist> items;
 
-    public PlaylistAdapter(Context context, List<Playlist> items) {
+    public PlaylistAdapter(Context context, ArrayList<Playlist> items) {
         this.context = context;
         this.items = items;
     }
@@ -40,9 +40,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
 
     @Override
     public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
-        position = holder.getAdapterPosition();
+        final int adapterPosition = holder.getAdapterPosition();
         holder.gridName.setText(items.get(position).getName());
-        final int finalPosition = position;
         holder.overflow.setOnClickListener(
                 v -> {
                     PopupMenu popupMenu = new PopupMenu(context, v);
@@ -51,18 +50,18 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                                 switch (item.getItemId()) {
                                     case R.id.menu_playlist_delete:
                                         PlaylistHelper helper = new PlaylistHelper(context);
-                                        helper.removePlayList(items.get(finalPosition).getId());
-                                        items.remove(finalPosition);
-                                        notifyItemRemoved(finalPosition);
+                                        helper.removePlayList(items.get(adapterPosition).getId());
+                                        items.remove(adapterPosition);
+                                        notifyItemRemoved(adapterPosition);
                                         return true;
                                     case R.id.menu_playlist_play:
                                         Intent i = new Intent();
-                                        i.putExtra("playlistId", items.get(finalPosition).getId());
+                                        i.putExtra("playlistId", items.get(adapterPosition).getId());
                                         i.setAction(Config.PLAY_PLAYLIST);
                                         context.sendBroadcast(i);
                                         return true;
                                     case R.id.menu_playlist_rename:
-                                        showRenamePlaylistPrompt(finalPosition);
+                                        showRenamePlaylistPrompt(adapterPosition);
                                         return true;
                                     default:
                                         return false;
@@ -74,8 +73,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
         holder.mainView.setOnClickListener(
                 v -> {
                     Intent i = new Intent(context, PlaylistActivity.class);
-                    i.putExtra("playlistId", items.get(finalPosition).getId());
-                    i.putExtra("title", items.get(finalPosition).getName());
+                    i.putExtra("playlistId", items.get(adapterPosition).getId());
+                    i.putExtra("title", items.get(adapterPosition).getName());
                     context.startActivity(i);
                 });
     }
@@ -103,7 +102,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Simple
                 .show();
     }
 
-    public void updateData(List<Playlist> newPlaylistList) {
+    public void updateData(ArrayList<Playlist> newPlaylistList) {
         items = newPlaylistList;
         notifyDataSetChanged();
     }
