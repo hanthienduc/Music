@@ -26,22 +26,16 @@
     <string name="shuffle">Shuffle</string>
     <string name="menu_play_next">Play next</string>
     <string name="menu_add_playing">Add to playing queue</string>
-    <string name="menu_remove_playing">Remove from playing queue</string>
     <string name="menu_delete">Delete from device</string>
     <string name="menu_share">Share</string>
     <string name="play_all">Play all</string>
     <string name="add_playlist">Create playlist</string>
     <string name="share_song">Share song</string>
-    <string name="song_delete_success">Song deleted</string>
-    <string name="song_delete_fail">Failed to delete song</string>
 
     <!-- Playlist strings -->
     <string name="rename_playlist">Rename playlist</string>
     <string name="playlist_example">e.g. Favourites</string>
     <string name="playlist_name_empty_warning">Playlist name cannot be empty</string>
-    <string name="create_new_playlist">Create playlist</string>
-    <string name="add_to_playlist">Add songs to playlist</string>
-    <string name="menu_add_playlist">Add to playlist</string>
 
     <!-- PlaylistAdapter -->
     <string name="ok">OK</string>
@@ -59,8 +53,6 @@
     <!-- List strings -->
     <string name="album">Album</string>
     <string name="song">Song</string>
-    <string name="no_songs">No songs found!</string>
-    <string name="no_albums">No albums found!</string>
     <string name="no_artists">No artists found!</string>
 
     <!-- Settings strings -->
@@ -73,7 +65,6 @@
     <string name="playback_speed">Playback speed</string>
     <string name="primary_color">Primary color</string>
     <string name="accent_color">Accent color</string>
-    <string name="search">Search</string>
     <string name="google_services_title">Google services</string>
     <string name="google_services_desc">Whether or not features that require Google services should be enabled</string>
     <string name="substratum_theme">Use Substratum theme colors</string>

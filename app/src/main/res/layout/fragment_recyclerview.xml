@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
-            android:id="@+id/artist_list"
+            android:id="@+id/recyclerview"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:layout_width="match_parent"

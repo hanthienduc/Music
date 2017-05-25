@@ -8,8 +8,8 @@ android {
         applicationId "com.mnml.music"
         minSdkVersion 24
         targetSdkVersion 25
-        versionCode 253
-        versionName "2.5.3"
+        versionCode 254
+        versionName "2.5.4"
     }
     configurations {
         all*.exclude group: 'com.google.firebase', module: 'firebase-core'

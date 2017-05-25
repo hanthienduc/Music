@@ -139,11 +139,6 @@ public class PlaylistHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void addSong(String songName, int playlistId) {
-        Song song = getSong(songName);
-        addSong(song, playlistId);
-    }
-
     private Song getSong(String songName) {
         final String where =
                 MediaStore.Audio.Media.IS_MUSIC

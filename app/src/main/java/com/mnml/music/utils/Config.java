@@ -34,10 +34,6 @@ public class Config {
     public static final String REQUEST_SONG_DETAILS = "request_song_details";
     public static final String SEEK_TO_SONG = "seek_to_song";
     public static final String SEEK_GET_SONG = "seek_get_song";
-    public static final String MENU_PLAY_NEXT = "menu_play_next";
-    public static final String MENU_REMOVE_FROM_QUEUE = "menu_remove_from_queue";
-    public static final String MENU_SHARE = "menu_share";
-    public static final String MENU_DELETE = "menu_delete";
     public static final String SHUFFLE_ALL = "shuffle_all";
     public static final String PLAY_ALL = "play_all";
 
