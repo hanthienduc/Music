@@ -1,6 +1,7 @@
 package com.mnml.music.ui.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -22,6 +23,9 @@ import com.mnml.music.utils.Utils;
 public class SettingsActivity extends AestheticActivity
         implements ColorChooserDialog.ColorCallback {
 
+    private boolean googleServicesToggled = false;
+    private Intent data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -38,6 +42,12 @@ public class SettingsActivity extends AestheticActivity
         transaction.replace(R.id.fragment_holder, new SettingsFragment());
         transaction.commit();
 
+        data = new Intent();
+    }
+
+    void toggleGoogleServices() {
+        googleServicesToggled = !googleServicesToggled;
+        data.putExtra("googleServicesToggled", googleServicesToggled);
     }
 
     @Override
@@ -46,6 +56,12 @@ public class SettingsActivity extends AestheticActivity
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void finish() {
+        setResult(Config.SETTINGS_REQUEST_CODE, data);
+        super.finish();
     }
 
     @Override
@@ -98,6 +114,7 @@ public class SettingsActivity extends AestheticActivity
                 googleServices.getSharedPreferences().edit().putBoolean(KEY_GOOGLE_SERVICES, false).apply();
             }
             googleServices.setEnabled(isGoogleServicesAvailable);
+            googleServices.setOnPreferenceChangeListener(this);
         }
 
         private void configurePlaybackSettings() {
@@ -143,6 +160,9 @@ public class SettingsActivity extends AestheticActivity
                     float value = ((int) newValue) / 10.0f;
                     preference.getSharedPreferences().edit().putFloat("playback_speed_float", value).apply();
                     preference.setSummary(value + "x");
+                    return true;
+                case KEY_GOOGLE_SERVICES:
+                    ((SettingsActivity) getActivity()).toggleGoogleServices();
                     return true;
             }
             return false;

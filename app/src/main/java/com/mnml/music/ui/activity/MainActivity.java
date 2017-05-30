@@ -25,6 +25,7 @@ import com.mnml.music.R;
 import com.mnml.music.adapters.ViewPagerAdapter;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.fragments.*;
+import com.mnml.music.utils.Config;
 import com.mnml.music.utils.shortcuts.ShortcutHandler;
 import com.mnml.music.utils.Utils;
 import com.mikepenz.materialdrawer.Drawer;
@@ -71,7 +72,7 @@ public class MainActivity extends AestheticActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean hasGoogleServices = Utils.isGooglePlayServicesAvailable(this);
+        final boolean hasGoogleServices = Utils.isGooglePlayServicesAvailable(this);
         if(!hasGoogleServices) {
             sharedPrefs.edit().putBoolean("google_services", false).apply();
         }
@@ -284,7 +285,7 @@ public class MainActivity extends AestheticActivity {
                                     break;
                                 case 5:
                                     Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                                    startActivity(intent);
+                                    startActivityForResult(intent, Config.SETTINGS_REQUEST_CODE);
                                     break;
                                 case 6:
                                     startActivity(new Intent(MainActivity.this, AboutActivity.class));
@@ -295,6 +296,17 @@ public class MainActivity extends AestheticActivity {
                 .build();
         drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         Aesthetic.get().colorAccent().take(1).subscribe(this::updateDrawerColors);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case Config.SETTINGS_REQUEST_CODE:
+                final boolean googleServicesToggled = data.getBooleanExtra("googleServicesToggled", false);
+                if(googleServicesToggled) recreate();
+                break;
+        }
     }
 
     @Override

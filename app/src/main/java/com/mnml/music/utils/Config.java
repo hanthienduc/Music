@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 public class Config {
     public static final int DONATE_REQUEST_CODE = 5963;
+    public static final int SETTINGS_REQUEST_CODE = 1160;
 
     // In-App SKUs
     public static final String DONATE_2 = "donate2";
