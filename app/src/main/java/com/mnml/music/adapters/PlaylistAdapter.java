@@ -7,7 +7,6 @@ import com.mnml.music.base.BaseAdapter;
 import com.mnml.music.models.Playlist;
 import com.mnml.music.ui.activity.PlaylistActivity;
 import com.mnml.music.utils.PlaylistHelper;
-import com.mnml.music.utils.PlaylistUtils;
 
 import java.util.ArrayList;
 
@@ -17,10 +16,10 @@ public class PlaylistAdapter extends BaseAdapter {
     private ArrayList<Playlist> items;
     private PlaylistHelper helper;
 
-    public PlaylistAdapter(Context context, ArrayList<Playlist> items) {
+    public PlaylistAdapter(Context context, ArrayList<Playlist> items, PlaylistHelper helper) {
         this.context = context;
         this.items = items;
-        helper = new PlaylistHelper(context);
+        this.helper = helper;
     }
 
     @Override
@@ -42,7 +41,7 @@ public class PlaylistAdapter extends BaseAdapter {
             contextMenu
                     .add(context.getString(R.string.rename_playlist))
                     .setOnMenuItemClickListener(menuItem -> {
-                        PlaylistUtils.showRenamePlaylistPrompt(context, this, playlist, position);
+                        helper.showRenamePlaylistPrompt(this, playlist, position);
                         return true;
                     });
             contextMenu

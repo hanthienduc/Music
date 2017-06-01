@@ -8,6 +8,8 @@
         <item>Temporarily remove drag n drop on playing list (I wasn\'t happy with the way it was implemented)</item>
         <item>Dark mode fixes</item>
         <item>Fix \'Play album\' function not queueing in track order</item>
+        <item>Use a new theming engine for changing app colors (Credits to @afollestad)</item>
+        <item>Move common code between adapters / fragments into one common class</item>
         <item>Fix headset button controls (now supports double/triple click)</item>
     </string-array>
     <string-array name="contributors">

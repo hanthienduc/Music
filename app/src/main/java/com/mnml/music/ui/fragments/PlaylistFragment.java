@@ -11,12 +11,22 @@ import java.util.ArrayList;
 
 public class PlaylistFragment extends RVFragment {
 
+    private PlaylistHelper helper;
+
+    public PlaylistHelper getHelper() {
+        return helper;
+    }
+
+    @Override
+    public void extraCreate() {
+        helper = new PlaylistHelper(getContext());
+    }
+
     @Override
     public RecyclerView.Adapter adapter() {
         final Context context = getContext();
-        final PlaylistHelper playlistHelper = new PlaylistHelper(context);
         final ArrayList<Playlist> playlistList = new ArrayList<>();
-        playlistList.addAll(playlistHelper.getAllPlaylist());
-        return new PlaylistAdapter(context, playlistList);
+        playlistList.addAll(helper.getAllPlaylist());
+        return new PlaylistAdapter(context, playlistList, helper);
     }
 }

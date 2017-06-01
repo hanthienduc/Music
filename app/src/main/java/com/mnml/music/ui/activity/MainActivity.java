@@ -14,7 +14,6 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -27,7 +26,7 @@ import com.mnml.music.adapters.ViewPagerAdapter;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.fragments.*;
 import com.mnml.music.utils.Config;
-import com.mnml.music.utils.PlaylistUtils;
+import com.mnml.music.utils.PlaylistHelper;
 import com.mnml.music.utils.shortcuts.ShortcutHandler;
 import com.mnml.music.utils.Utils;
 import com.mikepenz.materialdrawer.Drawer;
@@ -51,6 +50,7 @@ public class MainActivity extends AestheticActivity {
     private PrimaryDrawerItem songs, albums, artists, playlists;
     private Unbinder unbinder;
     private SharedPreferences sharedPrefs;
+    private PlaylistHelper playlistHelper;
     private Drawer drawer;
     private int startPage, lastPage;
     private PlaylistFragment playlistFragment;
@@ -204,7 +204,10 @@ public class MainActivity extends AestheticActivity {
         viewPager.setOffscreenPageLimit(adapter.getCount());
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
-        fab.setOnClickListener(v -> PlaylistUtils.createPlaylist(this, (PlaylistAdapter) playlistFragment.adapter()));
+        fab.setOnClickListener(v -> {
+            if(playlistHelper == null) playlistHelper = playlistFragment.getHelper();
+            if(playlistHelper != null) playlistHelper.createPlaylist((PlaylistAdapter) playlistFragment.adapter());
+        });
     }
 
     public SlidingUpPanelLayout getSlidingPanel() {

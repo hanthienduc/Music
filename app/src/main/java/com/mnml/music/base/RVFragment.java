@@ -27,10 +27,14 @@ public class RVFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_recyclerview, container, false);
         unbinder = ButterKnife.bind(this, v);
 
+        extraCreate();
+
         recyclerView();
 
         return v;
     }
+
+    public void extraCreate() {}
 
     public RecyclerView.LayoutManager layoutManager() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);

@@ -6,7 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.MediaStore;
+import android.text.InputType;
+import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.mnml.music.R;
 import com.mnml.music.adapters.PlaylistAdapter;
 import com.mnml.music.models.Playlist;
 import com.mnml.music.models.Song;
@@ -68,29 +71,67 @@ public class PlaylistHelper extends SQLiteOpenHelper {
         this.onCreate(db);
     }
 
-    int createNewPlayList(String name) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(PLAYLIST_KEY_TITLE, name);
-        long id = db.insert(TABLE_PLAYLIST, null, values);
-        db.close();
-        return (int) id;
+    public void showRenamePlaylistPrompt(final PlaylistAdapter adapter, final Playlist item, final int position) {
+        new MaterialDialog.Builder(context)
+                .title(R.string.rename_playlist)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input(
+                        context.getString(R.string.playlist_example),
+                        null,
+                        (dialog, input) -> {
+                            final String inputString = input.toString();
+                            if (!inputString.isEmpty()) {
+                                final ArrayList<Playlist> items = adapter.getItems();
+                                items.remove(item);
+                                SQLiteDatabase db = this.getWritableDatabase();
+                                db.execSQL(
+                                        "UPDATE "
+                                                + TABLE_PLAYLIST
+                                                + " SET "
+                                                + PLAYLIST_KEY_TITLE
+                                                + "='"
+                                                + inputString
+                                                + "' WHERE "
+                                                + PLAYLIST_KEY_ID
+                                                + "='"
+                                                + item.getId()
+                                                + "'");
+                                item.setName(inputString);
+                                items.add(position, item);
+                                adapter.updateData(items);
+                            } else {
+                                Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                .positiveText(context.getString(R.string.done))
+                .negativeText(context.getString(R.string.cancel))
+                .show();
     }
 
-    void renamePlaylist(String newName, int playlistId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL(
-                "UPDATE "
-                        + TABLE_PLAYLIST
-                        + " SET "
-                        + PLAYLIST_KEY_TITLE
-                        + "='"
-                        + newName
-                        + "' WHERE "
-                        + PLAYLIST_KEY_ID
-                        + "='"
-                        + playlistId
-                        + "'");
+    public void createPlaylist(final PlaylistAdapter adapter) {
+        new MaterialDialog.Builder(context)
+                .title(R.string.add_playlist)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input(context.getString(R.string.playlist_example),
+                        null,
+                        (dialog, input) -> {
+                            final String inputString = input.toString();
+                            if (!inputString.isEmpty()) {
+                                SQLiteDatabase db = this.getWritableDatabase();
+                                ContentValues values = new ContentValues();
+                                values.put(PLAYLIST_KEY_TITLE, inputString);
+                                db.close();
+                                final ArrayList<Playlist> list = new ArrayList<>();
+                                list.addAll(getAllPlaylist());
+                                adapter.updateData(list);
+                            } else {
+                                Toast.makeText(context, R.string.playlist_name_empty_warning, Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        })
+                .positiveText(context.getString(R.string.ok))
+                .negativeText(context.getString(R.string.cancel))
+                .show();
     }
 
     public void removePlayList(final Playlist playlist, final PlaylistAdapter adapter) {
