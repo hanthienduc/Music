@@ -1,4 +1,4 @@
-package com.mnml.music.ui.fragments.base;
+package com.mnml.music.base;
 
 import android.content.Context;
 import android.os.Bundle;

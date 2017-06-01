@@ -6,7 +6,7 @@
     android:foreground="?android:attr/selectableItemBackground">
 
     <ImageView
-            android:id="@+id/artist_image"
+            android:id="@+id/art"
             android:layout_width="72dp"
             android:layout_height="match_parent"
             android:padding="16dp"
@@ -24,11 +24,11 @@
             android:paddingEnd="16dp"
             android:orientation="vertical">
         <TextView
-                android:id="@+id/artist_name"
+                android:id="@+id/title"
                 style="@style/TitleText"/>
 
         <TextView
-                android:id="@+id/artist_desc"
+                android:id="@+id/desc"
                 style="@style/DescText"/>
     </LinearLayout>
 </RelativeLayout>

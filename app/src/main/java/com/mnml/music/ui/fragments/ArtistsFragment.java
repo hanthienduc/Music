@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.mnml.music.adapters.ArtistAdapter;
 import com.mnml.music.models.Artist;
-import com.mnml.music.ui.fragments.base.RVFragment;
+import com.mnml.music.base.RVFragment;
 import com.mnml.music.utils.Utils;
 
 import java.util.ArrayList;

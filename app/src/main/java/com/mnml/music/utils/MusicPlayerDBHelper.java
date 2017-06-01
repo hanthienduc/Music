@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class MusicPlayerDBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "MusicPlayingDB";
     private static final String TABLE_PLAYBACK = "playback";
     private static final String SONG_KEY_ID = "song_id";
@@ -29,21 +29,20 @@ public class MusicPlayerDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_PLAYBACK_TABLE =
-                "CREATE TABLE playback ("
-                        + "song_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                        + "song_real_id INTEGER,"
-                        + "song_album_id INTEGER,"
-                        + "song_desc TEXT,"
-                        + "song_path TEXT,"
-                        + "song_name TEXT,"
-                        + "song_count INTEGER,"
-                        + "song_album_name TEXT)";
+                "CREATE TABLE " + TABLE_PLAYBACK + " ("
+                        + SONG_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        + SONG_KEY_REAL_ID + " INTEGER,"
+                        + SONG_KEY_ALBUMID + " INTEGER,"
+                        + SONG_KEY_DESC + " TEXT,"
+                        + SONG_KEY_PATH + " TEXT,"
+                        + SONG_KEY_NAME + " TEXT,"
+                        + SONG_KEY_ALBUM_NAME + " TEXT)";
         db.execSQL(CREATE_PLAYBACK_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS playback");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYBACK);
         this.onCreate(db);
     }
 

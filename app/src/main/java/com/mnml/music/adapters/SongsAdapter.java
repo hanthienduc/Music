@@ -5,13 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import com.mnml.music.R;
+import com.mnml.music.base.BaseAdapter;
 import com.mnml.music.models.Song;
 import com.mnml.music.utils.Config;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
@@ -19,8 +15,7 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import java.io.File;
 import java.util.List;
 
-public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemViewHolder>
-        implements FastScrollRecyclerView.SectionedAdapter {
+public class SongsAdapter extends BaseAdapter implements FastScrollRecyclerView.SectionedAdapter {
 
     private List<Song> items;
     private final Context context;
@@ -43,22 +38,19 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
     }
 
     @Override
-    public SongsAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.song, parent, false);
-        return new SimpleItemViewHolder(itemView);
+    public int layoutId() {
+        return R.layout.song;
     }
 
     @Override
-    public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
-        final int absolutePosition = holder.getAdapterPosition();
-        holder.title.setText(items.get(absolutePosition).getName());
-        holder.desc.setText(items.get(absolutePosition).getDesc());
-        holder.view.setOnClickListener(v -> {
-            Intent a = new Intent();
-            a.setAction(Config.PLAY_SINGLE_SONG);
-            a.putExtra("song", items.get(absolutePosition));
-            context.sendBroadcast(a);
-        });
+    public void setView(final ViewHolder holder, final int position) {
+        holder.title.setText(items.get(position).getName());
+        holder.desc.setText(items.get(position).getDesc());
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return 0;
     }
 
     @Override
@@ -66,26 +58,17 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
         return items.size();
     }
 
-    final class SimpleItemViewHolder
-            extends RecyclerView.ViewHolder
-            implements View.OnCreateContextMenuListener {
-        private final TextView title;
-        private final TextView desc;
-        private final View view;
-
-        SimpleItemViewHolder(View itemView) {
-            super(itemView);
-            view = itemView;
-            title = (TextView) itemView.findViewById(R.id.song_item_name);
-            desc = (TextView) itemView.findViewById(R.id.song_item_desc);
-            itemView.setOnCreateContextMenuListener(this);
-        }
-
-        @Override
-        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-            final int position = SimpleItemViewHolder.this.getAdapterPosition();
-
-            contextMenu.setHeaderTitle(title.getText());
+    @Override
+    public void extraViewSetup(final ViewHolder holder, final View itemView) {
+        final int position = holder.getAdapterPosition();
+        itemView.setOnClickListener(v -> {
+            Intent a = new Intent();
+            a.setAction(Config.PLAY_SINGLE_SONG);
+            a.putExtra("song", items.get(position));
+            context.sendBroadcast(a);
+        });
+        itemView.setOnCreateContextMenuListener((contextMenu, view, contextMenuInfo) -> {
+            contextMenu.setHeaderTitle(holder.title.getText());
             contextMenu
                     .add(0, view.getId(), 0, context.getString(R.string.menu_play_next))
                     .setOnMenuItemClickListener(menuItem -> {
@@ -123,6 +106,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SimpleItemVi
                         }
                         return true;
                     });
-        }
+        });
     }
 }

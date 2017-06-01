@@ -22,10 +22,12 @@ import com.afollestad.aesthetic.Aesthetic;
 import com.afollestad.aesthetic.AestheticActivity;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mnml.music.R;
+import com.mnml.music.adapters.PlaylistAdapter;
 import com.mnml.music.adapters.ViewPagerAdapter;
 import com.mnml.music.service.MusicService;
 import com.mnml.music.ui.fragments.*;
 import com.mnml.music.utils.Config;
+import com.mnml.music.utils.PlaylistUtils;
 import com.mnml.music.utils.shortcuts.ShortcutHandler;
 import com.mnml.music.utils.Utils;
 import com.mikepenz.materialdrawer.Drawer;
@@ -51,6 +53,7 @@ public class MainActivity extends AestheticActivity {
     private SharedPreferences sharedPrefs;
     private Drawer drawer;
     private int startPage, lastPage;
+    private PlaylistFragment playlistFragment;
     private MusicService service;
     private PlayerFragment player;
     private final ServiceConnection serviceConnection =
@@ -171,10 +174,11 @@ public class MainActivity extends AestheticActivity {
 
     private void setupViewPager() {
         final ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        playlistFragment = new PlaylistFragment();
         adapter.addFrag(new SongsFragment(), getResources().getString(R.string.songs));
         adapter.addFrag(new AlbumsFragment(), getResources().getString(R.string.albums));
         adapter.addFrag(new ArtistsFragment(), getResources().getString(R.string.artist));
-        adapter.addFrag(new PlaylistFragment(), getResources().getString(R.string.playlist));
+        adapter.addFrag(playlistFragment, getResources().getString(R.string.playlist));
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(
                 new ViewPager.OnPageChangeListener() {
@@ -200,7 +204,7 @@ public class MainActivity extends AestheticActivity {
         viewPager.setOffscreenPageLimit(adapter.getCount());
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
-        fab.setOnClickListener(v -> Toast.makeText(this, "Coming soon", Toast.LENGTH_SHORT).show());
+        fab.setOnClickListener(v -> PlaylistUtils.createPlaylist(this, (PlaylistAdapter) playlistFragment.adapter()));
     }
 
     public SlidingUpPanelLayout getSlidingPanel() {

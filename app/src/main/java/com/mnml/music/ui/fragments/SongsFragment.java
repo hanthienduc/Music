@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import com.mnml.music.adapters.SongsAdapter;
 import com.mnml.music.models.Song;
-import com.mnml.music.ui.fragments.base.RVFragment;
+import com.mnml.music.base.RVFragment;
 import com.mnml.music.utils.Utils;
 
 import java.util.ArrayList;

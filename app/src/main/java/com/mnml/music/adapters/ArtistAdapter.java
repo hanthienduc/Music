@@ -4,17 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import com.boswelja.lastfm.LastFMRequest;
 import com.boswelja.lastfm.models.artist.Image;
 import com.boswelja.lastfm.models.artist.LastFMArtist;
 import com.bumptech.glide.RequestManager;
 import com.mnml.music.R;
+import com.mnml.music.base.BaseAdapter;
 import com.mnml.music.models.Artist;
 import com.mnml.music.ui.activity.ArtistDetailActivity;
 import com.mnml.music.utils.Utils;
@@ -27,7 +23,7 @@ import retrofit2.Response;
 import java.io.File;
 import java.util.List;
 
-public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItemViewHolder>
+public class ArtistAdapter extends BaseAdapter
         implements FastScrollRecyclerView.SectionedAdapter {
 
     private List<Artist> items;
@@ -53,60 +49,27 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
     }
 
     @Override
-    public ArtistAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView =
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.artist, parent, false);
-        return new SimpleItemViewHolder(itemView);
+    public int getItemCount() {
+        return this.items.size();
     }
 
     @Override
-    public void onBindViewHolder(SimpleItemViewHolder holder, int position) {
+    public void setView(ViewHolder holder, int position) {
         final int adapterPosition = holder.getAdapterPosition();
         int albumCount = items.get(adapterPosition).getNumOfAlbums();
         int songCount = items.get(adapterPosition).getNumOfTracks();
-        String artistItemsCount;
-        holder.artistName.setText(items.get(adapterPosition).getName());
+        holder.title.setText(items.get(adapterPosition).getName());
 
-        if (albumCount == 1 && songCount == 1) {
-            artistItemsCount =
-                    (albumCount
-                            + " "
-                            + context.getString(R.string.album)
-                            + " • "
-                            + songCount
-                            + " "
-                            + context.getString(R.string.song));
-        } else if (albumCount == 1) {
-            artistItemsCount =
-                    (albumCount
-                            + " "
-                            + context.getString(R.string.album)
-                            + " • "
-                            + songCount
-                            + " "
-                            + context.getString(R.string.songs));
-        } else if (songCount == 1) {
-            artistItemsCount =
-                    (albumCount
-                            + " "
-                            + context.getString(R.string.albums)
-                            + " • "
-                            + songCount
-                            + " "
-                            + context.getString(R.string.song));
-        } else {
-            artistItemsCount =
-                    (albumCount
-                            + " "
-                            + context.getString(R.string.albums)
-                            + " • "
-                            + songCount
-                            + " "
-                            + context.getString(R.string.songs));
-        }
-        holder.artistDesc.setText(artistItemsCount);
+        String descBuilder = String.valueOf(albumCount) +
+                " " +
+                context.getString(albumCount == 1 ? R.string.album : R.string.albums) +
+                " \u2022 " +
+                String.valueOf(songCount) +
+                " " +
+                context.getString(songCount == 1 ? R.string.song : R.string.songs);
+        holder.desc.setText(descBuilder);
 
-        holder.view.setOnClickListener(view -> {
+        holder.itemView.setOnClickListener(view -> {
             Intent i = new Intent(context, ArtistDetailActivity.class);
             i.putExtra("artistName", items.get(adapterPosition).getName());
             context.startActivity(i);
@@ -127,43 +90,31 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.SimpleItem
                                 if(images != null) {
                                     for (Image image : images) {
                                         if(image.getSize().equals("medium")) {
-                                            glide.load(image.getText()).into(holder.artistImg);
+                                            glide.load(image.getText()).into(holder.art);
                                             return;
                                         }
                                     }
                                 }
                             }
                         } else {
-                            final File file = new File(context.getCacheDir(), artistName + ".png");
-                            glide.load(file).into(holder.artistImg);
+                            loadFromCache(artistName, holder.art);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<LastFMArtist> call, Throwable throwable) {
-                        File file = new File(context.getCacheDir(), artistName + ".png");
-                        glide.load(file).into(holder.artistImg);
+                        loadFromCache(artistName, holder.art);
                     }
                 }).build();
     }
 
-    @Override
-    public int getItemCount() {
-        return this.items.size();
+    private void loadFromCache(final String artistName, final ImageView art) {
+        final File file = new File(context.getCacheDir(), artistName + ".png");
+        glide.load(file).into(art);
     }
 
-    static final class SimpleItemViewHolder extends RecyclerView.ViewHolder {
-        private final TextView artistName;
-        private final TextView artistDesc;
-        private final ImageView artistImg;
-        private final View view;
-
-        SimpleItemViewHolder(View itemView) {
-            super(itemView);
-            artistName = (TextView) itemView.findViewById(R.id.artist_name);
-            artistDesc = (TextView) itemView.findViewById(R.id.artist_desc);
-            artistImg = (ImageView) itemView.findViewById(R.id.artist_image);
-            view = itemView;
-        }
+    @Override
+    public int layoutId() {
+        return R.layout.artist;
     }
 }

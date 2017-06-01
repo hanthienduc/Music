@@ -7,7 +7,7 @@
                 tools:ignore="Overdraw">
 
     <ImageView
-            android:id="@+id/song_art"
+            android:id="@+id/art"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:contentDescription="@string/album"/>
@@ -21,10 +21,10 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
         <TextView
-                android:id="@+id/song_item_name"
+                android:id="@+id/title"
                 style="@style/TitleText"/>
         <TextView
-                android:id="@+id/song_item_desc"
+                android:id="@+id/desc"
                 style="@style/DescText"/>
     </LinearLayout>
 </RelativeLayout>

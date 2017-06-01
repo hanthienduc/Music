@@ -23,6 +23,7 @@
 -keep class com.mnml.music.utils.*
 -keep class com.mnml.music.utils.glide.*
 -keep class com.mnml.music.utils.shortcuts.*
+-keep class com.mnml.music.base.*
 -keep class com.boswelja.lastfm.*
 
 -keep class com.afollestad.aesthetic.**

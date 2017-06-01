@@ -3,27 +3,21 @@ package com.mnml.music.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.mnml.music.R;
+import com.mnml.music.base.BaseAdapter;
 import com.mnml.music.models.Album;
 import com.mnml.music.ui.activity.AlbumDetailActivity;
 import com.mnml.music.utils.Config;
@@ -33,7 +27,7 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.List;
 
-public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItemViewHolder>
+public class AlbumsAdapter extends BaseAdapter
         implements FastScrollRecyclerView.SectionedAdapter {
 
     private List<Album> items;
@@ -60,18 +54,28 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
     }
 
     @Override
-    public AlbumsAdapter.SimpleItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.album, parent, false);
-
-        return new SimpleItemViewHolder(itemView);
+    public int getItemCount() {
+        return this.items.size();
     }
 
     @Override
-    public void onBindViewHolder(final SimpleItemViewHolder holder, int position) {
+    public void setView(ViewHolder holder, int position) {
         final int adapterPosition = holder.getAdapterPosition();
+
+        holder.itemView.setOnClickListener(view -> {
+            final Intent intent = new Intent(context, AlbumDetailActivity.class);
+            intent.putExtra("albumName", items.get(adapterPosition).getName());
+            intent.putExtra("albumId", items.get(adapterPosition).getId());
+            final String transitionName = "albumArt";
+            Pair albumArtPair = new Pair<View, String>(holder.art, transitionName);
+            ActivityOptionsCompat options =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, albumArtPair);
+            ActivityCompat.startActivity(context, intent, options.toBundle());
+        });
+
         final String name = items.get(adapterPosition).getName();
-        holder.albumArt.setContentDescription(name);
-        holder.albumName.setText(name);
+        holder.art.setContentDescription(name);
+        holder.title.setText(name);
         String albumDesc;
         String desc = items.get(adapterPosition).getDesc();
         int songCount = items.get(adapterPosition).getSongCount();
@@ -80,11 +84,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
         } else {
             albumDesc = desc + " • " + songCount + " " + context.getString(R.string.song);
         }
-        holder.albumDesc.setText(albumDesc);
-        int backCardColor =
-                ResourcesCompat.getColor(context.getResources(), R.color.cardBackground, null);
-        if (((ColorDrawable) holder.textHolder.getBackground()).getColor() != backCardColor)
-            holder.textHolder.setBackgroundColor(backCardColor);
+        holder.desc.setText(albumDesc);
         glide
                 .load(items.get(adapterPosition).getArtString())
                 .listener(new RequestListener<Drawable>() {
@@ -97,51 +97,20 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.SimpleItem
                     public boolean onResourceReady(Drawable drawable, Object o, Target<Drawable> target, DataSource dataSource, boolean b) {
                         final Palette.Builder palette = Palette.from(GlideUtils.convertToBitmap(drawable, px, px));
                         palette.generate(palette1 ->
-                                holder.background.setBackgroundColor(
+                                holder.itemView.setBackgroundColor(
                                         palette1.getVibrantColor(
                                                 palette1.getDominantColor(
                                                         palette1.getMutedColor(
                                                                 context.getColor(R.color.colorAccent))))
-                        ));
+                                ));
                         return false;
                     }
                 })
-                .into(holder.albumArt);
+                .into(holder.art);
     }
 
     @Override
-    public int getItemCount() {
-        return this.items.size();
-    }
-
-    final class SimpleItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final TextView albumName;
-        private final TextView albumDesc;
-        private final ImageView albumArt;
-        private final View background;
-        private final View textHolder;
-
-        SimpleItemViewHolder(View view) {
-            super(view);
-
-            albumName = (TextView) view.findViewById(R.id.album_name);
-            albumDesc = (TextView) view.findViewById(R.id.album_info);
-            albumArt = (ImageView) view.findViewById(R.id.album_art);
-            textHolder = view.findViewById(R.id.text_holder);
-            background = view.findViewById(R.id.background);
-        }
-
-        @Override
-        public void onClick(View view) {
-            final int adapterPosition = this.getAdapterPosition();
-            final Intent intent = new Intent(context, AlbumDetailActivity.class);
-            intent.putExtra("albumName", items.get(adapterPosition).getName());
-            intent.putExtra("albumId", items.get(adapterPosition).getId());
-            final String transitionName = "albumArt";
-            Pair albumArtPair = new Pair<View, String>(albumArt, transitionName);
-            ActivityOptionsCompat options =
-                    ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, albumArtPair);
-            ActivityCompat.startActivity(context, intent, options.toBundle());
-        }
+    public int layoutId() {
+        return R.layout.album;
     }
 }
